@@ -1,8 +1,8 @@
 {
-    "name": "innmind/operating-system",
+    "name": "innmind/server-status",
     "type": "library",
     "description": "Library to access various components of the operating system",
-    "homepage": "http://github.com/Innmind/OperatingSystem",
+    "homepage": "http://github.com/Innmind/ServerStatus",
     "license": "MIT",
     "authors": [
         {
@@ -11,19 +11,19 @@
         }
     ],
     "support": {
-        "issues": "http://github.com/Innmind/OperatingSystem/issues"
+        "issues": "http://github.com/Innmind/ServerStatus/issues"
     },
     "require": {
         "php": "~7.1"
     },
     "autoload": {
         "psr-4": {
-            "Innmind\\OperatingSystem\\": "src/"
+            "Innmind\\Server\\Status\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Innmind\\OperatingSystem\\": "tests/"
+            "Tests\\Innmind\\Server\\Status\\": "tests/"
         }
     },
     "require-dev": {
