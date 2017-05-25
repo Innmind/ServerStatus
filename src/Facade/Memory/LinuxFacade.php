@@ -13,7 +13,7 @@ use Symfony\Component\Process\Process;
 
 final class LinuxFacade
 {
-    private $entries = [
+    private static $entries = [
         'MemTotal' => 'total',
         'Active' => 'active',
         'Inactive' => 'inactive',
@@ -35,7 +35,7 @@ final class LinuxFacade
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return $line->matches(
-                    '('.implode('|', array_keys($this->entries)).')'
+                    '('.implode('|', array_keys(self::$entries)).')'
                 );
             })
             ->reduce(
@@ -44,7 +44,7 @@ final class LinuxFacade
                     $elements = $line->capture('~^(?P<key>\s+): +(?P<value>\d+) kB$~');
 
                     return $map->put(
-                        $this->entries[(string) $elements->get('key')],
+                        self::$entries[(string) $elements->get('key')],
                         ((int) (string) $elements->get('value')) * Bytes::BYTES
                     );
                 }
