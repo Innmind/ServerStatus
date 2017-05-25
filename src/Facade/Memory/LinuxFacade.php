@@ -38,7 +38,7 @@ final class LinuxFacade
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return $line->matches(
-                    '('.implode('|', array_keys(self::$entries)).')'
+                    '~^('.implode('|', array_keys(self::$entries)).'):~'
                 );
             })
             ->reduce(
