@@ -5,7 +5,6 @@ namespace Tests\Innmind\Server\Status\Facade\Cpu;
 
 use Innmind\Server\Status\{
     Facade\Cpu\LinuxFacade,
-    Facade\CpuFacade,
     Server\Cpu,
     Exception\CpuUsageNotAccessible
 };
@@ -21,7 +20,6 @@ class LinuxFacadeTest extends TestCase
 
         $facade = new LinuxFacade;
 
-        $this->assertInstanceOf(CpuFacade::class, $facade);
         $this->assertInstanceOf(Cpu::class, $facade());
     }
 

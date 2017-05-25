@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Facade\Memory;
 
 use Innmind\Server\Status\{
-    Facade\MemoryFacade,
     Server\Memory,
     Server\Memory\Bytes,
     Exception\MemoryUsageNotAccessible
@@ -12,7 +11,7 @@ use Innmind\Server\Status\{
 use Innmind\Immutable\Str;
 use Symfony\Component\Process\Process;
 
-final class LinuxFacade implements MemoryFacade
+final class LinuxFacade
 {
     private $entries = [
         'MemTotal' => 'total',

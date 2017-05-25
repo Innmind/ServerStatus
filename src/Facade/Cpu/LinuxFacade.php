@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Facade\Cpu;
 
 use Innmind\Server\Status\{
-    Facade\CpuFacade,
     Server\Cpu,
     Server\Cpu\Percentage,
     Exception\CpuUsageNotAccessible
@@ -12,7 +11,7 @@ use Innmind\Server\Status\{
 use Innmind\Immutable\Str;
 use Symfony\Component\Process\Process;
 
-final class LinuxFacade implements CpuFacade
+final class LinuxFacade
 {
     public function __invoke(): Cpu
     {

@@ -5,7 +5,6 @@ namespace Tests\Innmind\Server\Status\Facade\Memory;
 
 use Innmind\Server\Status\{
     Facade\Memory\LinuxFacade,
-    Facade\MemoryFacade,
     Server\Memory,
     Exception\MemoryUsageNotAccessible
 };
@@ -21,7 +20,6 @@ class LinuxFacadeTest extends TestCase
 
         $facade = new LinuxFacade;
 
-        $this->assertInstanceOf(MemoryFacade::class, $facade);
         $this->assertInstanceOf(Memory::class, $facade());
     }
 

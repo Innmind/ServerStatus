@@ -5,7 +5,6 @@ namespace Tests\Innmind\Server\Status\Facade\LoadAverage;
 
 use Innmind\Server\Status\{
     Facade\LoadAverage\PhpFacade,
-    Facade\LoadAverageFacade,
     Server\LoadAverage
 };
 use PHPUnit\Framework\TestCase;
@@ -16,7 +15,6 @@ class PhpFacadeTest extends TestCase
     {
         $facade = new PhpFacade;
 
-        $this->assertInstanceOf(LoadAverageFacade::class, $facade);
         $this->assertInstanceOf(LoadAverage::class, $facade());
     }
 }

@@ -8,7 +8,7 @@ use Innmind\Server\Status\{
     Server\LoadAverage
 };
 
-final class PhpFacade implements LoadAverageFacade
+final class PhpFacade
 {
     public function __invoke(): LoadAverage
     {
