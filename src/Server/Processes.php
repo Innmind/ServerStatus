@@ -15,5 +15,5 @@ interface Processes
      * @return MapInterface<int, Process>
      */
     public function all(): MapInterface;
-    public function get(Pid $id): Process;
+    public function get(Pid $pid): Process;
 }
