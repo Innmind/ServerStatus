@@ -7,8 +7,8 @@ use Innmind\Server\Status\Server\{
     Process\Pid,
     Process\User,
     Process\Command,
-    Cpu\Percentage,
-    Memory\Bytes
+    Process\Memory,
+    Cpu\Percentage
 };
 use Innmind\TimeContinuum\PointInTimeInterface;
 
@@ -25,7 +25,7 @@ final class Process
         Pid $pid,
         User $user,
         Percentage $cpu,
-        Bytes $memory,
+        Memory $memory,
         PointInTimeInterface $start,
         Command $command
     ) {
@@ -52,7 +52,7 @@ final class Process
         return $this->cpu;
     }
 
-    public function memory(): Bytes
+    public function memory(): Memory
     {
         return $this->memory;
     }
