@@ -44,7 +44,7 @@ final class LinuxFacade
             ->reduce(
                 new Map('string', 'int'),
                 static function(Map $map, Str $line): Map {
-                    $elements = $line->capture('~^(?P<key>\s+): +(?P<value>\d+) kB$~');
+                    $elements = $line->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~');
 
                     return $map->put(
                         self::$entries[(string) $elements->get('key')],
