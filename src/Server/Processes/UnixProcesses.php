@@ -97,7 +97,11 @@ final class UnixProcesses implements Processes
                     new User((string) $parts->get($columns->indexOf('USER'))),
                     new Percentage((float) (string) $parts->get($columns->indexOf('%CPU'))),
                     new Memory((float) (string) $parts->get($columns->indexOf('%MEM'))),
-                    $this->clock->at((string) $parts->get($columns->indexOf('STARTED'))),
+                    $this->clock->at(
+                        (string) $parts->get(
+                            $columns->indexOf(PHP_OS === 'Linux' ? 'START' : 'STARTED')
+                        )
+                    ),
                     new Command((string) $parts->get($columns->indexOf('COMMAND')))
                 );
             })
