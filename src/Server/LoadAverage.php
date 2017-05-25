@@ -12,9 +12,9 @@ final class LoadAverage
     private $lastFifteenMinutes;
 
     public function __construct(
-        int $lastMinute,
-        int $lastFiveMinutes,
-        int $lastFifteenMinutes
+        float $lastMinute,
+        float $lastFiveMinutes,
+        float $lastFifteenMinutes
     ) {
         if ($lastMinute < 0 || $lastFiveMinutes < 0 || $lastFifteenMinutes < 0) {
             throw new LoadAverageCannotBeNegative;
@@ -25,17 +25,17 @@ final class LoadAverage
         $this->lastFifteenMinutes = $lastFifteenMinutes;
     }
 
-    public function lastMinute(): int
+    public function lastMinute(): float
     {
         return $this->lastMinute;
     }
 
-    public function lastFiveMinutes(): int
+    public function lastFiveMinutes(): float
     {
         return $this->lastFiveMinutes;
     }
 
-    public function lastFifteenMinutes(): int
+    public function lastFifteenMinutes(): float
     {
         return $this->lastFifteenMinutes;
     }

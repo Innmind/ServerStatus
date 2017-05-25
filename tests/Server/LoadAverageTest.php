@@ -12,9 +12,9 @@ class LoadAverageTest extends TestCase
     {
         $load = new LoadAverage(1, 5, 15);
 
-        $this->assertSame(1, $load->lastMinute());
-        $this->assertSame(5, $load->lastFiveMinutes());
-        $this->assertSame(15, $load->lastFifteenMinutes());
+        $this->assertSame(1.0, $load->lastMinute());
+        $this->assertSame(5.0, $load->lastFiveMinutes());
+        $this->assertSame(15.0, $load->lastFifteenMinutes());
     }
 
     /**
