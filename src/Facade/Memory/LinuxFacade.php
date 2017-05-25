@@ -8,7 +8,10 @@ use Innmind\Server\Status\{
     Server\Memory\Bytes,
     Exception\MemoryUsageNotAccessible
 };
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Map
+};
 use Symfony\Component\Process\Process;
 
 final class LinuxFacade
