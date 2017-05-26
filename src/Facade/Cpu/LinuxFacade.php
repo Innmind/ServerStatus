@@ -25,7 +25,7 @@ final class LinuxFacade
         $percentages = (new Str($process->getOutput()))
             ->trim()
             ->capture(
-                '~^%Cpu\(s\):  (?P<user>\d+\.?\d*) us,  (?P<sys>\d+\.?\d*) sy,  (\d+\.?\d*) ni, (?P<idle>\d+\.?\d*) id~'
+                '~^%Cpu\(s\): *(?P<user>\d+\.?\d*) us, *(?P<sys>\d+\.?\d*) sy, *(\d+\.?\d*) ni, *(?P<idle>\d+\.?\d*) id~'
             );
 
         return new Cpu(
