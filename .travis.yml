@@ -4,8 +4,10 @@ php:
     - 7.1
 services:
     - docker
-before_script: composer install --prefer-source
-script: docker run -it --rm -v "$PWD":/usr/src/lib php:7.1-cli pecl install xdebug && echo "zend_extension=/usr/local/lib/php/extensions/no-debug-non-zts-20160303/xdebug.so" >> /usr/local/etc/php/php.ini && /usr/src/lib/vendor/bin/phpunit -c /usr/src/lib/phpunit.xml.dist --coverage-clover=coverage.clover
+before_script:
+    - composer install --prefer-source
+    - docker build . -t test_server_status
+script: docker run -it --rm -v "$PWD":/usr/src/lib test_server_status
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
