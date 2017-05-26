@@ -44,11 +44,21 @@ final class UnixProcesses implements Processes
 
     public function get(Pid $pid): Process
     {
-        $flag = PHP_OS === 'Linux' ? 'q' : 'p';
+        try {
+            $processes = $this->parse(
+                $this->run(sprintf('ps ux -p %s', $pid))
+            );
+        } catch (InformationNotAccessible $e) {
+            $processes = $this->parse(
+                $this->run(sprintf('ps ux -q %s', $pid))
+            );
+        }
 
-        return $this
-            ->parse($this->run(sprintf('ps ux -%s %s', $flag, $pid)))
-            ->get($pid->toInt());
+        if (!$processes->contains($pid->toInt())) {
+            throw new InformationNotAccessible;
+        }
+
+        return $processes->get($pid->toInt());
     }
 
     private function run(string $command): Str
