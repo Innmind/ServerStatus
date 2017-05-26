@@ -5,7 +5,6 @@ namespace Innmind\Server\Status\Server\Disk;
 
 use Innmind\Server\Status\{
     Server\Disk,
-    Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
