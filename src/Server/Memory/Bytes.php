@@ -83,6 +83,10 @@ final class Bytes
 
     public static function fromString(string $bytes): self
     {
+        if ($bytes === (string) (int) $bytes) {
+            return new self((int) $bytes);
+        }
+
         $bytes = new Str($bytes);
 
         if ($bytes->length() < 2) {
