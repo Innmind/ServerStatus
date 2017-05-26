@@ -39,11 +39,11 @@ final class OSXFacade
 
         return new Memory(
             new Bytes((int) (string) $total),
-            $this->parse($amounts->get('wired')),
+            Bytes::fromString((string) $amounts->get('wired')),
             new Bytes(((int) (string) $active) * 4096),
-            $this->parse($amounts->get('unused')),
-            $this->parse($swap),
-            $this->parse($amounts->get('used'))
+            Bytes::fromString((string) $amounts->get('unused')),
+            Bytes::fromString((string) $swap),
+            Bytes::fromString((string) $amounts->get('used'))
         );
     }
 
@@ -57,34 +57,5 @@ final class OSXFacade
         }
 
         return new Str($process->getOutput());
-    }
-
-    private function parse(Str $str): Bytes
-    {
-        switch ($str->substring(-1)) {
-            case 'K':
-                $multiplier = Bytes::BYTES;
-                break;
-
-            case 'M':
-                $multiplier = Bytes::KILOBYTES;
-                break;
-
-            case 'G':
-                $multiplier = Bytes::MEGABYTES;
-                break;
-
-            case 'T':
-                $multiplier = Bytes::GIGABYTES;
-                break;
-
-            case 'P':
-                $multiplier = Bytes::TERABYTES;
-                break;
-        }
-
-        return new Bytes(
-            (int) (((float) (string) $str->substring(0, -1)) * $multiplier)
-        );
     }
 }
