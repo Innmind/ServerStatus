@@ -3,7 +3,11 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Memory;
 
-use Innmind\Server\Status\Exception\BytesCannotBeNegative;
+use Innmind\Server\Status\Exception\{
+    BytesCannotBeNegative,
+    UnknownBytesFormat
+};
+use Innmind\Immutable\Str;
 
 final class Bytes
 {
@@ -75,5 +79,59 @@ final class Bytes
     public function __toString(): string
     {
         return $this->string;
+    }
+
+    public static function fromString(string $bytes): self
+    {
+        $bytes = new Str($bytes);
+
+        try {
+            return self::fromUnit(
+                $bytes->substring(0, -1),
+                $bytes->substring(-1)
+            );
+        } catch (UnknownBytesFormat $e) {
+            return self::fromUnit(
+                $bytes->substring(0, -2),
+                $bytes->substring(-2)
+            );
+        }
+    }
+
+    private static function fromUnit(Str $bytes, Str $unit): self
+    {
+        switch ((string) $unit) {
+            case 'K':
+            case 'Ki':
+                $multiplier = Bytes::BYTES;
+                break;
+
+            case 'M':
+            case 'Mi':
+                $multiplier = Bytes::KILOBYTES;
+                break;
+
+            case 'G':
+            case 'Gi':
+                $multiplier = Bytes::MEGABYTES;
+                break;
+
+            case 'T':
+            case 'Ti':
+                $multiplier = Bytes::GIGABYTES;
+                break;
+
+            case 'P':
+            case 'Pi':
+                $multiplier = Bytes::TERABYTES;
+                break;
+
+            default:
+                throw new UnknownBytesFormat;
+        }
+
+        return new self(
+            (int) (((float) (string) $bytes) * $multiplier)
+        );
     }
 }

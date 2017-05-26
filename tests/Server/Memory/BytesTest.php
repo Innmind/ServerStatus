@@ -27,6 +27,25 @@ class BytesTest extends TestCase
         new Bytes(-1);
     }
 
+    /**
+     * @dataProvider strings
+     */
+    public function testFromString($string, $expected)
+    {
+        $bytes = Bytes::fromString($string);
+
+        $this->assertInstanceOf(Bytes::class, $bytes);
+        $this->assertSame($expected, (string) $bytes);
+    }
+
+    /**
+     * @expectedException Innmind\Server\Status\Exception\UnknownBytesFormat
+     */
+    public function testThrowWhenUnknownFormat()
+    {
+        Bytes::fromString('42Br');
+    }
+
     public function steps(): array
     {
         return [
@@ -42,6 +61,22 @@ class BytesTest extends TestCase
             [(1024 ** 5)-1, '1024TB'],
             [1024 ** 5, '1PB'],
             [(1024 ** 6)-1, '1024PB'],
+        ];
+    }
+
+    public function strings(): array
+    {
+        return [
+            ['42K', '42KB'],
+            ['42Ki', '42KB'],
+            ['42M', '42MB'],
+            ['42Mi', '42MB'],
+            ['42G', '42GB'],
+            ['42Gi', '42GB'],
+            ['42T', '42TB'],
+            ['42Ti', '42TB'],
+            ['42P', '42PB'],
+            ['42Pi', '42PB'],
         ];
     }
 }
