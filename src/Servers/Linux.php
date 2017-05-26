@@ -12,7 +12,9 @@ use Innmind\Server\Status\{
     Facade\Cpu\LinuxFacade as CpuFacade,
     Facade\Memory\LinuxFacade as MemoryFacade,
     Facade\LoadAverage\PhpFacade as LoadAverageFacade,
-    Server\Processes\UnixProcesses
+    Server\Processes\UnixProcesses,
+    Server\Disk,
+    Server\Disk\UnixDisk
 };
 use Innmind\TimeContinuum\TimeContinuumInterface;
 
@@ -22,6 +24,7 @@ final class Linux implements Server
     private $memory;
     private $processes;
     private $loadAverage;
+    private $disk;
 
     public function __construct(TimeContinuumInterface $clock)
     {
@@ -29,6 +32,7 @@ final class Linux implements Server
         $this->memory = new MemoryFacade;
         $this->processes = new UnixProcesses($clock);
         $this->loadAverage = new LoadAverageFacade;
+        $this->disk = new UnixDisk;
     }
 
     public function cpu(): Cpu
@@ -48,5 +52,10 @@ final class Linux implements Server
     public function loadAverage(): LoadAverage
     {
         return ($this->loadAverage)();
+    }
+
+    public function disk(): Disk
+    {
+        return $this->disk;
     }
 }

@@ -9,7 +9,8 @@ use Innmind\Server\Status\{
     Server\Cpu,
     Server\Memory,
     Server\LoadAverage,
-    Server\Processes
+    Server\Processes,
+    Server\Disk
 };
 use Innmind\TimeContinuum\TimeContinuum\Earth;
 use PHPUnit\Framework\TestCase;
@@ -47,5 +48,10 @@ class LinuxTest extends TestCase
     public function testLoadAverage()
     {
         $this->assertInstanceOf(LoadAverage::class, (new Linux(new Earth))->loadAverage());
+    }
+
+    public function testDisk()
+    {
+        $this->assertInstanceOf(Disk::class, (new Linux(new Earth))->disk());
     }
 }

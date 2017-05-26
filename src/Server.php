@@ -7,7 +7,8 @@ use Innmind\Server\Status\Server\{
     Cpu,
     Memory,
     Processes,
-    LoadAverage
+    LoadAverage,
+    Disk
 };
 
 interface Server
@@ -16,4 +17,5 @@ interface Server
     public function memory(): Memory;
     public function processes(): Processes;
     public function loadAverage(): LoadAverage;
+    public function disk(): Disk;
 }

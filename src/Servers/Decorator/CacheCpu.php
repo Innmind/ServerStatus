@@ -8,7 +8,8 @@ use Innmind\Server\Status\{
     Server\Cpu,
     Server\Memory,
     Server\Processes,
-    Server\LoadAverage
+    Server\LoadAverage,
+    Server\Disk
 };
 use Innmind\TimeContinuum\{
     TimeContinuumInterface,
@@ -65,5 +66,10 @@ final class CacheCpu implements Server
     public function loadAverage(): LoadAverage
     {
         return $this->server->loadAverage();
+    }
+
+    public function disk(): Disk
+    {
+        return $this->server->disk();
     }
 }

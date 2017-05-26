@@ -11,7 +11,8 @@ use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
     Server\LoadAverage,
-    Server\Processes
+    Server\Processes,
+    Server\Disk
 };
 use Innmind\TimeContinuum\{
     TimeContinuumInterface,
@@ -146,5 +147,23 @@ class CacheLoadAverageTest extends TestCase
         $this->assertSame($load1, $decorator->loadAverage()); //put in cache
         $this->assertSame($load1, $decorator->loadAverage()); //load cache
         $this->assertSame($load2, $decorator->loadAverage()); //stale
+    }
+
+    public function testDisk()
+    {
+        $decorator = new CacheLoadAverage(
+            $server = $this->createMock(Server::class),
+            $clock = $this->createMock(TimeContinuumInterface::class),
+            new ElapsedPeriod(42)
+        );
+        $server
+            ->expects($this->once())
+            ->method('disk')
+            ->willReturn($expected = $this->createMock(Disk::class));
+        $clock
+            ->expects($this->never())
+            ->method('now');
+
+        $this->assertSame($expected, $decorator->disk());
     }
 }
