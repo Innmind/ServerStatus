@@ -1,0 +1,38 @@
+{
+    "name": "innmind/server-status",
+    "type": "library",
+    "description": "Library to access various components of the operating system",
+    "homepage": "http://github.com/Innmind/ServerStatus",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Baptiste Langlade",
+            "email": "langlade.baptiste@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "http://github.com/Innmind/ServerStatus/issues"
+    },
+    "require": {
+        "php": "~7.1",
+        "innmind/immutable": "~2.3",
+        "innmind/time-continuum": "^1.0",
+        "symfony/process": "^3.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Innmind\\Server\\Status\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\Innmind\\Server\\Status\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~6.0"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --colors=always"
+    }
+}
