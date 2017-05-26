@@ -85,6 +85,10 @@ final class Bytes
     {
         $bytes = new Str($bytes);
 
+        if ($bytes->length() < 2) {
+            throw new UnknownBytesFormat;
+        }
+
         try {
             return self::fromUnit(
                 $bytes->substring(0, -1),
@@ -100,6 +104,10 @@ final class Bytes
 
     private static function fromUnit(Str $bytes, Str $unit): self
     {
+        if ($bytes->length() === 0) {
+            throw new UnknownBytesFormat;
+        }
+
         switch ((string) $unit) {
             case 'B':
             case 'Bi':

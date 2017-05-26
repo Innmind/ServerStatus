@@ -46,6 +46,15 @@ class BytesTest extends TestCase
         Bytes::fromString('42Br');
     }
 
+    /**
+     * @dataProvider invalidStrings
+     * @expectedException Innmind\Server\Status\Exception\UnknownBytesFormat
+     */
+    public function testThrowWhenStringTooShort($string)
+    {
+        Bytes::fromString($string);
+    }
+
     public function steps(): array
     {
         return [
@@ -79,6 +88,15 @@ class BytesTest extends TestCase
             ['42Ti', '42TB'],
             ['42P', '42PB'],
             ['42Pi', '42PB'],
+        ];
+    }
+
+    public function invalidStrings(): array
+    {
+        return [
+            [''],
+            ['B'],
+            ['Bi'],
         ];
     }
 }
