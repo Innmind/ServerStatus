@@ -101,6 +101,11 @@ final class Bytes
     private static function fromUnit(Str $bytes, Str $unit): self
     {
         switch ((string) $unit) {
+            case 'B':
+            case 'Bi':
+                $multiplier = 1;
+                break;
+
             case 'K':
             case 'Ki':
                 $multiplier = Bytes::BYTES;

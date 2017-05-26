@@ -67,6 +67,8 @@ class BytesTest extends TestCase
     public function strings(): array
     {
         return [
+            ['42B', '42B'],
+            ['42Bi', '42B'],
             ['42K', '42KB'],
             ['42Ki', '42KB'],
             ['42M', '42MB'],
