@@ -11,7 +11,7 @@ final class Percentage
 
     public function __construct(float $value)
     {
-        if ($value < 0 || $value > 100) {
+        if ($value < 0) {
             throw new OutOfBoundsPercentage;
         }
 
