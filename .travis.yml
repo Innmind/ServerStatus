@@ -13,5 +13,3 @@ script: docker run -it --rm -v "$PWD":/usr/src/lib test_server_status
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
-notifications:
-    slack: innmind:nAiLaAi6RU4wGEAdL6FuKdyF
