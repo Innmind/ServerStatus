@@ -23,12 +23,4 @@ class PercentageTest extends TestCase
     {
         new Percentage(-1);
     }
-
-    /**
-     * @expectedException Innmind\Server\Status\Exception\OutOfBoundsPercentage
-     */
-    public function testThrowWhenPercentageHigherThanHundred()
-    {
-        new Percentage(101);
-    }
 }
