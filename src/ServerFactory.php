@@ -31,4 +31,9 @@ final class ServerFactory
 
         throw new UnsupportedOperatingSystem;
     }
+
+    public static function build(TimeContinuumInterface $clock): Server
+    {
+        return (new self($clock))->make();
+    }
 }

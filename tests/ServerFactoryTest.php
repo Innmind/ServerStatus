@@ -22,6 +22,7 @@ class ServerFactoryTest extends TestCase
         $server = (new ServerFactory(new Earth))->make();
 
         $this->assertInstanceOf(Server::class, $server);
+        $this->assertInstanceOf(Server::class, ServerFactory::build(new Earth));
     }
 
     public function testThrowWhenUnsupportedOS()
