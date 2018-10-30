@@ -23,7 +23,7 @@ final class OSXFacade
         $swap = $this
             ->run('sysctl vm.swapusage')
             ->trim()
-            ->capture('~used = (?P<swap>\d+\.?\d*[KMGTP])~')
+            ->capture('~used = (?P<swap>\d+[\.,]?\d*[KMGTP])~')
             ->get('swap');
         $amounts = $this
             ->run('top -l 1 -s 0 | grep PhysMem')

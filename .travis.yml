@@ -1,15 +1,15 @@
-sudo: required
 language: php
 php:
     - 7.1
     - 7.2
     - nightly
-services:
-    - docker
-before_script:
-    - composer install --prefer-source
-    - docker build . -t test_server_status
-script: docker run -it --rm -v "$PWD":/usr/src/lib test_server_status
+matrix:
+    allow_failures:
+        - php: nightly
+os:
+    - linux
+before_script: composer install --prefer-source
+script: vendor/bin/phpunit
 after_script:
     - wget https://scrutinizer-ci.com/ocular.phar
     - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
