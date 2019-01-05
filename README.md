@@ -31,6 +31,7 @@ $server = (new ServerFactory(new Earth))->make();
 $server->cpu()->user(); //percentage of the cpu used by the user
 $server->cpu()->system(); //percentage of the cpu used by the system
 $server->cpu()->idle(); //percentage of the cpu not used
+$server->cput()->cores(); //number of cores available
 
 $server->memory()->total(); //total memory of the server
 $server->memory()->wired(); //memory that cannot be taken out of ram
@@ -53,4 +54,6 @@ $server->processes()->get(new Pid(1))->cpu(); //percentage
 $server->processes()->get(new Pid(1))->memory(); //percentage
 $server->processes()->get(new Pid(1))->start(); //point in time at which the process started
 $server->processes()->get(new Pid(1))->command();
+
+$server->tmp(); //path to temp directory
 ```
