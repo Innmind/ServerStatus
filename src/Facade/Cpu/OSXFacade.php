@@ -6,6 +6,7 @@ namespace Innmind\Server\Status\Facade\Cpu;
 use Innmind\Server\Status\{
     Server\Cpu,
     Server\Cpu\Percentage,
+    Server\Cpu\Cores,
     Exception\CpuUsageNotAccessible
 };
 use Innmind\Immutable\Str;
@@ -28,10 +29,23 @@ final class OSXFacade
                 '~^CPU usage: (?P<user>\d+\.?\d*)% user, (?P<sys>\d+\.?\d*)% sys, (?P<idle>\d+\.?\d*)% idle$~'
             );
 
+        $process = new Process('sysctl -a | grep \'hw.ncpu:\'');
+        $process->run();
+
+        if ($process->isSuccessful()) {
+            $match = (new Str($process->getOutput()))
+                ->trim()
+                ->capture(
+                    '~^hw.ncpu: (?P<cores>\d+)$~'
+                );
+            $cores = $match['cores'];
+        }
+
         return new Cpu(
             new Percentage((float) (string) $percentages->get('user')),
             new Percentage((float) (string) $percentages->get('sys')),
-            new Percentage((float) (string) $percentages->get('idle'))
+            new Percentage((float) (string) $percentages->get('idle')),
+            new Cores((int) (string) ($cores ?? 1))
         );
     }
 }
