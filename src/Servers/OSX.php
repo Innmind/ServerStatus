@@ -17,6 +17,10 @@ use Innmind\Server\Status\{
     Server\Disk\UnixDisk
 };
 use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\Url\{
+    PathInterface,
+    Path
+};
 
 final class OSX implements Server
 {
@@ -57,5 +61,10 @@ final class OSX implements Server
     public function disk(): Disk
     {
         return $this->disk;
+    }
+
+    public function tmp(): PathInterface
+    {
+        return new Path(\sys_get_temp_dir());
     }
 }
