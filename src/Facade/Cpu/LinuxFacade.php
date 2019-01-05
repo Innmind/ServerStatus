@@ -6,6 +6,7 @@ namespace Innmind\Server\Status\Facade\Cpu;
 use Innmind\Server\Status\{
     Server\Cpu,
     Server\Cpu\Percentage,
+    Server\Cpu\Cores,
     Exception\CpuUsageNotAccessible
 };
 use Innmind\Immutable\Str;
