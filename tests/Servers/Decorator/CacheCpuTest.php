@@ -8,6 +8,7 @@ use Innmind\Server\Status\{
     Server,
     Server\Cpu,
     Server\Cpu\Percentage,
+    Server\Cpu\Cores,
     Server\Memory,
     Server\Memory\Bytes,
     Server\LoadAverage,
@@ -47,8 +48,8 @@ class CacheCpuTest extends TestCase
             ->method('cpu')
             ->will(
                 $this->onConsecutiveCalls(
-                    $cpu1 = new Cpu(new Percentage(33), new Percentage(33), new Percentage(34)),
-                    $cpu2 = new Cpu(new Percentage(33), new Percentage(33), new Percentage(34))
+                    $cpu1 = new Cpu(new Percentage(33), new Percentage(33), new Percentage(34), new Cores(1)),
+                    $cpu2 = new Cpu(new Percentage(33), new Percentage(33), new Percentage(34), new Cores(1))
                 )
             );
         $clock

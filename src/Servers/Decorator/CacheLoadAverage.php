@@ -15,6 +15,7 @@ use Innmind\TimeContinuum\{
     TimeContinuumInterface,
     ElapsedPeriod
 };
+use Innmind\Url\PathInterface;
 
 final class CacheLoadAverage implements Server
 {
@@ -71,5 +72,10 @@ final class CacheLoadAverage implements Server
     public function disk(): Disk
     {
         return $this->server->disk();
+    }
+
+    public function tmp(): PathInterface
+    {
+        return $this->server->tmp();
     }
 }

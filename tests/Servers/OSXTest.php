@@ -13,6 +13,7 @@ use Innmind\Server\Status\{
     Server\Disk
 };
 use Innmind\TimeContinuum\TimeContinuum\Earth;
+use Innmind\Url\PathInterface;
 use PHPUnit\Framework\TestCase;
 
 class OSXTest extends TestCase
@@ -53,5 +54,13 @@ class OSXTest extends TestCase
     public function testDisk()
     {
         $this->assertInstanceOf(Disk::class, (new OSX(new Earth))->disk());
+    }
+
+    public function testTmp()
+    {
+        $server = new OSX(new Earth);
+
+        $this->assertInstanceOf(PathInterface::class, $server->tmp());
+        $this->assertSame(\sys_get_temp_dir(), (string) $server->tmp());
     }
 }

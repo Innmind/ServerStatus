@@ -8,6 +8,7 @@ use Innmind\Server\Status\{
     Server,
     Server\Cpu,
     Server\Cpu\Percentage,
+    Server\Cpu\Cores,
     Server\Memory,
     Server\Memory\Bytes,
     Server\LoadAverage,
@@ -45,7 +46,7 @@ class CacheMemoryTest extends TestCase
         $server
             ->expects($this->once())
             ->method('cpu')
-            ->willReturn($expected = new Cpu(new Percentage(33), new Percentage(33), new Percentage(34)));
+            ->willReturn($expected = new Cpu(new Percentage(33), new Percentage(33), new Percentage(34), new Cores(1)));
         $clock
             ->expects($this->never())
             ->method('now');
