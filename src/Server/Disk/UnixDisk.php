@@ -94,13 +94,13 @@ final class UnixDisk implements Disk
                     new MountPoint(
                         (string) $parts->get($columns->indexOf('mountPoint'))
                     ),
-                    Bytes::fromString(
+                    Bytes::of(
                         (string) $parts->get($columns->indexOf('size'))
                     ),
-                    Bytes::fromString(
+                    Bytes::of(
                         (string) $parts->get($columns->indexOf('available'))
                     ),
-                    Bytes::fromString(
+                    Bytes::of(
                         (string) $parts->get($columns->indexOf('used'))
                     ),
                     new Usage(
