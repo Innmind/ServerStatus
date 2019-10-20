@@ -81,7 +81,7 @@ final class Bytes
         return $this->string;
     }
 
-    public static function fromString(string $bytes): self
+    public static function of(string $bytes): self
     {
         if ($bytes === (string) (int) $bytes) {
             return new self((int) $bytes);
@@ -104,6 +104,15 @@ final class Bytes
                 $bytes->substring(-2)
             );
         }
+    }
+
+    /**
+     * @deprecated
+     * @see self::of()
+     */
+    public static function fromString(string $bytes): self
+    {
+        return self::of($bytes);
     }
 
     private static function fromUnit(Str $bytes, Str $unit): self
