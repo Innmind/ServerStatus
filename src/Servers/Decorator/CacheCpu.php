@@ -36,6 +36,9 @@ final class CacheCpu implements Server
         $this->threshold = $threshold;
     }
 
+    /**
+     * @psalm-suppress InvalidNullableReturnType
+     */
     public function cpu(): Cpu
     {
         $now = $this->clock->now();
@@ -46,6 +49,7 @@ final class CacheCpu implements Server
                 $now->elapsedSince($this->cachedAt)
             )
         ) {
+            /** @psalm-suppress NullableReturnStatement */
             return $this->data;
         }
 

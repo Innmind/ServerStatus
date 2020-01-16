@@ -89,7 +89,8 @@ final class UnixProcesses implements Processes
                 },
             );
 
-        return $lines
+        /** @var Sequence<Sequence<Str>> */
+        $partsByLine = $lines
             ->drop(1)
             ->reduce(
                 Sequence::of(Sequence::class),
@@ -98,32 +99,34 @@ final class UnixProcesses implements Processes
                         $line->pregSplit('~ +~', $columns->size()),
                     );
                 },
-            )
-            ->mapTo(
-                Process::class,
-                function(Sequence $parts) use ($columns): Process {
-                    return new Process(
-                        new Pid((int) $parts->get($columns->indexOf('PID'))->toString()),
-                        new User($parts->get($columns->indexOf('USER'))->toString()),
-                        new Percentage((float) $parts->get($columns->indexOf('%CPU'))->toString()),
-                        new Memory((float) $parts->get($columns->indexOf('%MEM'))->toString()),
-                        $this->clock->at(
-                            $parts->get(
-                                $columns->indexOf(PHP_OS === 'Linux' ? 'START' : 'STARTED'),
-                            )->toString(),
-                        ),
-                        new Command($parts->get($columns->indexOf('COMMAND'))->toString()),
-                    );
-                },
-            )
-            ->reduce(
-                Map::of('int', Process::class),
-                static function(Map $processes, Process $process): Map {
-                    return ($processes)(
-                        $process->pid()->toInt(),
-                        $process,
-                    );
-                },
             );
+        $processes = $partsByLine->mapTo(
+            Process::class,
+            function(Sequence $parts) use ($columns): Process {
+                return new Process(
+                    new Pid((int) $parts->get($columns->indexOf('PID'))->toString()),
+                    new User($parts->get($columns->indexOf('USER'))->toString()),
+                    new Percentage((float) $parts->get($columns->indexOf('%CPU'))->toString()),
+                    new Memory((float) $parts->get($columns->indexOf('%MEM'))->toString()),
+                    $this->clock->at(
+                        $parts->get(
+                            $columns->indexOf(PHP_OS === 'Linux' ? 'START' : 'STARTED'),
+                        )->toString(),
+                    ),
+                    new Command($parts->get($columns->indexOf('COMMAND'))->toString()),
+                );
+            },
+        );
+
+        /** @var Map<int, Process> */
+        return $processes->reduce(
+            Map::of('int', Process::class),
+            static function(Map $processes, Process $process): Map {
+                return ($processes)(
+                    $process->pid()->toInt(),
+                    $process,
+                );
+            },
+        );
     }
 }

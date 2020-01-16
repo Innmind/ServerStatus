@@ -51,6 +51,9 @@ final class CacheLoadAverage implements Server
         return $this->server->processes();
     }
 
+    /**
+     * @psalm-suppress InvalidNullableReturnType
+     */
     public function loadAverage(): LoadAverage
     {
         $now = $this->clock->now();
@@ -61,6 +64,7 @@ final class CacheLoadAverage implements Server
                 $now->elapsedSince($this->cachedAt)
             )
         ) {
+            /** @psalm-suppress NullableReturnStatement */
             return $this->data;
         }
 

@@ -41,6 +41,9 @@ final class CacheMemory implements Server
         return $this->server->cpu();
     }
 
+    /**
+     * @psalm-suppress InvalidNullableReturnType
+     */
     public function memory(): Memory
     {
         $now = $this->clock->now();
@@ -51,6 +54,7 @@ final class CacheMemory implements Server
                 $now->elapsedSince($this->cachedAt)
             )
         ) {
+            /** @psalm-suppress NullableReturnStatement */
             return $this->data;
         }
 

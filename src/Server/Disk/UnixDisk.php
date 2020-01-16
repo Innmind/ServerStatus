@@ -77,7 +77,8 @@ final class UnixDisk implements Disk
                 },
             );
 
-        return $lines
+        /** @var Sequence<Sequence<Str>> */
+        $partsByLine = $lines
             ->drop(1)
             ->reduce(
                 Sequence::of(Sequence::class),
@@ -86,37 +87,39 @@ final class UnixDisk implements Disk
                         $line->pregSplit('~ +~', $columns->size()),
                     );
                 },
-            )
-            ->mapTo(
-                Volume::class,
-                function(Sequence $parts) use ($columns): Volume {
-                    return new Volume(
-                        new MountPoint(
-                            $parts->get($columns->indexOf('mountPoint'))->toString(),
-                        ),
-                        Bytes::of(
-                            $parts->get($columns->indexOf('size'))->toString(),
-                        ),
-                        Bytes::of(
-                            $parts->get($columns->indexOf('available'))->toString(),
-                        ),
-                        Bytes::of(
-                            $parts->get($columns->indexOf('used'))->toString(),
-                        ),
-                        new Usage(
-                            (float) $parts->get($columns->indexOf('usage'))->toString(),
-                        ),
-                    );
-                },
-            )
-            ->reduce(
-                Map::of('string', Volume::class),
-                static function(Map $volumes, Volume $volume): Map {
-                    return $volumes->put(
-                        $volume->mountPoint()->toString(),
-                        $volume,
-                    );
-                },
             );
+        $volumes = $partsByLine->mapTo(
+            Volume::class,
+            function(Sequence $parts) use ($columns): Volume {
+                return new Volume(
+                    new MountPoint(
+                        $parts->get($columns->indexOf('mountPoint'))->toString(),
+                    ),
+                    Bytes::of(
+                        $parts->get($columns->indexOf('size'))->toString(),
+                    ),
+                    Bytes::of(
+                        $parts->get($columns->indexOf('available'))->toString(),
+                    ),
+                    Bytes::of(
+                        $parts->get($columns->indexOf('used'))->toString(),
+                    ),
+                    new Usage(
+                        (float) $parts->get($columns->indexOf('usage'))->toString(),
+                    ),
+                );
+            },
+        );
+
+        /** @var Map<string, Volume> */
+        return $volumes->reduce(
+            Map::of('string', Volume::class),
+            static function(Map $volumes, Volume $volume): Map {
+                return $volumes->put(
+                    $volume->mountPoint()->toString(),
+                    $volume,
+                );
+            },
+        );
     }
 }

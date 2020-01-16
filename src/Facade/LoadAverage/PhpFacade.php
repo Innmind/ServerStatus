@@ -12,6 +12,7 @@ final class PhpFacade
 {
     public function __invoke(): LoadAverage
     {
+        /** @var array{0: int, 1: int, 2: int} */
         $load = \sys_getloadavg();
 
         return new LoadAverage(

@@ -33,6 +33,7 @@ final class LinuxFacade
             throw new MemoryUsageNotAccessible;
         }
 
+        /** @var Map<string, int> */
         $amounts = Str::of($process->getOutput())
             ->trim()
             ->split("\n")
