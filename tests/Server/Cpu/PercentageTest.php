@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Cpu;
 
-use Innmind\Server\Status\Server\Cpu\Percentage;
+use Innmind\Server\Status\{
+    Server\Cpu\Percentage,
+    Exception\OutOfBoundsPercentage,
+};
 use PHPUnit\Framework\TestCase;
 
 class PercentageTest extends TestCase
@@ -16,11 +19,10 @@ class PercentageTest extends TestCase
         $this->assertSame('42.24%', $percentage->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\OutOfBoundsPercentage
-     */
     public function testThrowWhenPercentageLowerThanZero()
     {
+        $this->expectException(OutOfBoundsPercentage::class);
+
         new Percentage(-1);
     }
 }

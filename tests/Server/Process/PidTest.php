@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Process;
 
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Status\{
+    Server\Process\Pid,
+    Exception\LowestPidPossibleIsOne,
+};
 use PHPUnit\Framework\TestCase;
 
 class PidTest extends TestCase
@@ -16,11 +19,10 @@ class PidTest extends TestCase
         $this->assertSame('42', $pid->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\LowestPidPossibleIsOne
-     */
     public function testThrowWhenPidTooLow()
     {
+        $this->expectException(LowestPidPossibleIsOne::class);
+
         new Pid(0);
     }
 }

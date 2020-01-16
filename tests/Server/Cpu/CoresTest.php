@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Cpu;
 
-use Innmind\Server\Status\Server\Cpu\Cores;
+use Innmind\Server\Status\{
+    Server\Cpu\Cores,
+    Exception\DomainException,
+};
 use PHPUnit\Framework\TestCase;
 
 class CoresTest extends TestCase
@@ -16,11 +19,10 @@ class CoresTest extends TestCase
         $this->assertSame('8', $cores->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\DomainException
-     */
     public function testThrowWhenCoresLowerThanOne()
     {
+        $this->expectException(DomainException::class);
+
         new Cores(0);
     }
 }

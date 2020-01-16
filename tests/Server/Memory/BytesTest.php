@@ -3,7 +3,11 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Memory;
 
-use Innmind\Server\Status\Server\Memory\Bytes;
+use Innmind\Server\Status\{
+    Server\Memory\Bytes,
+    Exception\BytesCannotBeNegative,
+    Exception\UnknownBytesFormat,
+};
 use PHPUnit\Framework\TestCase;
 
 class BytesTest extends TestCase
@@ -19,11 +23,10 @@ class BytesTest extends TestCase
         $this->assertSame($expected, $bytes->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\BytesCannotBeNegative
-     */
     public function testThrowWhenNegative()
     {
+        $this->expectException(BytesCannotBeNegative::class);
+
         new Bytes(-1);
     }
 
@@ -38,20 +41,20 @@ class BytesTest extends TestCase
         $this->assertSame($expected, $bytes->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\UnknownBytesFormat
-     */
     public function testThrowWhenUnknownFormat()
     {
+        $this->expectException(UnknownBytesFormat::class);
+
         Bytes::fromString('42Br');
     }
 
     /**
      * @dataProvider invalidStrings
-     * @expectedException Innmind\Server\Status\Exception\UnknownBytesFormat
      */
     public function testThrowWhenStringTooShort($string)
     {
+        $this->expectException(UnknownBytesFormat::class);
+
         Bytes::fromString($string);
     }
 
