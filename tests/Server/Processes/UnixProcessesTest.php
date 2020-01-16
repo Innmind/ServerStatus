@@ -8,17 +8,17 @@ use Innmind\Server\Status\{
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
-    Exception\InformationNotAccessible
+    Exception\InformationNotAccessible,
 };
-use Innmind\TimeContinuum\TimeContinuum\Earth;
-use Innmind\Immutable\MapInterface;
+use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class UnixProcessesTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Processes::class, new UnixProcesses(new Earth));
+        $this->assertInstanceOf(Processes::class, new UnixProcesses(new Clock));
     }
 
     public function testAll()
@@ -27,9 +27,9 @@ class UnixProcessesTest extends TestCase
             return;
         }
 
-        $all = (new UnixProcesses(new Earth))->all();
+        $all = (new UnixProcesses(new Clock))->all();
 
-        $this->assertInstanceOf(MapInterface::class, $all);
+        $this->assertInstanceOf(Map::class, $all);
         $this->assertSame('int', (string) $all->keyType());
         $this->assertSame(Process::class, (string) $all->valueType());
         $this->assertTrue($all->size() > 0);
@@ -42,7 +42,7 @@ class UnixProcessesTest extends TestCase
             return;
         }
 
-        $process = (new UnixProcesses(new Earth))->get(new Pid(1));
+        $process = (new UnixProcesses(new Clock))->get(new Pid(1));
 
         $this->assertInstanceOf(Process::class, $process);
         $this->assertSame('root', $process->user()->toString());
@@ -52,6 +52,6 @@ class UnixProcessesTest extends TestCase
     {
         $this->expectException(InformationNotAccessible::class);
 
-        (new UnixProcesses(new Earth))->get(new Pid(42424));
+        (new UnixProcesses(new Clock))->get(new Pid(42424));
     }
 }

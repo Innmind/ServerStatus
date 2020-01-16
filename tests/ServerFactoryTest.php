@@ -8,7 +8,7 @@ use Innmind\Server\Status\{
     Server,
     Exception\UnsupportedOperatingSystem
 };
-use Innmind\TimeContinuum\TimeContinuum\Earth;
+use Innmind\TimeContinuum\Earth\Clock;
 use PHPUnit\Framework\TestCase;
 
 class ServerFactoryTest extends TestCase
@@ -19,10 +19,10 @@ class ServerFactoryTest extends TestCase
             return;
         }
 
-        $server = (new ServerFactory(new Earth))();
+        $server = (new ServerFactory(new Clock))();
 
         $this->assertInstanceOf(Server::class, $server);
-        $this->assertInstanceOf(Server::class, ServerFactory::build(new Earth));
+        $this->assertInstanceOf(Server::class, ServerFactory::build(new Clock));
     }
 
     public function testThrowWhenUnsupportedOS()
@@ -33,6 +33,6 @@ class ServerFactoryTest extends TestCase
 
         $this->expectException(UnsupportedOperatingSystem::class);
 
-        (new ServerFactory(new Earth))();
+        (new ServerFactory(new Clock))();
     }
 }

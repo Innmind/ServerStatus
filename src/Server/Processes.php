@@ -7,13 +7,13 @@ use Innmind\Server\Status\Server\{
     Process,
     Process\Pid,
 };
-use Innmind\Immutable\MapInterface;
+use Innmind\Immutable\Map;
 
 interface Processes
 {
     /**
-     * @return MapInterface<int, Process>
+     * @return Map<int, Process>
      */
-    public function all(): MapInterface;
+    public function all(): Map;
     public function get(Pid $pid): Process;
 }

@@ -12,23 +12,23 @@ use Innmind\Server\Status\{
     Server\Disk,
 };
 use Innmind\TimeContinuum\{
-    TimeContinuumInterface,
+    Clock,
     ElapsedPeriod,
-    PointInTimeInterface,
+    PointInTime,
 };
-use Innmind\Url\PathInterface;
+use Innmind\Url\Path;
 
 final class CacheMemory implements Server
 {
     private Server $server;
-    private TimeContinuumInterface $clock;
+    private Clock $clock;
     private ElapsedPeriod $threshold;
-    private ?PointInTimeInterface $cachedAt = null;
+    private ?PointInTime $cachedAt = null;
     private ?Memory $data = null;
 
     public function __construct(
         Server $server,
-        TimeContinuumInterface $clock,
+        Clock $clock,
         ElapsedPeriod $threshold
     ) {
         $this->server = $server;
@@ -75,7 +75,7 @@ final class CacheMemory implements Server
         return $this->server->disk();
     }
 
-    public function tmp(): PathInterface
+    public function tmp(): Path
     {
         return $this->server->tmp();
     }

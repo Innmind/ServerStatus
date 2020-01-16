@@ -23,7 +23,7 @@ final class LinuxFacade
             throw new CpuUsageNotAccessible;
         }
 
-        $percentages = (new Str($process->getOutput()))
+        $percentages = Str::of($process->getOutput())
             ->trim()
             ->capture(
                 '~^%Cpu\(s\): *(?P<user>\d+\.?\d*) us, *(?P<sys>\d+\.?\d*) sy, *(\d+\.?\d*) ni, *(?P<idle>\d+\.?\d*) id~'
@@ -37,9 +37,9 @@ final class LinuxFacade
         }
 
         return new Cpu(
-            new Percentage((float) (string) $percentages->get('user')),
-            new Percentage((float) (string) $percentages->get('sys')),
-            new Percentage((float) (string) $percentages->get('idle')),
+            new Percentage((float) $percentages->get('user')->toString()),
+            new Percentage((float) $percentages->get('sys')->toString()),
+            new Percentage((float) $percentages->get('idle')->toString()),
             new Cores((int) (string) ($cores ?? 1)),
         );
     }

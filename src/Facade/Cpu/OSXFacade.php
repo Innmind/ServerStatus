@@ -23,7 +23,7 @@ final class OSXFacade
             throw new CpuUsageNotAccessible;
         }
 
-        $percentages = (new Str($process->getOutput()))
+        $percentages = Str::of($process->getOutput())
             ->trim()
             ->capture(
                 '~^CPU usage: (?P<user>\d+\.?\d*)% user, (?P<sys>\d+\.?\d*)% sys, (?P<idle>\d+\.?\d*)% idle$~'
@@ -33,19 +33,19 @@ final class OSXFacade
         $process->run();
 
         if ($process->isSuccessful()) {
-            $match = (new Str($process->getOutput()))
+            $match = Str::of($process->getOutput())
                 ->trim()
                 ->capture(
                     '~^hw.ncpu: (?P<cores>\d+)$~'
                 );
-            $cores = $match['cores'];
+            $cores = $match->get('cores')->toString();
         }
 
         return new Cpu(
-            new Percentage((float) (string) $percentages->get('user')),
-            new Percentage((float) (string) $percentages->get('sys')),
-            new Percentage((float) (string) $percentages->get('idle')),
-            new Cores((int) (string) ($cores ?? 1)),
+            new Percentage((float) $percentages->get('user')->toString()),
+            new Percentage((float) $percentages->get('sys')->toString()),
+            new Percentage((float) $percentages->get('idle')->toString()),
+            new Cores((int) ($cores ?? 1)),
         );
     }
 }

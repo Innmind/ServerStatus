@@ -87,10 +87,10 @@ final class Bytes
             return new self((int) $bytes);
         }
 
-        $bytes = new Str($bytes);
+        $bytes = Str::of($bytes);
 
         if ($bytes->length() < 2) {
-            throw new UnknownBytesFormat((string) $bytes);
+            throw new UnknownBytesFormat($bytes->toString());
         }
 
         try {
@@ -118,10 +118,10 @@ final class Bytes
     private static function fromUnit(Str $bytes, Str $unit): self
     {
         if ($bytes->length() === 0) {
-            throw new UnknownBytesFormat((string) $bytes);
+            throw new UnknownBytesFormat($bytes->toString());
         }
 
-        switch ((string) $unit) {
+        switch ($unit->toString()) {
             case 'B':
             case 'Bi':
                 $multiplier = 1;
@@ -153,11 +153,11 @@ final class Bytes
                 break;
 
             default:
-                throw new UnknownBytesFormat((string) $bytes);
+                throw new UnknownBytesFormat($bytes->toString());
         }
 
         return new self(
-            (int) (((float) (string) $bytes) * $multiplier),
+            (int) (((float) $bytes->toString()) * $multiplier),
         );
     }
 }

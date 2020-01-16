@@ -9,9 +9,9 @@ use Innmind\Server\Status\Server\{
     Process\User,
     Process\Command,
     Process\Memory,
-    Cpu\Percentage
+    Cpu\Percentage,
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 use PHPUnit\Framework\TestCase;
 
 class ProcessTest extends TestCase
@@ -23,7 +23,7 @@ class ProcessTest extends TestCase
             $user = new User('root'),
             $cpu = new Percentage(42),
             $memory = new Memory(42),
-            $start = $this->createMock(PointInTimeInterface::class),
+            $start = $this->createMock(PointInTime::class),
             $command = new Command('/sbin/launchd')
         );
 

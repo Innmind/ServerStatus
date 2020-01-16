@@ -33,7 +33,7 @@ final class LinuxFacade
             throw new MemoryUsageNotAccessible;
         }
 
-        $amounts = (new Str($process->getOutput()))
+        $amounts = Str::of($process->getOutput())
             ->trim()
             ->split("\n")
             ->filter(static function(Str $line): bool {
@@ -42,13 +42,13 @@ final class LinuxFacade
                 );
             })
             ->reduce(
-                new Map('string', 'int'),
+                Map::of('string', 'int'),
                 static function(Map $map, Str $line): Map {
                     $elements = $line->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~');
 
-                    return $map->put(
-                        self::$entries[(string) $elements->get('key')],
-                        ((int) (string) $elements->get('value')) * Bytes::BYTES,
+                    return ($map)(
+                        self::$entries[$elements->get('key')->toString()],
+                        ((int) $elements->get('value')->toString()) * Bytes::BYTES,
                     );
                 },
             );

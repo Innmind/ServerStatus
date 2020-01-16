@@ -8,13 +8,13 @@ use Innmind\Server\Status\{
     Servers\Linux,
     Exception\UnsupportedOperatingSystem,
 };
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\Clock;
 
 final class ServerFactory
 {
     private $clock;
 
-    public function __construct(TimeContinuumInterface $clock)
+    public function __construct(Clock $clock)
     {
         $this->clock = $clock;
     }
@@ -32,7 +32,7 @@ final class ServerFactory
         throw new UnsupportedOperatingSystem;
     }
 
-    public static function build(TimeContinuumInterface $clock): Server
+    public static function build(Clock $clock): Server
     {
         return (new self($clock))();
     }

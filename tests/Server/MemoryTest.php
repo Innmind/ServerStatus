@@ -5,7 +5,7 @@ namespace Tests\Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\{
     Memory,
-    Memory\Bytes
+    Memory\Bytes,
 };
 use PHPUnit\Framework\TestCase;
 

@@ -23,8 +23,8 @@ class CommandTest extends TestCase
     {
         $command = new Command('foo');
 
-        $this->assertTrue($command->matches(new RegExp('/^foo/')));
-        $this->assertFalse($command->matches(new RegExp('/bar/')));
+        $this->assertTrue($command->matches(RegExp::of('/^foo/')));
+        $this->assertFalse($command->matches(RegExp::of('/bar/')));
     }
 
     public function testThrowWhenEmptyCommand()

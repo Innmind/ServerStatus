@@ -6,7 +6,7 @@ namespace Tests\Innmind\Server\Status\Server;
 use Innmind\Server\Status\Server\{
     Cpu,
     Cpu\Percentage,
-    Cpu\Cores
+    Cpu\Cores,
 };
 use PHPUnit\Framework\TestCase;
 

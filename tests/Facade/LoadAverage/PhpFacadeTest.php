@@ -5,7 +5,7 @@ namespace Tests\Innmind\Server\Status\Facade\LoadAverage;
 
 use Innmind\Server\Status\{
     Facade\LoadAverage\PhpFacade,
-    Server\LoadAverage
+    Server\LoadAverage,
 };
 use PHPUnit\Framework\TestCase;
 

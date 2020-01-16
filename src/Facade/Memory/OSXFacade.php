@@ -38,12 +38,12 @@ final class OSXFacade
             ->get('active');
 
         return new Memory(
-            new Bytes((int) (string) $total),
-            Bytes::of((string) $amounts->get('wired')),
-            new Bytes(((int) (string) $active) * 4096),
-            Bytes::of((string) $amounts->get('unused')),
-            Bytes::of((string) $swap),
-            Bytes::of((string) $amounts->get('used')),
+            new Bytes((int) $total->toString()),
+            Bytes::of($amounts->get('wired')->toString()),
+            new Bytes(((int) $active->toString()) * 4096),
+            Bytes::of($amounts->get('unused')->toString()),
+            Bytes::of($swap->toString()),
+            Bytes::of($amounts->get('used')->toString()),
         );
     }
 
@@ -56,6 +56,6 @@ final class OSXFacade
             throw new MemoryUsageNotAccessible;
         }
 
-        return new Str($process->getOutput());
+        return Str::of($process->getOutput());
     }
 }
