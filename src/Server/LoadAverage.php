@@ -17,7 +17,9 @@ final class LoadAverage
         float $lastFifteenMinutes
     ) {
         if ($lastMinute < 0 || $lastFiveMinutes < 0 || $lastFifteenMinutes < 0) {
-            throw new LoadAverageCannotBeNegative;
+            throw new LoadAverageCannotBeNegative(
+                (string) \min($lastMinute, $lastFiveMinutes, $lastFifteenMinutes),
+            );
         }
 
         $this->lastMinute = $lastMinute;

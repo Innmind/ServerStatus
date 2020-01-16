@@ -12,7 +12,7 @@ final class Percentage
     public function __construct(float $value)
     {
         if ($value < 0) {
-            throw new OutOfBoundsPercentage;
+            throw new OutOfBoundsPercentage((string) $value);
         }
 
         $this->value = $value;

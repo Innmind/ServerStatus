@@ -24,7 +24,7 @@ final class Bytes
     public function __construct(int $value)
     {
         if ($value < 0) {
-            throw new BytesCannotBeNegative;
+            throw new BytesCannotBeNegative((string) $value);
         }
 
         $this->value = $value;
@@ -90,7 +90,7 @@ final class Bytes
         $bytes = new Str($bytes);
 
         if ($bytes->length() < 2) {
-            throw new UnknownBytesFormat;
+            throw new UnknownBytesFormat((string) $bytes);
         }
 
         try {
@@ -118,7 +118,7 @@ final class Bytes
     private static function fromUnit(Str $bytes, Str $unit): self
     {
         if ($bytes->length() === 0) {
-            throw new UnknownBytesFormat;
+            throw new UnknownBytesFormat((string) $bytes);
         }
 
         switch ((string) $unit) {
@@ -153,7 +153,7 @@ final class Bytes
                 break;
 
             default:
-                throw new UnknownBytesFormat;
+                throw new UnknownBytesFormat((string) $bytes);
         }
 
         return new self(

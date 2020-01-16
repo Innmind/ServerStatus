@@ -12,7 +12,7 @@ final class Usage
     public function __construct(float $value)
     {
         if ($value < 0 || $value > 100) {
-            throw new OutOfBoundsPercentage;
+            throw new OutOfBoundsPercentage((string) $value);
         }
 
         $this->value = $value;
