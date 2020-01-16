@@ -43,7 +43,7 @@ final class OSXFacade
             new Bytes(((int) (string) $active) * 4096),
             Bytes::of((string) $amounts->get('unused')),
             Bytes::of((string) $swap),
-            Bytes::of((string) $amounts->get('used'))
+            Bytes::of((string) $amounts->get('used')),
         );
     }
 

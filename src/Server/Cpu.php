@@ -49,11 +49,11 @@ final class Cpu
 
     public function __toString(): string
     {
-        return sprintf(
+        return \sprintf(
             'CPU usage: %s user, %s sys, %s idle',
             $this->user,
             $this->system,
-            $this->idle
+            $this->idle,
         );
     }
 }

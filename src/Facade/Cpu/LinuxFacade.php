@@ -40,7 +40,7 @@ final class LinuxFacade
             new Percentage((float) (string) $percentages->get('user')),
             new Percentage((float) (string) $percentages->get('sys')),
             new Percentage((float) (string) $percentages->get('idle')),
-            new Cores((int) (string) ($cores ?? 1))
+            new Cores((int) (string) ($cores ?? 1)),
         );
     }
 }

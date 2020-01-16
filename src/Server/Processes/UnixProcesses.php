@@ -38,7 +38,7 @@ final class UnixProcesses implements Processes
     public function all(): MapInterface
     {
         return $this->parse(
-            $this->run('ps aux')
+            $this->run('ps aux'),
         );
     }
 
@@ -46,11 +46,11 @@ final class UnixProcesses implements Processes
     {
         try {
             $processes = $this->parse(
-                $this->run(sprintf('ps ux -p %s', $pid))
+                $this->run(sprintf('ps ux -p %s', $pid)),
             );
         } catch (InformationNotAccessible $e) {
             $processes = $this->parse(
-                $this->run(sprintf('ps ux -q %s', $pid))
+                $this->run(sprintf('ps ux -q %s', $pid)),
             );
         }
 
@@ -88,7 +88,7 @@ final class UnixProcesses implements Processes
                 new Sequence,
                 static function(Sequence $columns, Str $column): Sequence {
                     return $columns->add((string) $column);
-                }
+                },
             );
 
         return $lines
@@ -97,9 +97,9 @@ final class UnixProcesses implements Processes
                 new Sequence,
                 static function(Sequence $lines, Str $line) use ($columns): Sequence {
                     return $lines->add(
-                        $line->pregSplit('~ +~', $columns->size())
+                        $line->pregSplit('~ +~', $columns->size()),
                     );
-                }
+                },
             )
             ->map(function(StreamInterface $parts) use ($columns): Process {
                 return new Process(
@@ -109,10 +109,10 @@ final class UnixProcesses implements Processes
                     new Memory((float) (string) $parts->get($columns->indexOf('%MEM'))),
                     $this->clock->at(
                         (string) $parts->get(
-                            $columns->indexOf(PHP_OS === 'Linux' ? 'START' : 'STARTED')
-                        )
+                            $columns->indexOf(PHP_OS === 'Linux' ? 'START' : 'STARTED'),
+                        ),
                     ),
-                    new Command((string) $parts->get($columns->indexOf('COMMAND')))
+                    new Command((string) $parts->get($columns->indexOf('COMMAND'))),
                 );
             })
             ->reduce(
@@ -120,9 +120,9 @@ final class UnixProcesses implements Processes
                 static function(Map $processes, Process $process): Map {
                     return $processes->put(
                         $process->pid()->toInt(),
-                        $process
+                        $process,
                     );
-                }
+                },
             );
     }
 }

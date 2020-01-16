@@ -38,7 +38,7 @@ final class LinuxFacade
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return $line->matches(
-                    '~^('.implode('|', array_keys(self::$entries)).'):~'
+                    '~^('.\implode('|', \array_keys(self::$entries)).'):~'
                 );
             })
             ->reduce(
@@ -48,9 +48,9 @@ final class LinuxFacade
 
                     return $map->put(
                         self::$entries[(string) $elements->get('key')],
-                        ((int) (string) $elements->get('value')) * Bytes::BYTES
+                        ((int) (string) $elements->get('value')) * Bytes::BYTES,
                     );
-                }
+                },
             );
 
         $used = $amounts->get('total') - $amounts->get('free');
@@ -62,7 +62,7 @@ final class LinuxFacade
             new Bytes($amounts->get('active')),
             new Bytes($amounts->get('free')),
             new Bytes($amounts->get('swap')),
-            new Bytes($used)
+            new Bytes($used),
         );
     }
 }

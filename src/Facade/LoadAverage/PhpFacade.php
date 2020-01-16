@@ -12,12 +12,12 @@ final class PhpFacade
 {
     public function __invoke(): LoadAverage
     {
-        $load = sys_getloadavg();
+        $load = \sys_getloadavg();
 
         return new LoadAverage(
             $load[0],
             $load[1],
-            $load[2]
+            $load[2],
         );
     }
 }

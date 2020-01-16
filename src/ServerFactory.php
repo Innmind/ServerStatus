@@ -19,9 +19,9 @@ final class ServerFactory
         $this->clock = $clock;
     }
 
-    public function make(): Server
+    public function __invoke(): Server
     {
-        switch (PHP_OS) {
+        switch (\PHP_OS) {
             case 'Darwin':
                 return new OSX($this->clock);
 
@@ -34,6 +34,6 @@ final class ServerFactory
 
     public static function build(TimeContinuumInterface $clock): Server
     {
-        return (new self($clock))->make();
+        return (new self($clock))();
     }
 }

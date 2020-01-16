@@ -36,7 +36,7 @@ final class UnixDisk implements Disk
     public function volumes(): MapInterface
     {
         return $this->parse(
-            $this->run('df -lh')
+            $this->run('df -lh'),
         );
     }
 
@@ -76,7 +76,7 @@ final class UnixDisk implements Disk
                     $column = (string) $column;
 
                     return $columns->add(self::$columns[$column] ?? $column);
-                }
+                },
             );
 
         return $lines
@@ -87,25 +87,25 @@ final class UnixDisk implements Disk
                     return $lines->add(
                         $line->pregSplit('~ +~', $columns->size())
                     );
-                }
+                },
             )
             ->map(function(StreamInterface $parts) use ($columns): Volume {
                 return new Volume(
                     new MountPoint(
-                        (string) $parts->get($columns->indexOf('mountPoint'))
+                        (string) $parts->get($columns->indexOf('mountPoint')),
                     ),
                     Bytes::of(
-                        (string) $parts->get($columns->indexOf('size'))
+                        (string) $parts->get($columns->indexOf('size')),
                     ),
                     Bytes::of(
-                        (string) $parts->get($columns->indexOf('available'))
+                        (string) $parts->get($columns->indexOf('available')),
                     ),
                     Bytes::of(
-                        (string) $parts->get($columns->indexOf('used'))
+                        (string) $parts->get($columns->indexOf('used')),
                     ),
                     new Usage(
-                        (float) (string) $parts->get($columns->indexOf('usage'))
-                    )
+                        (float) (string) $parts->get($columns->indexOf('usage')),
+                    ),
                 );
             })
             ->reduce(
@@ -113,9 +113,9 @@ final class UnixDisk implements Disk
                 static function(Map $volumes, Volume $volume): Map {
                     return $volumes->put(
                         (string) $volume->mountPoint(),
-                        $volume
+                        $volume,
                     );
-                }
+                },
             );
     }
 }
