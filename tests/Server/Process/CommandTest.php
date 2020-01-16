@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Process;
 
-use Innmind\Server\Status\Server\Process\Command;
+use Innmind\Server\Status\{
+    Server\Process\Command,
+    Exception\EmptyCommandNotAllowed,
+};
 use Innmind\Immutable\RegExp;
 use PHPUnit\Framework\TestCase;
 
@@ -13,22 +16,21 @@ class CommandTest extends TestCase
     {
         $command = new Command('foo');
 
-        $this->assertSame('foo', (string) $command);
+        $this->assertSame('foo', $command->toString());
     }
 
     public function testMatches()
     {
         $command = new Command('foo');
 
-        $this->assertTrue($command->matches(new RegExp('/^foo/')));
-        $this->assertFalse($command->matches(new RegExp('/bar/')));
+        $this->assertTrue($command->matches(RegExp::of('/^foo/')));
+        $this->assertFalse($command->matches(RegExp::of('/bar/')));
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\EmptyCommandNotAllowed
-     */
     public function testThrowWhenEmptyCommand()
     {
+        $this->expectException(EmptyCommandNotAllowed::class);
+
         new Command('');
     }
 }

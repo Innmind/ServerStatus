@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Process;
 
-use Innmind\Server\Status\Server\Process\User;
+use Innmind\Server\Status\{
+    Server\Process\User,
+    Exception\EmptyUserNotAllowed,
+};
 use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
@@ -12,14 +15,13 @@ class UserTest extends TestCase
     {
         $user = new User('foo');
 
-        $this->assertSame('foo', (string) $user);
+        $this->assertSame('foo', $user->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\EmptyUserNotAllowed
-     */
     public function testThrowWhenEmptyUser()
     {
+        $this->expectException(EmptyUserNotAllowed::class);
+
         new User('');
     }
 }

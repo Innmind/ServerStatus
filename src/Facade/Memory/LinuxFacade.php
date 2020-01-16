@@ -6,17 +6,17 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
-    Exception\MemoryUsageNotAccessible
+    Exception\MemoryUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
-    Map
+    Map,
 };
 use Symfony\Component\Process\Process;
 
 final class LinuxFacade
 {
-    private static $entries = [
+    private static array $entries = [
         'MemTotal' => 'total',
         'Active' => 'active',
         'Inactive' => 'inactive',
@@ -26,31 +26,32 @@ final class LinuxFacade
 
     public function __invoke(): Memory
     {
-        $process = new Process('cat /proc/meminfo');
+        $process = Process::fromShellCommandline('cat /proc/meminfo');
         $process->run();
 
         if (!$process->isSuccessful()) {
             throw new MemoryUsageNotAccessible;
         }
 
-        $amounts = (new Str($process->getOutput()))
+        /** @var Map<string, int> */
+        $amounts = Str::of($process->getOutput())
             ->trim()
             ->split("\n")
             ->filter(static function(Str $line): bool {
                 return $line->matches(
-                    '~^('.implode('|', array_keys(self::$entries)).'):~'
+                    '~^('.\implode('|', \array_keys(self::$entries)).'):~'
                 );
             })
             ->reduce(
-                new Map('string', 'int'),
+                Map::of('string', 'int'),
                 static function(Map $map, Str $line): Map {
                     $elements = $line->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~');
 
-                    return $map->put(
-                        self::$entries[(string) $elements->get('key')],
-                        ((int) (string) $elements->get('value')) * Bytes::BYTES
+                    return ($map)(
+                        self::$entries[$elements->get('key')->toString()],
+                        ((int) $elements->get('value')->toString()) * Bytes::BYTES,
                     );
-                }
+                },
             );
 
         $used = $amounts->get('total') - $amounts->get('free');
@@ -62,7 +63,7 @@ final class LinuxFacade
             new Bytes($amounts->get('active')),
             new Bytes($amounts->get('free')),
             new Bytes($amounts->get('swap')),
-            new Bytes($used)
+            new Bytes($used),
         );
     }
 }

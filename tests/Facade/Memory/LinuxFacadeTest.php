@@ -6,7 +6,7 @@ namespace Tests\Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Facade\Memory\LinuxFacade,
     Server\Memory,
-    Exception\MemoryUsageNotAccessible
+    Exception\MemoryUsageNotAccessible,
 };
 use PHPUnit\Framework\TestCase;
 

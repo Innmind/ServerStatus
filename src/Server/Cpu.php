@@ -5,15 +5,15 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\Cpu\{
     Percentage,
-    Cores
+    Cores,
 };
 
 final class Cpu
 {
-    private $user;
-    private $system;
-    private $idle;
-    private $cores;
+    private Percentage $user;
+    private Percentage $system;
+    private Percentage $idle;
+    private Cores $cores;
 
     public function __construct(
         Percentage $user,
@@ -47,13 +47,13 @@ final class Cpu
         return $this->cores;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
-        return sprintf(
+        return \sprintf(
             'CPU usage: %s user, %s sys, %s idle',
-            $this->user,
-            $this->system,
-            $this->idle
+            $this->user->toString(),
+            $this->system->toString(),
+            $this->idle->toString(),
         );
     }
 }

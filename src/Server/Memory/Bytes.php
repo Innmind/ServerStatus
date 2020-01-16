@@ -5,7 +5,7 @@ namespace Innmind\Server\Status\Server\Memory;
 
 use Innmind\Server\Status\Exception\{
     BytesCannotBeNegative,
-    UnknownBytesFormat
+    UnknownBytesFormat,
 };
 use Innmind\Immutable\Str;
 
@@ -18,16 +18,17 @@ final class Bytes
     public const TERABYTES = 1024 ** 5;
     public const PETABYTES = 1024 ** 6;
 
-    private $value;
-    private $string;
+    private int $value;
+    private string $string;
 
     public function __construct(int $value)
     {
         if ($value < 0) {
-            throw new BytesCannotBeNegative;
+            throw new BytesCannotBeNegative((string) $value);
         }
 
         $this->value = $value;
+        $this->string = $value.'B';
 
         switch (true) {
             case $value < self::BYTES:
@@ -35,37 +36,37 @@ final class Bytes
                 break;
 
             case $value < self::KILOBYTES:
-                $this->string = sprintf(
+                $this->string = \sprintf(
                     '%sKB',
-                    round($value/self::BYTES, 3)
+                    \round($value/self::BYTES, 3),
                 );
                 break;
 
             case $value < self::MEGABYTES:
-                $this->string = sprintf(
+                $this->string = \sprintf(
                     '%sMB',
-                    round($value/self::KILOBYTES, 3)
+                    \round($value/self::KILOBYTES, 3),
                 );
                 break;
 
             case $value < self::GIGABYTES:
-                $this->string = sprintf(
+                $this->string = \sprintf(
                     '%sGB',
-                    round($value/self::MEGABYTES, 3)
+                    \round($value/self::MEGABYTES, 3),
                 );
                 break;
 
             case $value < self::TERABYTES:
-                $this->string = sprintf(
+                $this->string = \sprintf(
                     '%sTB',
-                    round($value/self::GIGABYTES, 3)
+                    \round($value/self::GIGABYTES, 3),
                 );
                 break;
 
             case $value < self::PETABYTES:
-                $this->string = sprintf(
+                $this->string = \sprintf(
                     '%sPB',
-                    round($value/self::TERABYTES, 3)
+                    \round($value/self::TERABYTES, 3),
                 );
                 break;
         }
@@ -76,7 +77,7 @@ final class Bytes
         return $this->value;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->string;
     }
@@ -87,21 +88,21 @@ final class Bytes
             return new self((int) $bytes);
         }
 
-        $bytes = new Str($bytes);
+        $bytes = Str::of($bytes);
 
         if ($bytes->length() < 2) {
-            throw new UnknownBytesFormat;
+            throw new UnknownBytesFormat($bytes->toString());
         }
 
         try {
             return self::fromUnit(
                 $bytes->substring(0, -1),
-                $bytes->substring(-1)
+                $bytes->substring(-1),
             );
         } catch (UnknownBytesFormat $e) {
             return self::fromUnit(
                 $bytes->substring(0, -2),
-                $bytes->substring(-2)
+                $bytes->substring(-2),
             );
         }
     }
@@ -118,10 +119,10 @@ final class Bytes
     private static function fromUnit(Str $bytes, Str $unit): self
     {
         if ($bytes->length() === 0) {
-            throw new UnknownBytesFormat;
+            throw new UnknownBytesFormat($bytes->toString());
         }
 
-        switch ((string) $unit) {
+        switch ($unit->toString()) {
             case 'B':
             case 'Bi':
                 $multiplier = 1;
@@ -153,11 +154,11 @@ final class Bytes
                 break;
 
             default:
-                throw new UnknownBytesFormat;
+                throw new UnknownBytesFormat($bytes->toString());
         }
 
         return new self(
-            (int) (((float) (string) $bytes) * $multiplier)
+            (int) (((float) $bytes->toString()) * $multiplier),
         );
     }
 }

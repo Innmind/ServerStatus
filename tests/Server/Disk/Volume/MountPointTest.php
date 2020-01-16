@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Disk\Volume;
 
-use Innmind\Server\Status\Server\Disk\Volume\MountPoint;
+use Innmind\Server\Status\{
+    Server\Disk\Volume\MountPoint,
+    Exception\EmptyPathNotAllowed,
+};
 use PHPUnit\Framework\TestCase;
 
 class MountPointTest extends TestCase
@@ -12,14 +15,13 @@ class MountPointTest extends TestCase
     {
         $mountPoint = new MountPoint('foo');
 
-        $this->assertSame('foo', (string) $mountPoint);
+        $this->assertSame('foo', $mountPoint->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\EmptyPathNotAllowed
-     */
     public function testThrowWhenEmptyMountPoint()
     {
+        $this->expectException(EmptyPathNotAllowed::class);
+
         new MountPoint('');
     }
 }

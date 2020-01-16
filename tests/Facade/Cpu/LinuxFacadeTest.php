@@ -6,7 +6,7 @@ namespace Tests\Innmind\Server\Status\Facade\Cpu;
 use Innmind\Server\Status\{
     Facade\Cpu\LinuxFacade,
     Server\Cpu,
-    Exception\CpuUsageNotAccessible
+    Exception\CpuUsageNotAccessible,
 };
 use PHPUnit\Framework\TestCase;
 

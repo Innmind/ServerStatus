@@ -6,16 +6,16 @@ namespace Innmind\Server\Status\Server\Process;
 use Innmind\Server\Status\Exception\EmptyCommandNotAllowed;
 use Innmind\Immutable\{
     RegExp,
-    Str
+    Str,
 };
 
 final class Command
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {
-        if (empty($value)) {
+        if ($value === '') {
             throw new EmptyCommandNotAllowed;
         }
 
@@ -27,7 +27,7 @@ final class Command
         return $pattern->matches(Str::of($this->value));
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

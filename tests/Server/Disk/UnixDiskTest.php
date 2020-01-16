@@ -8,9 +8,9 @@ use Innmind\Server\Status\{
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
-    Exception\DiskUsageNotAccessible
+    Exception\DiskUsageNotAccessible,
 };
-use Innmind\Immutable\MapInterface;
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class UnixDiskTest extends TestCase
@@ -28,7 +28,7 @@ class UnixDiskTest extends TestCase
 
         $volumes = (new UnixDisk)->volumes();
 
-        $this->assertInstanceOf(MapInterface::class, $volumes);
+        $this->assertInstanceOf(Map::class, $volumes);
         $this->assertSame('string', (string) $volumes->keyType());
         $this->assertSame(Volume::class, (string) $volumes->valueType());
         $this->assertTrue($volumes->size() > 0);
@@ -44,7 +44,7 @@ class UnixDiskTest extends TestCase
         $volume = (new UnixDisk)->get(new MountPoint('/'));
 
         $this->assertInstanceOf(Volume::class, $volume);
-        $this->assertSame('/', (string) $volume->mountPoint());
+        $this->assertSame('/', $volume->mountPoint()->toString());
         $this->assertTrue($volume->size()->toInt() > 0);
         $this->assertTrue($volume->available()->toInt() > 0);
         $this->assertTrue($volume->used()->toInt() > 0);

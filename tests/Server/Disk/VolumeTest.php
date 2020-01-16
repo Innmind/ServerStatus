@@ -7,7 +7,7 @@ use Innmind\Server\Status\Server\{
     Disk\Volume,
     Disk\Volume\MountPoint,
     Disk\Volume\Usage,
-    Memory\Bytes
+    Memory\Bytes,
 };
 use PHPUnit\Framework\TestCase;
 

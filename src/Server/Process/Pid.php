@@ -7,12 +7,12 @@ use Innmind\Server\Status\Exception\LowestPidPossibleIsOne;
 
 final class Pid
 {
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {
         if ($value < 1) {
-            throw new LowestPidPossibleIsOne;
+            throw new LowestPidPossibleIsOne((string) $value);
         }
 
         $this->value = $value;
@@ -23,7 +23,7 @@ final class Pid
         return $this->value;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return (string) $this->value;
     }

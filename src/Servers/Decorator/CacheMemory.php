@@ -9,25 +9,26 @@ use Innmind\Server\Status\{
     Server\Memory,
     Server\Processes,
     Server\LoadAverage,
-    Server\Disk
+    Server\Disk,
 };
 use Innmind\TimeContinuum\{
-    TimeContinuumInterface,
-    ElapsedPeriod
+    Clock,
+    ElapsedPeriod,
+    PointInTime,
 };
-use Innmind\Url\PathInterface;
+use Innmind\Url\Path;
 
 final class CacheMemory implements Server
 {
-    private $server;
-    private $clock;
-    private $threshold;
-    private $cachedAt;
-    private $data;
+    private Server $server;
+    private Clock $clock;
+    private ElapsedPeriod $threshold;
+    private ?PointInTime $cachedAt = null;
+    private ?Memory $data = null;
 
     public function __construct(
         Server $server,
-        TimeContinuumInterface $clock,
+        Clock $clock,
         ElapsedPeriod $threshold
     ) {
         $this->server = $server;
@@ -40,6 +41,9 @@ final class CacheMemory implements Server
         return $this->server->cpu();
     }
 
+    /**
+     * @psalm-suppress InvalidNullableReturnType
+     */
     public function memory(): Memory
     {
         $now = $this->clock->now();
@@ -50,6 +54,7 @@ final class CacheMemory implements Server
                 $now->elapsedSince($this->cachedAt)
             )
         ) {
+            /** @psalm-suppress NullableReturnStatement */
             return $this->data;
         }
 
@@ -74,7 +79,7 @@ final class CacheMemory implements Server
         return $this->server->disk();
     }
 
-    public function tmp(): PathInterface
+    public function tmp(): Path
     {
         return $this->server->tmp();
     }

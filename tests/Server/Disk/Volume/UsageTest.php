@@ -3,7 +3,10 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Disk\Volume;
 
-use Innmind\Server\Status\Server\Disk\Volume\Usage;
+use Innmind\Server\Status\{
+    Server\Disk\Volume\Usage,
+    Exception\OutOfBoundsPercentage,
+};
 use PHPUnit\Framework\TestCase;
 
 class UsageTest extends TestCase
@@ -13,22 +16,20 @@ class UsageTest extends TestCase
         $usage = new Usage(42.24);
 
         $this->assertSame(42.24, $usage->toFloat());
-        $this->assertSame('42.24%', (string) $usage);
+        $this->assertSame('42.24%', $usage->toString());
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\OutOfBoundsPercentage
-     */
     public function testThrowWhenUsageLowerThanZero()
     {
+        $this->expectException(OutOfBoundsPercentage::class);
+
         new Usage(-1);
     }
 
-    /**
-     * @expectedException Innmind\Server\Status\Exception\OutOfBoundsPercentage
-     */
     public function testThrowWhenUsageHigherThanHundred()
     {
+        $this->expectException(OutOfBoundsPercentage::class);
+
         new Usage(101);
     }
 }

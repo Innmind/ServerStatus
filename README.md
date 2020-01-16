@@ -1,10 +1,9 @@
 # Server Status
 
-| `master` | `develop` |
-|----------|-----------|
-| [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/ServerStatus/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Innmind/ServerStatus/?branch=master) | [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/ServerStatus/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/ServerStatus/?branch=develop) |
-| [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/ServerStatus/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/Innmind/ServerStatus/?branch=master) | [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/ServerStatus/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/ServerStatus/?branch=develop) |
-| [![Build Status](https://scrutinizer-ci.com/g/Innmind/ServerStatus/badges/build.png?b=master)](https://scrutinizer-ci.com/g/Innmind/ServerStatus/build-status/master) | [![Build Status](https://scrutinizer-ci.com/g/Innmind/ServerStatus/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/ServerStatus/build-status/develop) |
+| `develop` |
+|-----------|
+| [![codecov](https://codecov.io/gh/Innmind/ServerStatus/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/ServerStatus) |
+| [![Build Status](https://github.com/Innmind/ServerStatus/workflows/CI/badge.svg)](https://github.com/Innmind/ServerStatus/actions?query=workflow%3ACI) |
 
 Give an easy access to the cpu, memory, disk usages and the list of processes running on the machine.
 
@@ -22,11 +21,11 @@ composer require innmind/server-status
 use Innmind\Server\Status\{
     ServerFactory,
     Server\Disk\Volume\MountPoint,
-    Server\Process\Pid
+    Server\Process\Pid,
 };
-use Innmind\TimeContinuum\TimeContinuum\Earth;
+use Innmind\TimeContinuum\Earth\Clock;
 
-$server = (new ServerFactory(new Earth))->make();
+$server = ServerFactory::build(new Clock);
 
 $server->cpu()->user(); //percentage of the cpu used by the user
 $server->cpu()->system(); //percentage of the cpu used by the system

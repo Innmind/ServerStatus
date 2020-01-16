@@ -13,12 +13,12 @@ use Innmind\Server\Status\{
     Server\Memory\Bytes,
     Server\LoadAverage,
     Server\Processes,
-    Server\Disk
+    Server\Disk,
 };
 use Innmind\TimeContinuum\{
-    TimeContinuumInterface,
-    ElapsedPeriod,
-    PointInTimeInterface
+    Clock,
+    Earth\ElapsedPeriod,
+    PointInTime,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -30,7 +30,7 @@ class CacheLoadAverageTest extends TestCase
             Server::class,
             new CacheLoadAverage(
                 $this->createMock(Server::class),
-                $this->createMock(TimeContinuumInterface::class),
+                $this->createMock(Clock::class),
                 new ElapsedPeriod(0)
             )
         );
@@ -40,7 +40,7 @@ class CacheLoadAverageTest extends TestCase
     {
         $decorator = new CacheLoadAverage(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(TimeContinuumInterface::class),
+            $clock = $this->createMock(Clock::class),
             new ElapsedPeriod(42)
         );
         $server
@@ -58,7 +58,7 @@ class CacheLoadAverageTest extends TestCase
     {
         $decorator = new CacheLoadAverage(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(TimeContinuumInterface::class),
+            $clock = $this->createMock(Clock::class),
             new ElapsedPeriod(42)
         );
         $server
@@ -83,7 +83,7 @@ class CacheLoadAverageTest extends TestCase
     {
         $decorator = new CacheLoadAverage(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(TimeContinuumInterface::class),
+            $clock = $this->createMock(Clock::class),
             new ElapsedPeriod(42)
         );
         $server
@@ -101,7 +101,7 @@ class CacheLoadAverageTest extends TestCase
     {
         $decorator = new CacheLoadAverage(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(TimeContinuumInterface::class),
+            $clock = $this->createMock(Clock::class),
             new ElapsedPeriod(42)
         );
         $server
@@ -117,13 +117,13 @@ class CacheLoadAverageTest extends TestCase
             ->expects($this->at(0))
             ->method('now')
             ->willReturn(
-                $first = $this->createMock(PointInTimeInterface::class)
+                $first = $this->createMock(PointInTime::class)
             );
         $clock
             ->expects($this->at(1))
             ->method('now')
             ->willReturn(
-                $second = $this->createMock(PointInTimeInterface::class)
+                $second = $this->createMock(PointInTime::class)
             );
         $second
             ->expects($this->once())
@@ -134,7 +134,7 @@ class CacheLoadAverageTest extends TestCase
             ->expects($this->at(2))
             ->method('now')
             ->willReturn(
-                $third = $this->createMock(PointInTimeInterface::class)
+                $third = $this->createMock(PointInTime::class)
             );
         $third
             ->expects($this->once())
@@ -154,7 +154,7 @@ class CacheLoadAverageTest extends TestCase
     {
         $decorator = new CacheLoadAverage(
             $server = $this->createMock(Server::class),
-            $clock = $this->createMock(TimeContinuumInterface::class),
+            $clock = $this->createMock(Clock::class),
             new ElapsedPeriod(42)
         );
         $server

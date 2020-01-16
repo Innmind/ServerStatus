@@ -5,15 +5,15 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\Disk\{
     Volume,
-    Volume\MountPoint
+    Volume\MountPoint,
 };
-use Innmind\Immutable\MapInterface;
+use Innmind\Immutable\Map;
 
 interface Disk
 {
     /**
-     * @return MapInterface<string, Volume>
+     * @return Map<string, Volume>
      */
-    public function volumes(): MapInterface;
+    public function volumes(): Map;
     public function get(MountPoint $point): Volume;
 }

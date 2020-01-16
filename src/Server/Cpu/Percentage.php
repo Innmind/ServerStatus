@@ -7,12 +7,12 @@ use Innmind\Server\Status\Exception\OutOfBoundsPercentage;
 
 final class Percentage
 {
-    private $value;
+    private float $value;
 
     public function __construct(float $value)
     {
         if ($value < 0) {
-            throw new OutOfBoundsPercentage;
+            throw new OutOfBoundsPercentage((string) $value);
         }
 
         $this->value = $value;
@@ -23,7 +23,7 @@ final class Percentage
         return $this->value;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value.'%';
     }

@@ -8,20 +8,18 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
-    Exception\DiskUsageNotAccessible
+    Exception\DiskUsageNotAccessible,
 };
 use Innmind\Immutable\{
-    MapInterface,
     Str,
-    StreamInterface,
     Sequence,
-    Map
+    Map,
 };
 use Symfony\Component\Process\Process;
 
 final class UnixDisk implements Disk
 {
-    private static $columns = [
+    private static array $columns = [
         'Size' => 'size',
         'Used' => 'used',
         'Avail' => 'available',
@@ -33,10 +31,10 @@ final class UnixDisk implements Disk
     /**
      * {@inheritdoc}
      */
-    public function volumes(): MapInterface
+    public function volumes(): Map
     {
         return $this->parse(
-            $this->run('df -lh')
+            $this->run('df -lh'),
         );
     }
 
@@ -44,25 +42,25 @@ final class UnixDisk implements Disk
     {
         return $this
             ->volumes()
-            ->get((string) $point);
+            ->get($point->toString());
     }
 
     private function run(string $command): Str
     {
-        $process = new Process($command);
+        $process = Process::fromShellCommandline($command);
         $process->run();
 
         if (!$process->isSuccessful()) {
             throw new DiskUsageNotAccessible;
         }
 
-        return new Str($process->getOutput());
+        return Str::of($process->getOutput());
     }
 
     /**
-     * @return MapInterface<string, Volume>
+     * @return Map<string, Volume>
      */
-    private function parse(Str $output): MapInterface
+    private function parse(Str $output): Map
     {
         $lines = $output
             ->trim()
@@ -71,51 +69,57 @@ final class UnixDisk implements Disk
             ->first()
             ->pregSplit('~ +~')
             ->reduce(
-                new Sequence,
+                Sequence::strings(),
                 static function(Sequence $columns, Str $column): Sequence {
-                    $column = (string) $column;
+                    $column = $column->toString();
 
-                    return $columns->add(self::$columns[$column] ?? $column);
-                }
+                    return ($columns)(self::$columns[$column] ?? $column);
+                },
             );
 
-        return $lines
+        /** @var Sequence<Sequence<Str>> */
+        $partsByLine = $lines
             ->drop(1)
             ->reduce(
-                new Sequence,
+                Sequence::of(Sequence::class),
                 static function(Sequence $lines, Str $line) use ($columns): Sequence {
-                    return $lines->add(
-                        $line->pregSplit('~ +~', $columns->size())
+                    return ($lines)(
+                        $line->pregSplit('~ +~', $columns->size()),
                     );
-                }
-            )
-            ->map(function(StreamInterface $parts) use ($columns): Volume {
+                },
+            );
+        $volumes = $partsByLine->mapTo(
+            Volume::class,
+            function(Sequence $parts) use ($columns): Volume {
                 return new Volume(
                     new MountPoint(
-                        (string) $parts->get($columns->indexOf('mountPoint'))
+                        $parts->get($columns->indexOf('mountPoint'))->toString(),
                     ),
                     Bytes::of(
-                        (string) $parts->get($columns->indexOf('size'))
+                        $parts->get($columns->indexOf('size'))->toString(),
                     ),
                     Bytes::of(
-                        (string) $parts->get($columns->indexOf('available'))
+                        $parts->get($columns->indexOf('available'))->toString(),
                     ),
                     Bytes::of(
-                        (string) $parts->get($columns->indexOf('used'))
+                        $parts->get($columns->indexOf('used'))->toString(),
                     ),
                     new Usage(
-                        (float) (string) $parts->get($columns->indexOf('usage'))
-                    )
+                        (float) $parts->get($columns->indexOf('usage'))->toString(),
+                    ),
                 );
-            })
-            ->reduce(
-                new Map('string', Volume::class),
-                static function(Map $volumes, Volume $volume): Map {
-                    return $volumes->put(
-                        (string) $volume->mountPoint(),
-                        $volume
-                    );
-                }
-            );
+            },
+        );
+
+        /** @var Map<string, Volume> */
+        return $volumes->reduce(
+            Map::of('string', Volume::class),
+            static function(Map $volumes, Volume $volume): Map {
+                return ($volumes)(
+                    $volume->mountPoint()->toString(),
+                    $volume,
+                );
+            },
+        );
     }
 }

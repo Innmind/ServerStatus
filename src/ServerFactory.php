@@ -6,22 +6,22 @@ namespace Innmind\Server\Status;
 use Innmind\Server\Status\{
     Servers\OSX,
     Servers\Linux,
-    Exception\UnsupportedOperatingSystem
+    Exception\UnsupportedOperatingSystem,
 };
-use Innmind\TimeContinuum\TimeContinuumInterface;
+use Innmind\TimeContinuum\Clock;
 
 final class ServerFactory
 {
     private $clock;
 
-    public function __construct(TimeContinuumInterface $clock)
+    public function __construct(Clock $clock)
     {
         $this->clock = $clock;
     }
 
-    public function make(): Server
+    public function __invoke(): Server
     {
-        switch (PHP_OS) {
+        switch (\PHP_OS) {
             case 'Darwin':
                 return new OSX($this->clock);
 
@@ -32,8 +32,8 @@ final class ServerFactory
         throw new UnsupportedOperatingSystem;
     }
 
-    public static function build(TimeContinuumInterface $clock): Server
+    public static function build(Clock $clock): Server
     {
-        return (new self($clock))->make();
+        return (new self($clock))();
     }
 }

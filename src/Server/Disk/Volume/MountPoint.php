@@ -7,18 +7,18 @@ use Innmind\Server\Status\Exception\EmptyPathNotAllowed;
 
 final class MountPoint
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {
-        if (empty($value)) {
+        if ($value === '') {
             throw new EmptyPathNotAllowed;
         }
 
         $this->value = $value;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

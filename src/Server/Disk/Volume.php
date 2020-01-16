@@ -6,16 +6,16 @@ namespace Innmind\Server\Status\Server\Disk;
 use Innmind\Server\Status\Server\{
     Disk\Volume\MountPoint,
     Disk\Volume\Usage,
-    Memory\Bytes
+    Memory\Bytes,
 };
 
 final class Volume
 {
-    private $mountPoint;
-    private $size;
-    private $available;
-    private $used;
-    private $usage;
+    private MountPoint $mountPoint;
+    private Bytes $size;
+    private Bytes $available;
+    private Bytes $used;
+    private Usage $usage;
 
     public function __construct(
         MountPoint $mountPoint,

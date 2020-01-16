@@ -12,15 +12,15 @@ use Innmind\Server\Status\{
     Server\Processes,
     Server\Disk
 };
-use Innmind\TimeContinuum\TimeContinuum\Earth;
-use Innmind\Url\PathInterface;
+use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\Url\Path;
 use PHPUnit\Framework\TestCase;
 
 class LinuxTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Server::class, new Linux(new Earth));
+        $this->assertInstanceOf(Server::class, new Linux(new Clock));
     }
 
     public function testCpu()
@@ -29,7 +29,7 @@ class LinuxTest extends TestCase
             return;
         }
 
-        $this->assertInstanceOf(Cpu::class, (new Linux(new Earth))->cpu());
+        $this->assertInstanceOf(Cpu::class, (new Linux(new Clock))->cpu());
     }
 
     public function testMemory()
@@ -38,29 +38,29 @@ class LinuxTest extends TestCase
             return;
         }
 
-        $this->assertInstanceOf(Memory::class, (new Linux(new Earth))->memory());
+        $this->assertInstanceOf(Memory::class, (new Linux(new Clock))->memory());
     }
 
     public function testProcesses()
     {
-        $this->assertInstanceOf(Processes::class, (new Linux(new Earth))->processes());
+        $this->assertInstanceOf(Processes::class, (new Linux(new Clock))->processes());
     }
 
     public function testLoadAverage()
     {
-        $this->assertInstanceOf(LoadAverage::class, (new Linux(new Earth))->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, (new Linux(new Clock))->loadAverage());
     }
 
     public function testDisk()
     {
-        $this->assertInstanceOf(Disk::class, (new Linux(new Earth))->disk());
+        $this->assertInstanceOf(Disk::class, (new Linux(new Clock))->disk());
     }
 
     public function testTmp()
     {
-        $server = new Linux(new Earth);
+        $server = new Linux(new Clock);
 
-        $this->assertInstanceOf(PathInterface::class, $server->tmp());
-        $this->assertSame(\sys_get_temp_dir(), (string) $server->tmp());
+        $this->assertInstanceOf(Path::class, $server->tmp());
+        $this->assertSame(\sys_get_temp_dir(), $server->tmp()->toString());
     }
 }

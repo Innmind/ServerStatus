@@ -8,9 +8,9 @@ use Innmind\Server\Status\Server\{
     Memory,
     Processes,
     LoadAverage,
-    Disk
+    Disk,
 };
-use Innmind\Url\PathInterface;
+use Innmind\Url\Path;
 
 interface Server
 {
@@ -19,5 +19,5 @@ interface Server
     public function processes(): Processes;
     public function loadAverage(): LoadAverage;
     public function disk(): Disk;
-    public function tmp(): PathInterface;
+    public function tmp(): Path;
 }

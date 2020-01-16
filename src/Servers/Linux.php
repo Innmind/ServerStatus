@@ -14,23 +14,20 @@ use Innmind\Server\Status\{
     Facade\LoadAverage\PhpFacade as LoadAverageFacade,
     Server\Processes\UnixProcesses,
     Server\Disk,
-    Server\Disk\UnixDisk
+    Server\Disk\UnixDisk,
 };
-use Innmind\TimeContinuum\TimeContinuumInterface;
-use Innmind\Url\{
-    PathInterface,
-    Path
-};
+use Innmind\TimeContinuum\Clock;
+use Innmind\Url\Path;
 
 final class Linux implements Server
 {
-    private $cpu;
-    private $memory;
-    private $processes;
-    private $loadAverage;
-    private $disk;
+    private CpuFacade $cpu;
+    private MemoryFacade $memory;
+    private UnixProcesses $processes;
+    private LoadAverageFacade $loadAverage;
+    private UnixDisk $disk;
 
-    public function __construct(TimeContinuumInterface $clock)
+    public function __construct(Clock $clock)
     {
         $this->cpu = new CpuFacade;
         $this->memory = new MemoryFacade;
@@ -63,8 +60,8 @@ final class Linux implements Server
         return $this->disk;
     }
 
-    public function tmp(): PathInterface
+    public function tmp(): Path
     {
-        return new Path(\sys_get_temp_dir());
+        return Path::of(\sys_get_temp_dir());
     }
 }

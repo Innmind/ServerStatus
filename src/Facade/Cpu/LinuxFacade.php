@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Cpu,
     Server\Cpu\Percentage,
     Server\Cpu\Cores,
-    Exception\CpuUsageNotAccessible
+    Exception\CpuUsageNotAccessible,
 };
 use Innmind\Immutable\Str;
 use Symfony\Component\Process\Process;
@@ -16,20 +16,20 @@ final class LinuxFacade
 {
     public function __invoke(): Cpu
     {
-        $process = new Process('top -bn1 | grep \'%Cpu\'');
+        $process = Process::fromShellCommandline('top -bn1 | grep \'%Cpu\'');
         $process->run();
 
         if (!$process->isSuccessful()) {
             throw new CpuUsageNotAccessible;
         }
 
-        $percentages = (new Str($process->getOutput()))
+        $percentages = Str::of($process->getOutput())
             ->trim()
             ->capture(
                 '~^%Cpu\(s\): *(?P<user>\d+\.?\d*) us, *(?P<sys>\d+\.?\d*) sy, *(\d+\.?\d*) ni, *(?P<idle>\d+\.?\d*) id~'
             );
 
-        $process = new Process('nproc');
+        $process = Process::fromShellCommandline('nproc');
         $process->run();
 
         if ($process->isSuccessful()) {
@@ -37,10 +37,10 @@ final class LinuxFacade
         }
 
         return new Cpu(
-            new Percentage((float) (string) $percentages->get('user')),
-            new Percentage((float) (string) $percentages->get('sys')),
-            new Percentage((float) (string) $percentages->get('idle')),
-            new Cores((int) (string) ($cores ?? 1))
+            new Percentage((float) $percentages->get('user')->toString()),
+            new Percentage((float) $percentages->get('sys')->toString()),
+            new Percentage((float) $percentages->get('idle')->toString()),
+            new Cores((int) (string) ($cores ?? 1)),
         );
     }
 }

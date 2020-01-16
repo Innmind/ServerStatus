@@ -6,7 +6,7 @@ namespace Tests\Innmind\Server\Status\Server;
 use Innmind\Server\Status\Server\{
     Cpu,
     Cpu\Percentage,
-    Cpu\Cores
+    Cpu\Cores,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -27,7 +27,7 @@ class CpuTest extends TestCase
         $this->assertSame($cores, $cpu->cores());
         $this->assertSame(
             'CPU usage: 31% user, 33% sys, 36% idle',
-            (string) $cpu
+            $cpu->toString(),
         );
     }
 }

@@ -8,25 +8,25 @@ use Innmind\Server\Status\Server\{
     Process\User,
     Process\Command,
     Process\Memory,
-    Cpu\Percentage
+    Cpu\Percentage,
 };
-use Innmind\TimeContinuum\PointInTimeInterface;
+use Innmind\TimeContinuum\PointInTime;
 
 final class Process
 {
-    private $pid;
-    private $user;
-    private $cpu;
-    private $memory;
-    private $start;
-    private $command;
+    private Pid $pid;
+    private User $user;
+    private Percentage $cpu;
+    private Memory $memory;
+    private PointInTime $start;
+    private Command $command;
 
     public function __construct(
         Pid $pid,
         User $user,
         Percentage $cpu,
         Memory $memory,
-        PointInTimeInterface $start,
+        PointInTime $start,
         Command $command
     ) {
         $this->pid = $pid;
@@ -57,7 +57,7 @@ final class Process
         return $this->memory;
     }
 
-    public function start(): PointInTimeInterface
+    public function start(): PointInTime
     {
         return $this->start;
     }

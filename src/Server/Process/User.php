@@ -7,18 +7,18 @@ use Innmind\Server\Status\Exception\EmptyUserNotAllowed;
 
 final class User
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {
-        if (empty($value)) {
+        if ($value === '') {
             throw new EmptyUserNotAllowed;
         }
 
         $this->value = $value;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

@@ -7,9 +7,9 @@ use Innmind\Server\Status\Exception\LoadAverageCannotBeNegative;
 
 final class LoadAverage
 {
-    private $lastMinute;
-    private $lastFiveMinutes;
-    private $lastFifteenMinutes;
+    private float $lastMinute;
+    private float $lastFiveMinutes;
+    private float $lastFifteenMinutes;
 
     public function __construct(
         float $lastMinute,
@@ -17,7 +17,9 @@ final class LoadAverage
         float $lastFifteenMinutes
     ) {
         if ($lastMinute < 0 || $lastFiveMinutes < 0 || $lastFifteenMinutes < 0) {
-            throw new LoadAverageCannotBeNegative;
+            throw new LoadAverageCannotBeNegative(
+                (string) \min($lastMinute, $lastFiveMinutes, $lastFifteenMinutes),
+            );
         }
 
         $this->lastMinute = $lastMinute;
