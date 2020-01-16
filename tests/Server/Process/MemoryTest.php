@@ -13,7 +13,7 @@ class MemoryTest extends TestCase
         $memory = new Memory(42.24);
 
         $this->assertSame(42.24, $memory->toFloat());
-        $this->assertSame('42.24%', (string) $memory);
+        $this->assertSame('42.24%', $memory->toString());
     }
 
     /**

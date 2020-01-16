@@ -13,7 +13,7 @@ class CommandTest extends TestCase
     {
         $command = new Command('foo');
 
-        $this->assertSame('foo', (string) $command);
+        $this->assertSame('foo', $command->toString());
     }
 
     public function testMatches()

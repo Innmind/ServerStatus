@@ -12,7 +12,7 @@ class UserTest extends TestCase
     {
         $user = new User('foo');
 
-        $this->assertSame('foo', (string) $user);
+        $this->assertSame('foo', $user->toString());
     }
 
     /**

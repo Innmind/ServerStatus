@@ -12,7 +12,7 @@ class MountPointTest extends TestCase
     {
         $mountPoint = new MountPoint('foo');
 
-        $this->assertSame('foo', (string) $mountPoint);
+        $this->assertSame('foo', $mountPoint->toString());
     }
 
     /**

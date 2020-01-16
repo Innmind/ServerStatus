@@ -16,7 +16,7 @@ class BytesTest extends TestCase
         $bytes = new Bytes($value);
 
         $this->assertSame($value, $bytes->toInt());
-        $this->assertSame($expected, (string) $bytes);
+        $this->assertSame($expected, $bytes->toString());
     }
 
     /**
@@ -35,7 +35,7 @@ class BytesTest extends TestCase
         $bytes = Bytes::fromString($string);
 
         $this->assertInstanceOf(Bytes::class, $bytes);
-        $this->assertSame($expected, (string) $bytes);
+        $this->assertSame($expected, $bytes->toString());
     }
 
     /**

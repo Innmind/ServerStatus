@@ -13,7 +13,7 @@ class PidTest extends TestCase
         $pid = new Pid(42);
 
         $this->assertSame(42, $pid->toInt());
-        $this->assertSame('42', (string) $pid);
+        $this->assertSame('42', $pid->toString());
     }
 
     /**

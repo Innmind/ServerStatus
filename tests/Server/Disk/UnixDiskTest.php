@@ -44,7 +44,7 @@ class UnixDiskTest extends TestCase
         $volume = (new UnixDisk)->get(new MountPoint('/'));
 
         $this->assertInstanceOf(Volume::class, $volume);
-        $this->assertSame('/', (string) $volume->mountPoint());
+        $this->assertSame('/', $volume->mountPoint()->toString());
         $this->assertTrue($volume->size()->toInt() > 0);
         $this->assertTrue($volume->available()->toInt() > 0);
         $this->assertTrue($volume->used()->toInt() > 0);

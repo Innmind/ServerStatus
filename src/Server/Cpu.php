@@ -47,13 +47,13 @@ final class Cpu
         return $this->cores;
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return \sprintf(
             'CPU usage: %s user, %s sys, %s idle',
-            $this->user,
-            $this->system,
-            $this->idle,
+            $this->user->toString(),
+            $this->system->toString(),
+            $this->idle->toString(),
         );
     }
 }

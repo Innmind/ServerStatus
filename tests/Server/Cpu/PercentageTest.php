@@ -13,7 +13,7 @@ class PercentageTest extends TestCase
         $percentage = new Percentage(42.24);
 
         $this->assertSame(42.24, $percentage->toFloat());
-        $this->assertSame('42.24%', (string) $percentage);
+        $this->assertSame('42.24%', $percentage->toString());
     }
 
     /**

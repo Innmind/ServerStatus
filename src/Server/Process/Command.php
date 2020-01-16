@@ -27,7 +27,7 @@ final class Command
         return $pattern->matches(Str::of($this->value));
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

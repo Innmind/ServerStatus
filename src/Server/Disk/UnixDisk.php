@@ -44,7 +44,7 @@ final class UnixDisk implements Disk
     {
         return $this
             ->volumes()
-            ->get((string) $point);
+            ->get($point->toString());
     }
 
     private function run(string $command): Str
@@ -112,7 +112,7 @@ final class UnixDisk implements Disk
                 new Map('string', Volume::class),
                 static function(Map $volumes, Volume $volume): Map {
                     return $volumes->put(
-                        (string) $volume->mountPoint(),
+                        $volume->mountPoint()->toString(),
                         $volume,
                     );
                 },

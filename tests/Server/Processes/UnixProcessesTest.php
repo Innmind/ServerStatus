@@ -33,7 +33,7 @@ class UnixProcessesTest extends TestCase
         $this->assertSame('int', (string) $all->keyType());
         $this->assertSame(Process::class, (string) $all->valueType());
         $this->assertTrue($all->size() > 0);
-        $this->assertSame('root', (string) $all->get(1)->user());
+        $this->assertSame('root', $all->get(1)->user()->toString());
     }
 
     public function testGet()
@@ -45,7 +45,7 @@ class UnixProcessesTest extends TestCase
         $process = (new UnixProcesses(new Earth))->get(new Pid(1));
 
         $this->assertInstanceOf(Process::class, $process);
-        $this->assertSame('root', (string) $process->user());
+        $this->assertSame('root', $process->user()->toString());
     }
 
     public function testThrowWhenProcessFails()

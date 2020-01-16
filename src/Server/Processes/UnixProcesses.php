@@ -46,11 +46,11 @@ final class UnixProcesses implements Processes
     {
         try {
             $processes = $this->parse(
-                $this->run(\sprintf('ps ux -p %s', $pid)),
+                $this->run(\sprintf('ps ux -p %s', $pid->toString())),
             );
         } catch (InformationNotAccessible $e) {
             $processes = $this->parse(
-                $this->run(\sprintf('ps ux -q %s', $pid)),
+                $this->run(\sprintf('ps ux -q %s', $pid->toString())),
             );
         }
 

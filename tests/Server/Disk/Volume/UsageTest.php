@@ -13,7 +13,7 @@ class UsageTest extends TestCase
         $usage = new Usage(42.24);
 
         $this->assertSame(42.24, $usage->toFloat());
-        $this->assertSame('42.24%', (string) $usage);
+        $this->assertSame('42.24%', $usage->toString());
     }
 
     /**

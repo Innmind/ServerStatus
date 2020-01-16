@@ -13,7 +13,7 @@ class CoresTest extends TestCase
         $cores = new Cores(8);
 
         $this->assertSame(8, $cores->toInt());
-        $this->assertSame('8', (string) $cores);
+        $this->assertSame('8', $cores->toString());
     }
 
     /**
