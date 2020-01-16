@@ -26,7 +26,7 @@ final class LinuxFacade
 
     public function __invoke(): Memory
     {
-        $process = new Process('cat /proc/meminfo');
+        $process = Process::fromShellCommandline('cat /proc/meminfo');
         $process->run();
 
         if (!$process->isSuccessful()) {

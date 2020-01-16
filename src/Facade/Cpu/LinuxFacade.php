@@ -16,7 +16,7 @@ final class LinuxFacade
 {
     public function __invoke(): Cpu
     {
-        $process = new Process('top -bn1 | grep \'%Cpu\'');
+        $process = Process::fromShellCommandline('top -bn1 | grep \'%Cpu\'');
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -29,7 +29,7 @@ final class LinuxFacade
                 '~^%Cpu\(s\): *(?P<user>\d+\.?\d*) us, *(?P<sys>\d+\.?\d*) sy, *(\d+\.?\d*) ni, *(?P<idle>\d+\.?\d*) id~'
             );
 
-        $process = new Process('nproc');
+        $process = Process::fromShellCommandline('nproc');
         $process->run();
 
         if ($process->isSuccessful()) {

@@ -16,7 +16,7 @@ final class OSXFacade
 {
     public function __invoke(): Cpu
     {
-        $process = new Process('top -l 1 -s 0 | grep \'CPU usage\'');
+        $process = Process::fromShellCommandline('top -l 1 -s 0 | grep \'CPU usage\'');
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -29,7 +29,7 @@ final class OSXFacade
                 '~^CPU usage: (?P<user>\d+\.?\d*)% user, (?P<sys>\d+\.?\d*)% sys, (?P<idle>\d+\.?\d*)% idle$~'
             );
 
-        $process = new Process('sysctl -a | grep \'hw.ncpu:\'');
+        $process = Process::fromShellCommandline('sysctl -a | grep \'hw.ncpu:\'');
         $process->run();
 
         if ($process->isSuccessful()) {

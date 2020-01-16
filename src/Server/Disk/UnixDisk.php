@@ -49,7 +49,7 @@ final class UnixDisk implements Disk
 
     private function run(string $command): Str
     {
-        $process = new Process($command);
+        $process = Process::fromShellCommandline($command);
         $process->run();
 
         if (!$process->isSuccessful()) {
