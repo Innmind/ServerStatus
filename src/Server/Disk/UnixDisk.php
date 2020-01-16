@@ -115,7 +115,7 @@ final class UnixDisk implements Disk
         return $volumes->reduce(
             Map::of('string', Volume::class),
             static function(Map $volumes, Volume $volume): Map {
-                return $volumes->put(
+                return ($volumes)(
                     $volume->mountPoint()->toString(),
                     $volume,
                 );
