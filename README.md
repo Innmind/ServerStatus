@@ -21,11 +21,11 @@ composer require innmind/server-status
 use Innmind\Server\Status\{
     ServerFactory,
     Server\Disk\Volume\MountPoint,
-    Server\Process\Pid
+    Server\Process\Pid,
 };
-use Innmind\TimeContinuum\TimeContinuum\Earth;
+use Innmind\TimeContinuum\Earth\Clock;
 
-$server = (new ServerFactory(new Earth))->make();
+$server = ServerFactory::build(new Clock);
 
 $server->cpu()->user(); //percentage of the cpu used by the user
 $server->cpu()->system(); //percentage of the cpu used by the system
