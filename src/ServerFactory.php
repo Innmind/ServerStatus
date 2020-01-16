@@ -6,7 +6,7 @@ namespace Innmind\Server\Status;
 use Innmind\Server\Status\{
     Servers\OSX,
     Servers\Linux,
-    Exception\UnsupportedOperatingSystem
+    Exception\UnsupportedOperatingSystem,
 };
 use Innmind\TimeContinuum\TimeContinuumInterface;
 

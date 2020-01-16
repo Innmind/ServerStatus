@@ -5,7 +5,7 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\Disk\{
     Volume,
-    Volume\MountPoint
+    Volume\MountPoint,
 };
 use Innmind\Immutable\MapInterface;
 

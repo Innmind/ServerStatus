@@ -5,7 +5,7 @@ namespace Innmind\Server\Status\Facade\LoadAverage;
 
 use Innmind\Server\Status\{
     Facade\LoadAverageFacade,
-    Server\LoadAverage
+    Server\LoadAverage,
 };
 
 final class PhpFacade

@@ -11,7 +11,7 @@ use Innmind\Server\Status\{
     Server\Process\Command,
     Server\Process\Memory,
     Server\Cpu\Percentage,
-    Exception\InformationNotAccessible
+    Exception\InformationNotAccessible,
 };
 use Innmind\TimeContinuum\TimeContinuumInterface;
 use Innmind\Immutable\{
@@ -19,13 +19,13 @@ use Innmind\Immutable\{
     Str,
     StreamInterface,
     Sequence,
-    Map
+    Map,
 };
 use Symfony\Component\Process\Process as SfProcess;
 
 final class UnixProcesses implements Processes
 {
-    private $clock;
+    private TimeContinuumInterface $clock;
 
     public function __construct(TimeContinuumInterface $clock)
     {

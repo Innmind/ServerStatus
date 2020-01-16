@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Cpu,
     Server\Cpu\Percentage,
     Server\Cpu\Cores,
-    Exception\CpuUsageNotAccessible
+    Exception\CpuUsageNotAccessible,
 };
 use Innmind\Immutable\Str;
 use Symfony\Component\Process\Process;

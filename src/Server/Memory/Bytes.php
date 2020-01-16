@@ -5,7 +5,7 @@ namespace Innmind\Server\Status\Server\Memory;
 
 use Innmind\Server\Status\Exception\{
     BytesCannotBeNegative,
-    UnknownBytesFormat
+    UnknownBytesFormat,
 };
 use Innmind\Immutable\Str;
 
@@ -18,8 +18,8 @@ final class Bytes
     public const TERABYTES = 1024 ** 5;
     public const PETABYTES = 1024 ** 6;
 
-    private $value;
-    private $string;
+    private int $value;
+    private string $string;
 
     public function __construct(int $value)
     {

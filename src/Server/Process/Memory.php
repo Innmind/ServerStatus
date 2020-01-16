@@ -7,7 +7,7 @@ use Innmind\Server\Status\Exception\OutOfBoundsPercentage;
 
 final class Memory
 {
-    private $value;
+    private float $value;
 
     public function __construct(float $value)
     {

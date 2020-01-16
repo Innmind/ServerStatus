@@ -5,7 +5,7 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\{
     Process,
-    Process\Pid
+    Process\Pid,
 };
 use Innmind\Immutable\MapInterface;
 

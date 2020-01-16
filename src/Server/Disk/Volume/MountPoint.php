@@ -7,7 +7,7 @@ use Innmind\Server\Status\Exception\EmptyPathNotAllowed;
 
 final class MountPoint
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {

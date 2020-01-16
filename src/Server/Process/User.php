@@ -7,7 +7,7 @@ use Innmind\Server\Status\Exception\EmptyUserNotAllowed;
 
 final class User
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {

@@ -14,21 +14,21 @@ use Innmind\Server\Status\{
     Facade\LoadAverage\PhpFacade as LoadAverageFacade,
     Server\Processes\UnixProcesses,
     Server\Disk,
-    Server\Disk\UnixDisk
+    Server\Disk\UnixDisk,
 };
 use Innmind\TimeContinuum\TimeContinuumInterface;
 use Innmind\Url\{
     PathInterface,
-    Path
+    Path,
 };
 
 final class OSX implements Server
 {
-    private $cpu;
-    private $memory;
-    private $processes;
-    private $loadAverage;
-    private $disk;
+    private CpuFacade $cpu;
+    private MemoryFacade $memory;
+    private UnixProcesses $processes;
+    private LoadAverageFacade $loadAverage;
+    private UnixDisk $disk;
 
     public function __construct(TimeContinuumInterface $clock)
     {

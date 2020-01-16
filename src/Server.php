@@ -8,7 +8,7 @@ use Innmind\Server\Status\Server\{
     Memory,
     Processes,
     LoadAverage,
-    Disk
+    Disk,
 };
 use Innmind\Url\PathInterface;
 

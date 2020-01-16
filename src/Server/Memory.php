@@ -7,12 +7,12 @@ use Innmind\Server\Status\Server\Memory\Bytes;
 
 final class Memory
 {
-    private $total;
-    private $wired;
-    private $active;
-    private $free;
-    private $swap;
-    private $used;
+    private Bytes $total;
+    private Bytes $wired;
+    private Bytes $active;
+    private Bytes $free;
+    private Bytes $swap;
+    private Bytes $used;
 
     public function __construct(
         Bytes $total,

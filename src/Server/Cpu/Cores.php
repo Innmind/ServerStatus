@@ -7,7 +7,7 @@ use Innmind\Server\Status\Exception\DomainException;
 
 final class Cores
 {
-    private $value;
+    private int $value;
 
     public function __construct(int $value)
     {

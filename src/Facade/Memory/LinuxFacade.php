@@ -6,17 +6,17 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
-    Exception\MemoryUsageNotAccessible
+    Exception\MemoryUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
-    Map
+    Map,
 };
 use Symfony\Component\Process\Process;
 
 final class LinuxFacade
 {
-    private static $entries = [
+    private static array $entries = [
         'MemTotal' => 'total',
         'Active' => 'active',
         'Inactive' => 'inactive',

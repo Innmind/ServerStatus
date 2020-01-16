@@ -14,7 +14,7 @@
         "issues": "http://github.com/Innmind/ServerStatus/issues"
     },
     "require": {
-        "php": "~7.1",
+        "php": "~7.4",
         "innmind/immutable": "~2.10",
         "innmind/time-continuum": "^1.0",
         "symfony/process": "^3.2|~4.0",

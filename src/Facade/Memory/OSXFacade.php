@@ -6,7 +6,7 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
-    Exception\MemoryUsageNotAccessible
+    Exception\MemoryUsageNotAccessible,
 };
 use Innmind\Immutable\Str;
 use Symfony\Component\Process\Process;

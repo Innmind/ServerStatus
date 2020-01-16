@@ -5,15 +5,15 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\Cpu\{
     Percentage,
-    Cores
+    Cores,
 };
 
 final class Cpu
 {
-    private $user;
-    private $system;
-    private $idle;
-    private $cores;
+    private Percentage $user;
+    private Percentage $system;
+    private Percentage $idle;
+    private Cores $cores;
 
     public function __construct(
         Percentage $user,

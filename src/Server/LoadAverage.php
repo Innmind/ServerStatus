@@ -7,9 +7,9 @@ use Innmind\Server\Status\Exception\LoadAverageCannotBeNegative;
 
 final class LoadAverage
 {
-    private $lastMinute;
-    private $lastFiveMinutes;
-    private $lastFifteenMinutes;
+    private float $lastMinute;
+    private float $lastFiveMinutes;
+    private float $lastFifteenMinutes;
 
     public function __construct(
         float $lastMinute,

@@ -8,20 +8,20 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
-    Exception\DiskUsageNotAccessible
+    Exception\DiskUsageNotAccessible,
 };
 use Innmind\Immutable\{
     MapInterface,
     Str,
     StreamInterface,
     Sequence,
-    Map
+    Map,
 };
 use Symfony\Component\Process\Process;
 
 final class UnixDisk implements Disk
 {
-    private static $columns = [
+    private static array $columns = [
         'Size' => 'size',
         'Used' => 'used',
         'Avail' => 'available',

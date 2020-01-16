@@ -9,21 +9,22 @@ use Innmind\Server\Status\{
     Server\Memory,
     Server\Processes,
     Server\LoadAverage,
-    Server\Disk
+    Server\Disk,
 };
 use Innmind\TimeContinuum\{
     TimeContinuumInterface,
-    ElapsedPeriod
+    ElapsedPeriod,
+    PointInTimeInterface,
 };
 use Innmind\Url\PathInterface;
 
 final class CacheMemory implements Server
 {
-    private $server;
-    private $clock;
-    private $threshold;
-    private $cachedAt;
-    private $data;
+    private Server $server;
+    private TimeContinuumInterface $clock;
+    private ElapsedPeriod $threshold;
+    private ?PointInTimeInterface $cachedAt = null;
+    private ?Memory $data = null;
 
     public function __construct(
         Server $server,
