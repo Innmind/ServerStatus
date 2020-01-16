@@ -15,7 +15,7 @@ final class Command
 
     public function __construct(string $value)
     {
-        if (empty($value)) {
+        if ($value === '') {
             throw new EmptyCommandNotAllowed;
         }
 

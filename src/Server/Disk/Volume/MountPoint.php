@@ -11,7 +11,7 @@ final class MountPoint
 
     public function __construct(string $value)
     {
-        if (empty($value)) {
+        if ($value === '') {
             throw new EmptyPathNotAllowed;
         }
 
