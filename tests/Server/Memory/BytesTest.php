@@ -35,7 +35,7 @@ class BytesTest extends TestCase
      */
     public function testFromString($string, $expected)
     {
-        $bytes = Bytes::fromString($string);
+        $bytes = Bytes::of($string);
 
         $this->assertInstanceOf(Bytes::class, $bytes);
         $this->assertSame($expected, $bytes->toString());
@@ -45,7 +45,7 @@ class BytesTest extends TestCase
     {
         $this->expectException(UnknownBytesFormat::class);
 
-        Bytes::fromString('42Br');
+        Bytes::of('42Br');
     }
 
     /**
@@ -55,7 +55,7 @@ class BytesTest extends TestCase
     {
         $this->expectException(UnknownBytesFormat::class);
 
-        Bytes::fromString($string);
+        Bytes::of($string);
     }
 
     public function steps(): array
