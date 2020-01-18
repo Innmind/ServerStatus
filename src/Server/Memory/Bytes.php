@@ -107,15 +107,6 @@ final class Bytes
         }
     }
 
-    /**
-     * @deprecated
-     * @see self::of()
-     */
-    public static function fromString(string $bytes): self
-    {
-        return self::of($bytes);
-    }
-
     private static function fromUnit(Str $bytes, Str $unit): self
     {
         if ($bytes->length() === 0) {
