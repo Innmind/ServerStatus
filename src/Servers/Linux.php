@@ -62,6 +62,6 @@ final class Linux implements Server
 
     public function tmp(): Path
     {
-        return Path::of(\sys_get_temp_dir());
+        return Path::of(\rtrim(\sys_get_temp_dir(), '/').'/');
     }
 }
