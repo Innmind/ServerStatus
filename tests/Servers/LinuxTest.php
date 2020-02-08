@@ -61,6 +61,6 @@ class LinuxTest extends TestCase
         $server = new Linux(new Clock);
 
         $this->assertInstanceOf(Path::class, $server->tmp());
-        $this->assertSame(\sys_get_temp_dir(), $server->tmp()->toString());
+        $this->assertSame(\sys_get_temp_dir().'/', $server->tmp()->toString());
     }
 }
