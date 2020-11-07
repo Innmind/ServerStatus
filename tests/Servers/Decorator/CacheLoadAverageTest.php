@@ -113,29 +113,14 @@ class CacheLoadAverageTest extends TestCase
                     $load2 = new LoadAverage(1, 5, 15)
                 )
             );
-        $clock
-            ->expects($this->at(0))
-            ->method('now')
-            ->willReturn(
-                $first = $this->createMock(PointInTime::class)
-            );
-        $clock
-            ->expects($this->at(1))
-            ->method('now')
-            ->willReturn(
-                $second = $this->createMock(PointInTime::class)
-            );
+        $first = $this->createMock(PointInTime::class);
+        $second = $this->createMock(PointInTime::class);
         $second
             ->expects($this->once())
             ->method('elapsedSince')
             ->with($first)
             ->willReturn(new ElapsedPeriod(24));
-        $clock
-            ->expects($this->at(2))
-            ->method('now')
-            ->willReturn(
-                $third = $this->createMock(PointInTime::class)
-            );
+        $third = $this->createMock(PointInTime::class);
         $third
             ->expects($this->once())
             ->method('elapsedSince')
@@ -143,7 +128,8 @@ class CacheLoadAverageTest extends TestCase
             ->willReturn(new ElapsedPeriod(50));
         $clock
             ->expects($this->exactly(3))
-            ->method('now');
+            ->method('now')
+            ->will($this->onConsecutiveCalls($first, $second, $third));
 
         $this->assertSame($load1, $decorator->loadAverage()); //put in cache
         $this->assertSame($load1, $decorator->loadAverage()); //load cache
