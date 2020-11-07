@@ -15,7 +15,7 @@ class OSXFacadeTest extends TestCase
     public function testInterface()
     {
         if (\PHP_OS !== 'Darwin') {
-            return;
+            $this->markTestSkipped();
         }
 
         $facade = new OSXFacade;
@@ -26,7 +26,7 @@ class OSXFacadeTest extends TestCase
     public function testThrowWhenProcessFails()
     {
         if (\PHP_OS === 'Darwin') {
-            return;
+            $this->markTestSkipped();
         }
 
         $this->expectException(CpuUsageNotAccessible::class);

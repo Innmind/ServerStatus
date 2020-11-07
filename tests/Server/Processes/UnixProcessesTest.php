@@ -24,7 +24,7 @@ class UnixProcessesTest extends TestCase
     public function testAll()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            return;
+            $this->markTestSkipped();
         }
 
         $all = (new UnixProcesses(new Clock))->all();
@@ -39,7 +39,7 @@ class UnixProcessesTest extends TestCase
     public function testGet()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            return;
+            $this->markTestSkipped();
         }
 
         $process = (new UnixProcesses(new Clock))->get(new Pid(1));

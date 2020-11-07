@@ -23,7 +23,7 @@ class UnixDiskTest extends TestCase
     public function testVolumes()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            return;
+            $this->markTestSkipped();
         }
 
         $volumes = (new UnixDisk)->volumes();
@@ -38,7 +38,7 @@ class UnixDiskTest extends TestCase
     public function testGet()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            return;
+            $this->markTestSkipped();
         }
 
         $volume = (new UnixDisk)->get(new MountPoint('/'));
@@ -54,7 +54,7 @@ class UnixDiskTest extends TestCase
     public function testThrowWhenCommandFails()
     {
         if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            return;
+            $this->markTestSkipped();
         }
 
         $this->expectException(DiskUsageNotAccessible::class);

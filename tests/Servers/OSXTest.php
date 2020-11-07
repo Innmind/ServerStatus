@@ -26,7 +26,7 @@ class OSXTest extends TestCase
     public function testCpu()
     {
         if (\PHP_OS !== 'Darwin') {
-            return;
+            $this->markTestSkipped();
         }
 
         $this->assertInstanceOf(Cpu::class, (new OSX(new Clock))->cpu());
@@ -35,7 +35,7 @@ class OSXTest extends TestCase
     public function testMemory()
     {
         if (\PHP_OS !== 'Darwin') {
-            return;
+            $this->markTestSkipped();
         }
 
         $this->assertInstanceOf(Memory::class, (new OSX(new Clock))->memory());
