@@ -25,7 +25,7 @@ class OSXTest extends TestCase
 
     public function testCpu()
     {
-        if (PHP_OS !== 'Darwin') {
+        if (\PHP_OS !== 'Darwin') {
             return;
         }
 
@@ -34,7 +34,7 @@ class OSXTest extends TestCase
 
     public function testMemory()
     {
-        if (PHP_OS !== 'Darwin') {
+        if (\PHP_OS !== 'Darwin') {
             return;
         }
 

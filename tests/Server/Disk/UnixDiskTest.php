@@ -22,7 +22,7 @@ class UnixDiskTest extends TestCase
 
     public function testVolumes()
     {
-        if (!in_array(PHP_OS, ['Darwin', 'Linux'])) {
+        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
             return;
         }
 
@@ -37,7 +37,7 @@ class UnixDiskTest extends TestCase
 
     public function testGet()
     {
-        if (!in_array(PHP_OS, ['Darwin', 'Linux'])) {
+        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
             return;
         }
 
@@ -53,7 +53,7 @@ class UnixDiskTest extends TestCase
 
     public function testThrowWhenCommandFails()
     {
-        if (in_array(PHP_OS, ['Darwin', 'Linux'])) {
+        if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
             return;
         }
 

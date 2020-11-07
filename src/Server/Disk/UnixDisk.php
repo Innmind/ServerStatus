@@ -28,9 +28,6 @@ final class UnixDisk implements Disk
         'Mounted' => 'mountPoint',
     ];
 
-    /**
-     * {@inheritdoc}
-     */
     public function volumes(): Map
     {
         return $this->parse(
@@ -90,7 +87,7 @@ final class UnixDisk implements Disk
             );
         $volumes = $partsByLine->mapTo(
             Volume::class,
-            function(Sequence $parts) use ($columns): Volume {
+            static function(Sequence $parts) use ($columns): Volume {
                 return new Volume(
                     new MountPoint(
                         $parts->get($columns->indexOf('mountPoint'))->toString(),

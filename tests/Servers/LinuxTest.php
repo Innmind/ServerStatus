@@ -25,7 +25,7 @@ class LinuxTest extends TestCase
 
     public function testCpu()
     {
-        if (PHP_OS !== 'Linux') {
+        if (\PHP_OS !== 'Linux') {
             return;
         }
 
@@ -34,7 +34,7 @@ class LinuxTest extends TestCase
 
     public function testMemory()
     {
-        if (PHP_OS !== 'Linux') {
+        if (\PHP_OS !== 'Linux') {
             return;
         }
 

@@ -121,27 +121,27 @@ final class Bytes
 
             case 'K':
             case 'Ki':
-                $multiplier = Bytes::BYTES;
+                $multiplier = self::BYTES;
                 break;
 
             case 'M':
             case 'Mi':
-                $multiplier = Bytes::KILOBYTES;
+                $multiplier = self::KILOBYTES;
                 break;
 
             case 'G':
             case 'Gi':
-                $multiplier = Bytes::MEGABYTES;
+                $multiplier = self::MEGABYTES;
                 break;
 
             case 'T':
             case 'Ti':
-                $multiplier = Bytes::GIGABYTES;
+                $multiplier = self::GIGABYTES;
                 break;
 
             case 'P':
             case 'Pi':
-                $multiplier = Bytes::TERABYTES;
+                $multiplier = self::TERABYTES;
                 break;
 
             default:

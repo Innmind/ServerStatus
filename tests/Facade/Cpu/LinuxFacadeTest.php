@@ -14,7 +14,7 @@ class LinuxFacadeTest extends TestCase
 {
     public function testInterface()
     {
-        if (PHP_OS !== 'Linux') {
+        if (\PHP_OS !== 'Linux') {
             return;
         }
 
@@ -25,7 +25,7 @@ class LinuxFacadeTest extends TestCase
 
     public function testThrowWhenProcessFails()
     {
-        if (PHP_OS === 'Linux') {
+        if (\PHP_OS === 'Linux') {
             return;
         }
 

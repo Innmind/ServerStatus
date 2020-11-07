@@ -14,7 +14,7 @@ class OSXFacadeTest extends TestCase
 {
     public function testInterface()
     {
-        if (PHP_OS !== 'Darwin') {
+        if (\PHP_OS !== 'Darwin') {
             return;
         }
 
@@ -25,7 +25,7 @@ class OSXFacadeTest extends TestCase
 
     public function testThrowWhenProcessFails()
     {
-        if (PHP_OS === 'Darwin') {
+        if (\PHP_OS === 'Darwin') {
             return;
         }
 
