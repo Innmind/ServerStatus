@@ -45,6 +45,7 @@ final class Linux implements Server
     {
         return ($this->memory)();
     }
+
     public function processes(): Processes
     {
         return $this->processes;

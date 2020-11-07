@@ -14,8 +14,8 @@ class LinuxFacadeTest extends TestCase
 {
     public function testInterface()
     {
-        if (PHP_OS !== 'Linux') {
-            return;
+        if (\PHP_OS !== 'Linux') {
+            $this->markTestSkipped();
         }
 
         $facade = new LinuxFacade;
@@ -25,8 +25,8 @@ class LinuxFacadeTest extends TestCase
 
     public function testThrowWhenProcessFails()
     {
-        if (PHP_OS === 'Linux') {
-            return;
+        if (\PHP_OS === 'Linux') {
+            $this->markTestSkipped();
         }
 
         $this->expectException(MemoryUsageNotAccessible::class);

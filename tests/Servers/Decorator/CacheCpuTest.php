@@ -52,29 +52,14 @@ class CacheCpuTest extends TestCase
                     $cpu2 = new Cpu(new Percentage(33), new Percentage(33), new Percentage(34), new Cores(1))
                 )
             );
-        $clock
-            ->expects($this->at(0))
-            ->method('now')
-            ->willReturn(
-                $first = $this->createMock(PointInTime::class)
-            );
-        $clock
-            ->expects($this->at(1))
-            ->method('now')
-            ->willReturn(
-                $second = $this->createMock(PointInTime::class)
-            );
+        $first = $this->createMock(PointInTime::class);
+        $second = $this->createMock(PointInTime::class);
         $second
             ->expects($this->once())
             ->method('elapsedSince')
             ->with($first)
             ->willReturn(new ElapsedPeriod(24));
-        $clock
-            ->expects($this->at(2))
-            ->method('now')
-            ->willReturn(
-                $third = $this->createMock(PointInTime::class)
-            );
+        $third = $this->createMock(PointInTime::class);
         $third
             ->expects($this->once())
             ->method('elapsedSince')
@@ -82,7 +67,8 @@ class CacheCpuTest extends TestCase
             ->willReturn(new ElapsedPeriod(50));
         $clock
             ->expects($this->exactly(3))
-            ->method('now');
+            ->method('now')
+            ->will($this->onConsecutiveCalls($first, $second, $third));
 
         $this->assertSame($cpu1, $decorator->cpu()); //put in cache
         $this->assertSame($cpu1, $decorator->cpu()); //load cache

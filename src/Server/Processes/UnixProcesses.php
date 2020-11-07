@@ -30,9 +30,6 @@ final class UnixProcesses implements Processes
         $this->clock = $clock;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function all(): Map
     {
         return $this->parse(
@@ -110,7 +107,7 @@ final class UnixProcesses implements Processes
                     new Memory((float) $parts->get($columns->indexOf('%MEM'))->toString()),
                     $this->clock->at(
                         $parts->get(
-                            $columns->indexOf(PHP_OS === 'Linux' ? 'START' : 'STARTED'),
+                            $columns->indexOf(\PHP_OS === 'Linux' ? 'START' : 'STARTED'),
                         )->toString(),
                     ),
                     new Command($parts->get($columns->indexOf('COMMAND'))->toString()),

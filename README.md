@@ -56,3 +56,12 @@ $server->processes()->get(new Pid(1))->command();
 
 $server->tmp(); //path to temp directory
 ```
+
+You can easily log all the informations gathered via a simple decorator:
+
+```php
+use Innmind\Server\Status\Server\Logger;
+use Psr\Log\LoggerInterface;
+
+$server = new Logger($server, /** instance of LoggerInterface */);
+```

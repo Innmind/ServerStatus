@@ -70,29 +70,14 @@ class CacheMemoryTest extends TestCase
                     $memory2 = new Memory(new Bytes(42), new Bytes(42), new Bytes(42), new Bytes(42), new Bytes(42), new Bytes(42))
                 )
             );
-        $clock
-            ->expects($this->at(0))
-            ->method('now')
-            ->willReturn(
-                $first = $this->createMock(PointInTime::class)
-            );
-        $clock
-            ->expects($this->at(1))
-            ->method('now')
-            ->willReturn(
-                $second = $this->createMock(PointInTime::class)
-            );
+        $first = $this->createMock(PointInTime::class);
+        $second = $this->createMock(PointInTime::class);
         $second
             ->expects($this->once())
             ->method('elapsedSince')
             ->with($first)
             ->willReturn(new ElapsedPeriod(24));
-        $clock
-            ->expects($this->at(2))
-            ->method('now')
-            ->willReturn(
-                $third = $this->createMock(PointInTime::class)
-            );
+        $third = $this->createMock(PointInTime::class);
         $third
             ->expects($this->once())
             ->method('elapsedSince')
@@ -100,7 +85,8 @@ class CacheMemoryTest extends TestCase
             ->willReturn(new ElapsedPeriod(50));
         $clock
             ->expects($this->exactly(3))
-            ->method('now');
+            ->method('now')
+            ->will($this->onConsecutiveCalls($first, $second, $third));
 
         $this->assertSame($memory1, $decorator->memory()); //put in cache
         $this->assertSame($memory1, $decorator->memory()); //load cache

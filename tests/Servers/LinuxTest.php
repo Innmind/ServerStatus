@@ -25,8 +25,8 @@ class LinuxTest extends TestCase
 
     public function testCpu()
     {
-        if (PHP_OS !== 'Linux') {
-            return;
+        if (\PHP_OS !== 'Linux') {
+            $this->markTestSkipped();
         }
 
         $this->assertInstanceOf(Cpu::class, (new Linux(new Clock))->cpu());
@@ -34,8 +34,8 @@ class LinuxTest extends TestCase
 
     public function testMemory()
     {
-        if (PHP_OS !== 'Linux') {
-            return;
+        if (\PHP_OS !== 'Linux') {
+            $this->markTestSkipped();
         }
 
         $this->assertInstanceOf(Memory::class, (new Linux(new Clock))->memory());

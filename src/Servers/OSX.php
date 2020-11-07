@@ -45,6 +45,7 @@ final class OSX implements Server
     {
         return ($this->memory)();
     }
+
     public function processes(): Processes
     {
         return $this->processes;

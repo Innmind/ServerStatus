@@ -14,8 +14,8 @@ class OSXFacadeTest extends TestCase
 {
     public function testInterface()
     {
-        if (PHP_OS !== 'Darwin') {
-            return;
+        if (\PHP_OS !== 'Darwin') {
+            $this->markTestSkipped();
         }
 
         $facade = new OSXFacade;
@@ -25,8 +25,8 @@ class OSXFacadeTest extends TestCase
 
     public function testThrowWhenProcessFails()
     {
-        if (PHP_OS === 'Darwin') {
-            return;
+        if (\PHP_OS === 'Darwin') {
+            $this->markTestSkipped();
         }
 
         $this->expectException(MemoryUsageNotAccessible::class);
