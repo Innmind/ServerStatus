@@ -33,6 +33,7 @@ final class LinuxFacade
         $process->run();
 
         if ($process->isSuccessful()) {
+            /** @psalm-suppress RedundantCastGivenDocblockType */
             $cores = ((int) (string) $process->getOutput()) ?: 1;
         }
 
