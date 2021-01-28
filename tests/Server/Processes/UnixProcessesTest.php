@@ -8,9 +8,13 @@ use Innmind\Server\Status\{
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
+    Clock\PointInTime\Delay,
     Exception\InformationNotAccessible,
 };
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\{
+    Clock as ClockInterface,
+    Earth\Clock,
+};
 use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
@@ -53,5 +57,32 @@ class UnixProcessesTest extends TestCase
         $this->expectException(InformationNotAccessible::class);
 
         (new UnixProcesses(new Clock))->get(new Pid(42424));
+    }
+
+    public function testTheProcessStartTimeIsNotParsedByDefault()
+    {
+        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
+            $this->markTestSkipped();
+        }
+
+        $clock = $this->createMock(ClockInterface::class);
+        $clock
+            ->expects($this->never())
+            ->method('at');
+
+        $process = (new UnixProcesses($clock))->all()->get(1);
+
+        $this->assertInstanceOf(Delay::class, $process->start());
+    }
+
+    public function testProcessTimeIsStillAccessibleEvenThoughParsingDelayed()
+    {
+        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
+            $this->markTestSkipped();
+        }
+
+        $process = (new UnixProcesses(new Clock))->all()->get(1);
+
+        $this->assertIsInt($process->start()->milliseconds());
     }
 }
