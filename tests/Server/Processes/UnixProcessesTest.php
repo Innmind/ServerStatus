@@ -75,6 +75,9 @@ class UnixProcessesTest extends TestCase
         $this->assertInstanceOf(Delay::class, $process->start());
     }
 
+    /**
+     * The machine must have been started today to make this test pass
+     */
     public function testProcessTimeIsStillAccessibleEvenThoughParsingDelayed()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
@@ -84,5 +87,17 @@ class UnixProcessesTest extends TestCase
         $process = (new UnixProcesses(new Clock))->all()->get(1);
 
         $this->assertIsInt($process->start()->milliseconds());
+        $this->assertSame(
+            (int) \date('Y'),
+            $process->start()->year()->toInt(),
+        );
+        $this->assertSame(
+            (int) \date('m'),
+            $process->start()->month()->toInt(),
+        );
+        $this->assertSame(
+            (int) \date('d'),
+            $process->start()->day()->toInt(),
+        );
     }
 }
