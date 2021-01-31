@@ -100,7 +100,7 @@ final class UnixProcesses implements Processes
                     ->mapTo('string', static fn(Str $part): string => $part->toString());
                 $start = join(' ', $startParts)->toString();
                 $parts = $parts->drop(5);
-
+                \var_dump($start);
                 return new Process(
                     new Pid((int) $parts->get(1)->toString()),
                     new User($parts->get(0)->toString()),
