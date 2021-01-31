@@ -20,6 +20,7 @@ use Innmind\Immutable\{
     Sequence,
     Map,
 };
+use function Innmind\Immutable\join;
 use Symfony\Component\Process\Process as SfProcess;
 
 final class UnixProcesses implements Processes
@@ -34,7 +35,7 @@ final class UnixProcesses implements Processes
     public function all(): Map
     {
         return $this->parse(
-            $this->run('ps aux'),
+            $this->run('ps -eo '.$this->format()),
         );
     }
 
@@ -42,11 +43,11 @@ final class UnixProcesses implements Processes
     {
         try {
             $processes = $this->parse(
-                $this->run(\sprintf('ps ux -p %s', $pid->toString())),
+                $this->run(\sprintf('ps -o %s -p %s', $this->format(), $pid->toString())),
             );
         } catch (InformationNotAccessible $e) {
             $processes = $this->parse(
-                $this->run(\sprintf('ps ux -q %s', $pid->toString())),
+                $this->run(\sprintf('ps -o %s -q %s', $this->format(), $pid->toString())),
             );
         }
 
@@ -59,7 +60,9 @@ final class UnixProcesses implements Processes
 
     private function run(string $command): Str
     {
-        $process = SfProcess::fromShellCommandline($command);
+        $process = SfProcess::fromShellCommandline($command, null, [
+            'TZ' => \date('e'),
+        ]);
         $process->run();
 
         if (!$process->isSuccessful()) {
@@ -77,42 +80,37 @@ final class UnixProcesses implements Processes
         $lines = $output
             ->trim()
             ->split("\n");
-        $columns = $lines
-            ->first()
-            ->pregSplit('~ +~')
-            ->reduce(
-                Sequence::strings(),
-                static function(Sequence $columns, Str $column): Sequence {
-                    return ($columns)($column->toString());
-                },
-            );
 
         /** @var Sequence<Sequence<Str>> */
         $partsByLine = $lines
-            ->drop(1)
+            ->drop(1) // columns name
             ->reduce(
                 Sequence::of(Sequence::class),
-                static function(Sequence $lines, Str $line) use ($columns): Sequence {
+                static function(Sequence $lines, Str $line): Sequence {
                     return ($lines)(
-                        $line->pregSplit('~ +~', $columns->size()),
+                        $line->pregSplit('~ +~', 10), // 6 columns + 4 spaces in the START column
                     );
                 },
             );
         $processes = $partsByLine->mapTo(
             Process::class,
-            function(Sequence $parts) use ($columns): Process {
+            function(Sequence $parts): Process {
+                $startParts = $parts
+                    ->take(5)
+                    ->mapTo('string', static fn(Str $part): string => $part->toString());
+                $start = join(' ', $startParts)->toString();
+                $parts = $parts->drop(5);
+
                 return new Process(
-                    new Pid((int) $parts->get($columns->indexOf('PID'))->toString()),
-                    new User($parts->get($columns->indexOf('USER'))->toString()),
-                    new Percentage((float) $parts->get($columns->indexOf('%CPU'))->toString()),
-                    new Memory((float) $parts->get($columns->indexOf('%MEM'))->toString()),
+                    new Pid((int) $parts->get(1)->toString()),
+                    new User($parts->get(0)->toString()),
+                    new Percentage((float) $parts->get(2)->toString()),
+                    new Memory((float) $parts->get(3)->toString()),
                     new Delay(
                         $this->clock,
-                        $parts->get(
-                            $columns->indexOf(\PHP_OS === 'Linux' ? 'START' : 'STARTED'),
-                        )->toString(),
+                        $start, // see %c for strftime for the format
                     ),
-                    new Command($parts->get($columns->indexOf('COMMAND'))->toString()),
+                    new Command($parts->get(4)->toString()),
                 );
             },
         );
@@ -127,5 +125,10 @@ final class UnixProcesses implements Processes
                 );
             },
         );
+    }
+
+    private function format(): string
+    {
+        return \PHP_OS === 'Linux' ? 'lstart,user,pid,%cpu,%mem,cmd' : 'lstart,user,pid,%cpu,%mem,command';
     }
 }
