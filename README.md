@@ -1,9 +1,8 @@
 # Server Status
 
-| `develop` |
-|-----------|
-| [![codecov](https://codecov.io/gh/Innmind/ServerStatus/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/ServerStatus) |
-| [![Build Status](https://github.com/Innmind/ServerStatus/workflows/CI/badge.svg)](https://github.com/Innmind/ServerStatus/actions?query=workflow%3ACI) |
+[![Build Status](https://github.com/innmind/serverstatus/workflows/CI/badge.svg?branch=master)](https://github.com/innmind/serverstatus/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/innmind/serverstatus/branch/develop/graph/badge.svg)](https://codecov.io/gh/innmind/serverstatus)
+[![Type Coverage](https://shepherd.dev/github/innmind/serverstatus/coverage.svg)](https://shepherd.dev/github/innmind/serverstatus)
 
 Give an easy access to the cpu, memory, disk usages and the list of processes running on the machine.
 
