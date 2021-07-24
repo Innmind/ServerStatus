@@ -12,28 +12,16 @@ use Innmind\TimeContinuum\Clock;
 
 final class ServerFactory
 {
-    private $clock;
-
-    public function __construct(Clock $clock)
-    {
-        $this->clock = $clock;
-    }
-
-    public function __invoke(): Server
+    public static function build(Clock $clock): Server
     {
         switch (\PHP_OS) {
             case 'Darwin':
-                return new OSX($this->clock);
+                return new OSX($clock);
 
             case 'Linux':
-                return new Linux($this->clock);
+                return new Linux($clock);
         }
 
         throw new UnsupportedOperatingSystem;
-    }
-
-    public static function build(Clock $clock): Server
-    {
-        return (new self($clock))();
     }
 }
