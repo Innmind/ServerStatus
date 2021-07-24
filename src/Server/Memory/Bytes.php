@@ -11,12 +11,12 @@ use Innmind\Immutable\Str;
 
 final class Bytes
 {
-    public const BYTES = 1024;
-    public const KILOBYTES = 1024 ** 2;
-    public const MEGABYTES = 1024 ** 3;
-    public const GIGABYTES = 1024 ** 4;
-    public const TERABYTES = 1024 ** 5;
-    public const PETABYTES = 1024 ** 6;
+    private const BYTES = 1024;
+    private const KILOBYTES = 1024 ** 2;
+    private const MEGABYTES = 1024 ** 3;
+    private const GIGABYTES = 1024 ** 4;
+    private const TERABYTES = 1024 ** 5;
+    private const PETABYTES = 1024 ** 6;
 
     private int $value;
     private string $string;

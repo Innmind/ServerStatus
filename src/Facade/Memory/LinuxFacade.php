@@ -49,7 +49,7 @@ final class LinuxFacade
 
                     return ($map)(
                         self::$entries[$elements->get('key')->toString()],
-                        ((int) $elements->get('value')->toString()) * Bytes::BYTES,
+                        ((int) $elements->get('value')->toString()) * 1024, // 1024 represents a kilobyte
                     );
                 },
             );
