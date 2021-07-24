@@ -14,6 +14,7 @@ use Innmind\Immutable\{
     Str,
     Sequence,
     Map,
+    Maybe,
 };
 use Symfony\Component\Process\Process;
 
@@ -35,11 +36,16 @@ final class UnixDisk implements Disk
         );
     }
 
-    public function get(MountPoint $point): Volume
+    public function get(MountPoint $point): Maybe
     {
-        return $this
-            ->volumes()
-            ->get($point->toString());
+        $volumes = $this->volumes();
+
+        if (!$volumes->contains($point->toString())) {
+            /** @var Maybe<Volume> */
+            return Maybe::nothing();
+        }
+
+        return Maybe::just($volumes->get($point->toString()));
     }
 
     private function run(string $command): Str

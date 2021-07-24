@@ -41,7 +41,12 @@ class UnixDiskTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $volume = (new UnixDisk)->get(new MountPoint('/'));
+        $volume = (new UnixDisk)
+            ->get(new MountPoint('/'))
+            ->match(
+                static fn($volume) => $volume,
+                static fn() => null,
+            );
 
         $this->assertInstanceOf(Volume::class, $volume);
         $this->assertSame('/', $volume->mountPoint()->toString());
