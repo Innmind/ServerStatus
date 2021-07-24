@@ -46,7 +46,12 @@ class UnixProcessesTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $process = (new UnixProcesses(new Clock))->get(new Pid(1));
+        $process = (new UnixProcesses(new Clock))
+            ->get(new Pid(1))
+            ->match(
+                static fn($process) => $process,
+                static fn() => null,
+            );
 
         $this->assertInstanceOf(Process::class, $process);
         $this->assertSame('root', $process->user()->toString());

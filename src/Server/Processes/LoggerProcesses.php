@@ -9,7 +9,10 @@ use Innmind\Server\Status\{
     Server\Process\Pid,
 };
 use Innmind\TimeContinuum\Earth\Format\ISO8601;
-use Innmind\Immutable\Map;
+use Innmind\Immutable\{
+    Map,
+    Maybe,
+};
 use Psr\Log\LoggerInterface;
 
 final class LoggerProcesses implements Processes
@@ -41,12 +44,16 @@ final class LoggerProcesses implements Processes
         return $all;
     }
 
-    public function get(Pid $pid): Process
+    public function get(Pid $pid): Maybe
     {
-        $process = $this->processes->get($pid);
-        $this->logger->debug('Process {pid} currently running', $this->normalize($process));
+        return $this
+            ->processes
+            ->get($pid)
+            ->map(function($process) {
+                $this->logger->debug('Process {pid} currently running', $this->normalize($process));
 
-        return $process;
+                return $process;
+            });
     }
 
     private function normalize(Process $process): array

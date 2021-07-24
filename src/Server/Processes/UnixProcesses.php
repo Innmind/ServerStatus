@@ -19,6 +19,7 @@ use Innmind\Immutable\{
     Str,
     Sequence,
     Map,
+    Maybe,
 };
 use function Innmind\Immutable\join;
 use Symfony\Component\Process\Process as SfProcess;
@@ -39,7 +40,7 @@ final class UnixProcesses implements Processes
         );
     }
 
-    public function get(Pid $pid): Process
+    public function get(Pid $pid): Maybe
     {
         try {
             $processes = $this->parse(
@@ -52,10 +53,11 @@ final class UnixProcesses implements Processes
         }
 
         if (!$processes->contains($pid->toInt())) {
-            throw new InformationNotAccessible;
+            /** @var Maybe<Process> */
+            return Maybe::nothing();
         }
 
-        return $processes->get($pid->toInt());
+        return Maybe::just($processes->get($pid->toInt()));
     }
 
     private function run(string $command): Str
