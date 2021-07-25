@@ -8,6 +8,7 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
+    Exception\RuntimeException,
 };
 use Innmind\Immutable\{
     Str,
@@ -117,7 +118,7 @@ final class UnixDisk implements Disk
                 ))
                 ->match(
                     static fn($volume) => $volume,
-                    static fn() => throw new \RuntimeException(join(' ', $parts)->toString()),
+                    static fn() => throw new RuntimeException(join(' ', $parts)->toString()),
                 );
         });
 

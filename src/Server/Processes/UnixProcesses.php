@@ -11,6 +11,7 @@ use Innmind\Server\Status\{
     Server\Process\Command,
     Server\Process\Memory,
     Server\Cpu\Percentage,
+    Exception\RuntimeException,
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\Immutable\{
@@ -108,7 +109,7 @@ final class UnixProcesses implements Processes
                 ))
                 ->match(
                     static fn($process) => $process,
-                    static fn() => throw new \RuntimeException(join(' ', $parts)->toString()),
+                    static fn() => throw new RuntimeException(join(' ', $parts)->toString()),
                 );
         });
 
