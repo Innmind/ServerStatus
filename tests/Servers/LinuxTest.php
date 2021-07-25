@@ -29,7 +29,15 @@ class LinuxTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $this->assertInstanceOf(Cpu::class, (new Linux(new Clock))->cpu());
+        $this->assertInstanceOf(
+            Cpu::class,
+            (new Linux(new Clock))
+                ->cpu()
+                ->match(
+                    static fn($cpu) => $cpu,
+                    static fn() => null,
+                ),
+        );
     }
 
     public function testMemory()
@@ -38,7 +46,15 @@ class LinuxTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $this->assertInstanceOf(Memory::class, (new Linux(new Clock))->memory());
+        $this->assertInstanceOf(
+            Memory::class,
+            (new Linux(new Clock))
+                ->memory()
+                ->match(
+                    static fn($memory) => $memory,
+                    static fn() => null,
+                ),
+        );
     }
 
     public function testProcesses()
