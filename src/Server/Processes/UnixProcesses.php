@@ -11,7 +11,6 @@ use Innmind\Server\Status\{
     Server\Process\Command,
     Server\Process\Memory,
     Server\Cpu\Percentage,
-    Exception\InformationNotAccessible,
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\Immutable\{
@@ -34,27 +33,30 @@ final class UnixProcesses implements Processes
 
     public function all(): Set
     {
-        return $this->parse(
-            $this->run('ps -eo '.$this->format()),
-        );
+        return $this
+            ->run('ps -eo '.$this->format())
+            ->map(fn($output) => $this->parse($output))
+            ->match(
+                static fn($processes) => $processes,
+                static fn() => Set::of(),
+            );
     }
 
     public function get(Pid $pid): Maybe
     {
-        try {
-            $processes = $this->parse(
-                $this->run(\sprintf('ps -o %s -p %s', $this->format(), $pid->toString())),
-            );
-        } catch (InformationNotAccessible $e) {
-            $processes = $this->parse(
-                $this->run(\sprintf('ps -o %s -q %s', $this->format(), $pid->toString())),
-            );
-        }
-
-        return $processes->find(static fn($process) => $process->pid()->equals($pid));
+        return $this
+            ->run(\sprintf('ps -o %s -p %s', $this->format(), $pid->toString()))
+            ->otherwise(fn() => $this->run(\sprintf('ps -o %s -q %s', $this->format(), $pid->toString())))
+            ->map(fn($output) => $this->parse($output))
+            ->flatMap(static fn($processes) => $processes->find(
+                static fn($process) => $process->pid()->equals($pid),
+            ));
     }
 
-    private function run(string $command): Str
+    /**
+     * @return Maybe<Str>
+     */
+    private function run(string $command): Maybe
     {
         $process = SfProcess::fromShellCommandline($command, null, [
             'TZ' => \date('e'),
@@ -62,10 +64,11 @@ final class UnixProcesses implements Processes
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new InformationNotAccessible;
+            /** @var Maybe<Str> */
+            return Maybe::nothing();
         }
 
-        return Str::of($process->getOutput());
+        return Maybe::just(Str::of($process->getOutput()));
     }
 
     /**

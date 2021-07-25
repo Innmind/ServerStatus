@@ -9,7 +9,6 @@ use Innmind\Server\Status\{
     Server\Process,
     Server\Process\Pid,
     Clock\PointInTime\Delay,
-    Exception\InformationNotAccessible,
 };
 use Innmind\TimeContinuum\{
     Clock as ClockInterface,
@@ -65,11 +64,16 @@ class UnixProcessesTest extends TestCase
         $this->assertSame('root', $process->user()->toString());
     }
 
-    public function testThrowWhenProcessFails()
+    public function testReturnNothingWhenProcessDoesntExist()
     {
-        $this->expectException(InformationNotAccessible::class);
-
-        (new UnixProcesses(new Clock))->get(new Pid(42424));
+        $this->assertNull(
+            (new UnixProcesses(new Clock))
+                ->get(new Pid(42424))
+                ->match(
+                    static fn($process) => $process,
+                    static fn() => null,
+                ),
+        );
     }
 
     public function testProcessTimeIsStillAccessible()
