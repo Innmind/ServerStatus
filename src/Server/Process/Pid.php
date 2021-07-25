@@ -5,6 +5,9 @@ namespace Innmind\Server\Status\Server\Process;
 
 use Innmind\Server\Status\Exception\LowestPidPossibleIsOne;
 
+/**
+ * @psalm-immutable
+ */
 final class Pid
 {
     private int $value;

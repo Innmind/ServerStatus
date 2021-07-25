@@ -9,6 +9,9 @@ use Innmind\Immutable\{
     Str,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Command
 {
     private string $value;

@@ -5,6 +5,9 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Exception\LoadAverageCannotBeNegative;
 
+/**
+ * @psalm-immutable
+ */
 final class LoadAverage
 {
     private float $lastMinute;

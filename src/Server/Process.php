@@ -12,6 +12,9 @@ use Innmind\Server\Status\Server\{
 };
 use Innmind\TimeContinuum\PointInTime;
 
+/**
+ * @psalm-immutable
+ */
 final class Process
 {
     private Pid $pid;

@@ -9,6 +9,9 @@ use Innmind\Server\Status\Exception\{
 };
 use Innmind\Immutable\Str;
 
+/**
+ * @psalm-immutable
+ */
 final class Bytes
 {
     private const BYTES = 1024;

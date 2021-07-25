@@ -5,6 +5,9 @@ namespace Innmind\Server\Status\Server\Cpu;
 
 use Innmind\Server\Status\Exception\DomainException;
 
+/**
+ * @psalm-immutable
+ */
 final class Cores
 {
     private int $value;

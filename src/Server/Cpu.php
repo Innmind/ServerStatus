@@ -8,6 +8,9 @@ use Innmind\Server\Status\Server\Cpu\{
     Cores,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Cpu
 {
     private Percentage $user;

@@ -5,6 +5,9 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\Memory\Bytes;
 
+/**
+ * @psalm-immutable
+ */
 final class Memory
 {
     private Bytes $total;
