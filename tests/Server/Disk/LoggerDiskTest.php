@@ -34,7 +34,7 @@ class LoggerDiskTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('volumes')
-            ->willReturn($all = Map::of('string', Volume::class));
+            ->willReturn($all = Map::of());
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())

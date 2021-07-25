@@ -29,9 +29,7 @@ class UnixDiskTest extends TestCase
         $volumes = (new UnixDisk)->volumes();
 
         $this->assertInstanceOf(Map::class, $volumes);
-        $this->assertSame('string', (string) $volumes->keyType());
-        $this->assertSame(Volume::class, (string) $volumes->valueType());
-        $this->assertTrue($volumes->size() > 0);
+        $this->assertNotEmpty($volumes);
         $this->assertTrue($volumes->contains('/'));
     }
 

@@ -8,7 +8,10 @@ use Innmind\Server\Status\{
     Server\Memory\Bytes,
     Exception\MemoryUsageNotAccessible,
 };
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 use Symfony\Component\Process\Process;
 
 final class OSXFacade
@@ -19,32 +22,44 @@ final class OSXFacade
             ->run('sysctl hw.memsize')
             ->trim()
             ->capture('~^hw.memsize: (?P<total>\d+)$~')
-            ->get('total');
+            ->get('total')
+            ->map(static fn($total) => $total->toString());
         $swap = $this
             ->run('sysctl vm.swapusage')
             ->trim()
             ->capture('~used = (?P<swap>\d+[\.,]?\d*[KMGTP])~')
-            ->get('swap');
+            ->get('swap')
+            ->map(static fn($swap) => $swap->toString());
         $amounts = $this
             ->run('top -l 1 -s 0 | grep PhysMem')
             ->trim()
             ->capture(
                 '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired\), (?P<unused>\d+[KMGTP]) unused.$~'
-            );
+            )
+            ->map(static fn($_, $amount) => $amount->toString());
+        $wired = $amounts->get('wired');
+        $unused = $amounts->get('unused');
+        $used = $amounts->get('used');
         $active = $this
             ->run('vm_stat | grep \'Pages active\'')
             ->trim()
             ->capture('~(?P<active>\d+)~')
-            ->get('active');
+            ->get('active')
+            ->map(static fn($active) => $active->toString());
 
-        return new Memory(
-            new Bytes((int) $total->toString()),
-            Bytes::of($amounts->get('wired')->toString()),
-            new Bytes(((int) $active->toString()) * 4096),
-            Bytes::of($amounts->get('unused')->toString()),
-            Bytes::of($swap->toString()),
-            Bytes::of($amounts->get('used')->toString()),
-        );
+        return Maybe::all($total, $wired, $active, $unused, $swap, $used)
+            ->map(static fn(string $total, string $wired, string $active, string $unused, string $swap, string $used) => new Memory(
+                new Bytes((int) $total),
+                Bytes::of($wired),
+                new Bytes(((int) $active) * 4096),
+                Bytes::of($unused),
+                Bytes::of($swap),
+                Bytes::of($used),
+            ))
+            ->match(
+                static fn($memory) => $memory,
+                static fn() => throw new MemoryUsageNotAccessible,
+            );
     }
 
     private function run(string $command): Str

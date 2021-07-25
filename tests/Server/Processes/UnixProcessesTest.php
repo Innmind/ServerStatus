@@ -34,10 +34,18 @@ class UnixProcessesTest extends TestCase
         $all = (new UnixProcesses(new Clock))->all();
 
         $this->assertInstanceOf(Map::class, $all);
-        $this->assertSame('int', (string) $all->keyType());
-        $this->assertSame(Process::class, (string) $all->valueType());
-        $this->assertTrue($all->size() > 0);
-        $this->assertSame('root', $all->get(1)->user()->toString());
+        $this->assertNotEmpty($all);
+        $this->assertSame(
+            'root',
+            $all
+                ->get(1)
+                ->map(static fn($process) => $process->user())
+                ->map(static fn($user) => $user->toString())
+                ->match(
+                    static fn($user) => $user,
+                    static fn() => null,
+                ),
+        );
     }
 
     public function testGet()
@@ -75,8 +83,15 @@ class UnixProcessesTest extends TestCase
             ->expects($this->never())
             ->method('at');
 
-        $process = (new UnixProcesses($clock))->all()->get(1);
+        $process = (new UnixProcesses($clock))
+            ->all()
+            ->get(1)
+            ->match(
+                static fn($process) => $process,
+                static fn() => null,
+            );
 
+        $this->assertInstanceOf(Process::class, $process);
         $this->assertInstanceOf(Delay::class, $process->start());
     }
 
@@ -89,8 +104,15 @@ class UnixProcessesTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $process = (new UnixProcesses(new Clock))->all()->get(1);
+        $process = (new UnixProcesses(new Clock))
+            ->all()
+            ->get(1)
+            ->match(
+                static fn($process) => $process,
+                static fn() => null,
+            );
 
+        $this->assertInstanceOf(Process::class, $process);
         $this->assertIsInt($process->start()->milliseconds());
         $this->assertSame(
             (int) \date('Y'),

@@ -52,12 +52,7 @@ final class UnixProcesses implements Processes
             );
         }
 
-        if (!$processes->contains($pid->toInt())) {
-            /** @var Maybe<Process> */
-            return Maybe::nothing();
-        }
-
-        return Maybe::just($processes->get($pid->toInt()));
+        return $processes->get($pid->toInt());
     }
 
     private function run(string $command): Str
@@ -87,39 +82,45 @@ final class UnixProcesses implements Processes
         $partsByLine = $lines
             ->drop(1) // columns name
             ->reduce(
-                Sequence::of(Sequence::class),
+                Sequence::of(),
                 static function(Sequence $lines, Str $line): Sequence {
                     return ($lines)(
                         $line->pregSplit('~ +~', 10), // 6 columns + 4 spaces in the START column
                     );
                 },
             );
-        $processes = $partsByLine->mapTo(
-            Process::class,
-            function(Sequence $parts): Process {
-                $startParts = $parts
-                    ->take(5)
-                    ->mapTo('string', static fn(Str $part): string => $part->toString());
-                $start = join(' ', $startParts)->toString();
-                $parts = $parts->drop(5);
+        $processes = $partsByLine->map(function(Sequence $parts): Process {
+            $startParts = $parts
+                ->take(5)
+                ->map(static fn(Str $part): string => $part->toString());
+            $start = join(' ', $startParts)->toString();
+            $parts = $parts
+                ->drop(5)
+                ->map(static fn($part) => $part->toString());
+            $user = $parts->get(0);
+            $pid = $parts->get(1);
+            $percentage = $parts->get(2);
+            $memory = $parts->get(3);
+            $command = $parts->get(4);
 
-                return new Process(
-                    new Pid((int) $parts->get(1)->toString()),
-                    new User($parts->get(0)->toString()),
-                    new Percentage((float) $parts->get(2)->toString()),
-                    new Memory((float) $parts->get(3)->toString()),
-                    new Delay(
-                        $this->clock,
-                        $start, // see %c for strftime for the format
-                    ),
-                    new Command($parts->get(4)->toString()),
+            return Maybe::all($user, $pid, $percentage, $memory, $command)
+                ->map(fn(string $user, string $pid, string $percentage, string $memory, string $command) => new Process(
+                    new Pid((int) $pid),
+                    new User($user),
+                    new Percentage((float) $percentage),
+                    new Memory((float) $memory),
+                    new Delay($this->clock, $start),
+                    new Command($command),
+                ))
+                ->match(
+                    static fn($process) => $process,
+                    static fn() => throw new \RuntimeException(join(' ', $parts)->toString()),
                 );
-            },
-        );
+        });
 
         /** @var Map<int, Process> */
         return $processes->reduce(
-            Map::of('int', Process::class),
+            Map::of(),
             static function(Map $processes, Process $process): Map {
                 return ($processes)(
                     $process->pid()->toInt(),

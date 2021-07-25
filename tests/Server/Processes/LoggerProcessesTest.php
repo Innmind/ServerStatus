@@ -37,7 +37,7 @@ class LoggerProcessesTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('all')
-            ->willReturn($all = Map::of('int', Process::class));
+            ->willReturn($all = Map::of());
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())

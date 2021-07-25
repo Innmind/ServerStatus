@@ -120,6 +120,9 @@ final class Delay implements PointInTime
 
     private function time(): PointInTime
     {
-        return $this->clock->at($this->time);
+        return $this->clock->at($this->time)->match(
+            static fn($point) => $point,
+            static fn() => throw new \RuntimeException("Invalid point in time '{$this->time}'"),
+        );
     }
 }
