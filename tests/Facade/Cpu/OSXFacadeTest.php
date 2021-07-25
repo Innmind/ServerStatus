@@ -6,7 +6,6 @@ namespace Tests\Innmind\Server\Status\Facade\Cpu;
 use Innmind\Server\Status\{
     Facade\Cpu\OSXFacade,
     Server\Cpu,
-    Exception\CpuUsageNotAccessible,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -20,17 +19,21 @@ class OSXFacadeTest extends TestCase
 
         $facade = new OSXFacade;
 
-        $this->assertInstanceOf(Cpu::class, $facade());
+        $this->assertInstanceOf(Cpu::class, $facade()->match(
+            static fn($cpu) => $cpu,
+            static fn() => null,
+        ));
     }
 
-    public function testThrowWhenProcessFails()
+    public function testReturnNothingWhenInfoNotAccessible()
     {
         if (\PHP_OS === 'Darwin') {
             $this->markTestSkipped();
         }
 
-        $this->expectException(CpuUsageNotAccessible::class);
-
-        (new OSXFacade)();
+        $this->assertNull((new OSXFacade)()->match(
+            static fn($cpu) => $cpu,
+            static fn() => null,
+        ));
     }
 }

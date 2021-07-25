@@ -7,7 +7,6 @@ use Innmind\Server\Status\{
     Server\Cpu,
     Server\Cpu\Percentage,
     Server\Cpu\Cores,
-    Exception\CpuUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
@@ -17,13 +16,17 @@ use Symfony\Component\Process\Process;
 
 final class LinuxFacade
 {
-    public function __invoke(): Cpu
+    /**
+     * @return Maybe<Cpu>
+     */
+    public function __invoke(): Maybe
     {
         $process = Process::fromShellCommandline('top -bn1 | grep \'%Cpu\'');
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new CpuUsageNotAccessible;
+            /** @var Maybe<Cpu> */
+            return Maybe::nothing();
         }
 
         $percentages = Str::of($process->getOutput())
@@ -53,10 +56,6 @@ final class LinuxFacade
                 new Percentage($sys),
                 new Percentage($idle),
                 new Cores($cores),
-            ))
-            ->match(
-                static fn($cpu) => $cpu,
-                static fn() => throw new CpuUsageNotAccessible,
-            );
+            ));
     }
 }

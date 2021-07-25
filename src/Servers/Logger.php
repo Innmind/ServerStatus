@@ -5,13 +5,13 @@ namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
     Server,
-    Server\Cpu,
     Server\Memory,
     Server\Processes,
     Server\LoadAverage,
     Server\Disk,
 };
 use Innmind\Url\Path;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Server
@@ -25,12 +25,16 @@ final class Logger implements Server
         $this->logger = $logger;
     }
 
-    public function cpu(): Cpu
+    public function cpu(): Maybe
     {
-        $cpu = $this->server->cpu();
-        $this->logger->debug($cpu->toString());
+        return $this
+            ->server
+            ->cpu()
+            ->map(function($cpu) {
+                $this->logger->debug($cpu->toString());
 
-        return $cpu;
+                return $cpu;
+            });
     }
 
     public function memory(): Memory

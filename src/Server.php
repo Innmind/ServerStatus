@@ -11,10 +11,14 @@ use Innmind\Server\Status\Server\{
     Disk,
 };
 use Innmind\Url\Path;
+use Innmind\Immutable\Maybe;
 
 interface Server
 {
-    public function cpu(): Cpu;
+    /**
+     * @return Maybe<Cpu>
+     */
+    public function cpu(): Maybe;
     public function memory(): Memory;
     public function processes(): Processes;
     public function loadAverage(): LoadAverage;

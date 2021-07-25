@@ -13,6 +13,7 @@ use Innmind\Server\Status\{
     Server\Disk
 };
 use Innmind\Url\Path;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -32,12 +33,12 @@ class LoggerTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('cpu')
-            ->willReturn($cpu = new Cpu(
+            ->willReturn($cpu = Maybe::just(new Cpu(
                 new Cpu\Percentage(1),
                 new Cpu\Percentage(1),
                 new Cpu\Percentage(1),
                 new Cpu\Cores(1),
-            ));
+            )));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -45,7 +46,7 @@ class LoggerTest extends TestCase
 
         $server = new Logger($inner, $logger);
 
-        $this->assertSame($cpu, $server->cpu());
+        $this->assertEquals($cpu, $server->cpu());
     }
 
     public function testMemory()

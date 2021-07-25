@@ -29,7 +29,13 @@ class OSXTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $this->assertInstanceOf(Cpu::class, (new OSX(new Clock))->cpu());
+        $this->assertInstanceOf(
+            Cpu::class,
+            (new OSX(new Clock))->cpu()->match(
+                static fn($cpu) => $cpu,
+                static fn() => null,
+            ),
+        );
     }
 
     public function testMemory()
