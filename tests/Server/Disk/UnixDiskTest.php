@@ -8,7 +8,6 @@ use Innmind\Server\Status\{
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
-    Exception\DiskUsageNotAccessible,
 };
 use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
@@ -61,14 +60,12 @@ class UnixDiskTest extends TestCase
         $this->assertTrue($volume->usage()->toFloat() > 0);
     }
 
-    public function testThrowWhenCommandFails()
+    public function testReturnEmptyListWhenInfoNotAccessible()
     {
         if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
             $this->markTestSkipped();
         }
 
-        $this->expectException(DiskUsageNotAccessible::class);
-
-        (new UnixDisk)->volumes();
+        $this->assertEmpty((new UnixDisk)->volumes());
     }
 }

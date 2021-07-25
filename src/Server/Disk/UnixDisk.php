@@ -8,7 +8,6 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
-    Exception\DiskUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
@@ -32,9 +31,13 @@ final class UnixDisk implements Disk
 
     public function volumes(): Set
     {
-        return $this->parse(
-            $this->run('df -lh'),
-        );
+        return $this
+            ->run('df -lh')
+            ->map(fn($output) => $this->parse($output))
+            ->match(
+                static fn($volumes) => $volumes,
+                static fn() => Set::of(),
+            );
     }
 
     public function get(MountPoint $point): Maybe
@@ -44,16 +47,20 @@ final class UnixDisk implements Disk
             ->find(static fn($volume) => $volume->mountPoint()->equals($point));
     }
 
-    private function run(string $command): Str
+    /**
+     * @return Maybe<Str>
+     */
+    private function run(string $command): Maybe
     {
         $process = Process::fromShellCommandline($command);
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new DiskUsageNotAccessible;
+            /** @var Maybe<Str> */
+            return Maybe::nothing();
         }
 
-        return Str::of($process->getOutput());
+        return Maybe::just(Str::of($process->getOutput()));
     }
 
     /**
