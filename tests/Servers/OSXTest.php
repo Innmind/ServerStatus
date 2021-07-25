@@ -44,7 +44,15 @@ class OSXTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $this->assertInstanceOf(Memory::class, (new OSX(new Clock))->memory());
+        $this->assertInstanceOf(
+            Memory::class,
+            (new OSX(new Clock))
+                ->memory()
+                ->match(
+                    static fn($memory) => $memory,
+                    static fn() => null,
+                ),
+        );
     }
 
     public function testProcesses()

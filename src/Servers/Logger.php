@@ -5,7 +5,6 @@ namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
     Server,
-    Server\Memory,
     Server\Processes,
     Server\LoadAverage,
     Server\Disk,
@@ -37,19 +36,23 @@ final class Logger implements Server
             });
     }
 
-    public function memory(): Memory
+    public function memory(): Maybe
     {
-        $memory = $this->server->memory();
-        $this->logger->debug('Memory usage: {total} {wired} {active} {free} {swap} {used}', [
-            'total' => $memory->total()->toString(),
-            'wired' => $memory->wired()->toString(),
-            'active' => $memory->active()->toString(),
-            'free' => $memory->free()->toString(),
-            'swap' => $memory->swap()->toString(),
-            'used' => $memory->used()->toString(),
-        ]);
+        return $this
+            ->server
+            ->memory()
+            ->map(function($memory) {
+                $this->logger->debug('Memory usage: {total} {wired} {active} {free} {swap} {used}', [
+                    'total' => $memory->total()->toString(),
+                    'wired' => $memory->wired()->toString(),
+                    'active' => $memory->active()->toString(),
+                    'free' => $memory->free()->toString(),
+                    'swap' => $memory->swap()->toString(),
+                    'used' => $memory->used()->toString(),
+                ]);
 
-        return $memory;
+                return $memory;
+            });
     }
 
     public function processes(): Processes

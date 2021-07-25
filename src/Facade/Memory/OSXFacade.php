@@ -6,7 +6,6 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
-    Exception\MemoryUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
@@ -16,7 +15,10 @@ use Symfony\Component\Process\Process;
 
 final class OSXFacade
 {
-    public function __invoke(): Memory
+    /**
+     * @return Maybe<Memory>
+     */
+    public function __invoke(): Maybe
     {
         $total = $this
             ->run('sysctl hw.memsize')
@@ -55,11 +57,7 @@ final class OSXFacade
                 Bytes::of($unused),
                 Bytes::of($swap),
                 Bytes::of($used),
-            ))
-            ->match(
-                static fn($memory) => $memory,
-                static fn() => throw new MemoryUsageNotAccessible,
-            );
+            ));
     }
 
     private function run(string $command): Str
@@ -68,7 +66,7 @@ final class OSXFacade
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new MemoryUsageNotAccessible;
+            return Str::of('');
         }
 
         return Str::of($process->getOutput());

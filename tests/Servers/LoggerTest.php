@@ -55,14 +55,14 @@ class LoggerTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('memory')
-            ->willReturn($memory = new Memory(
+            ->willReturn($memory = Maybe::just(new Memory(
                 new Memory\Bytes(1),
                 new Memory\Bytes(1),
                 new Memory\Bytes(1),
                 new Memory\Bytes(1),
                 new Memory\Bytes(1),
                 new Memory\Bytes(1),
-            ));
+            )));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -70,7 +70,7 @@ class LoggerTest extends TestCase
 
         $server = new Logger($inner, $logger);
 
-        $this->assertSame($memory, $server->memory());
+        $this->assertEquals($memory, $server->memory());
     }
 
     public function testProcesses()

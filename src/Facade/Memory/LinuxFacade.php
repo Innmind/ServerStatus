@@ -6,7 +6,6 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
-    Exception\MemoryUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
@@ -25,13 +24,17 @@ final class LinuxFacade
         'SwapCached' => 'swap',
     ];
 
-    public function __invoke(): Memory
+    /**
+     * @return Maybe<Memory>
+     */
+    public function __invoke(): Maybe
     {
         $process = Process::fromShellCommandline('cat /proc/meminfo');
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new MemoryUsageNotAccessible;
+            /** @var Maybe<Memory> */
+            return Maybe::nothing();
         }
 
         /** @var Map<string, int> */
@@ -77,10 +80,6 @@ final class LinuxFacade
                 new Bytes($free),
                 new Bytes($swap),
                 new Bytes($used),
-            ))
-            ->match(
-                static fn($memory) => $memory,
-                static fn() => throw new MemoryUsageNotAccessible,
-            );
+            ));
     }
 }

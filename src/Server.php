@@ -19,7 +19,11 @@ interface Server
      * @return Maybe<Cpu>
      */
     public function cpu(): Maybe;
-    public function memory(): Memory;
+
+    /**
+     * @return Maybe<Memory>
+     */
+    public function memory(): Maybe;
     public function processes(): Processes;
     public function loadAverage(): LoadAverage;
     public function disk(): Disk;

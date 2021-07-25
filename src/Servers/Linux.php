@@ -5,7 +5,6 @@ namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
     Server,
-    Server\Memory,
     Server\Processes,
     Server\LoadAverage,
     Facade\Cpu\LinuxFacade as CpuFacade,
@@ -41,7 +40,7 @@ final class Linux implements Server
         return ($this->cpu)();
     }
 
-    public function memory(): Memory
+    public function memory(): Maybe
     {
         return ($this->memory)();
     }
