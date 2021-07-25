@@ -72,33 +72,7 @@ class UnixProcessesTest extends TestCase
         (new UnixProcesses(new Clock))->get(new Pid(42424));
     }
 
-    public function testTheProcessStartTimeIsNotParsedByDefault()
-    {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
-        }
-
-        $clock = $this->createMock(ClockInterface::class);
-        $clock
-            ->expects($this->never())
-            ->method('at');
-
-        $process = (new UnixProcesses($clock))
-            ->all()
-            ->find(static fn($process) => $process->pid()->is(1))
-            ->match(
-                static fn($process) => $process,
-                static fn() => null,
-            );
-
-        $this->assertInstanceOf(Process::class, $process);
-        $this->assertInstanceOf(Delay::class, $process->start());
-    }
-
-    /**
-     * The machine must have been started today to make this test pass
-     */
-    public function testProcessTimeIsStillAccessibleEvenThoughParsingDelayed()
+    public function testProcessTimeIsStillAccessible()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
             $this->markTestSkipped();
@@ -113,18 +87,9 @@ class UnixProcessesTest extends TestCase
             );
 
         $this->assertInstanceOf(Process::class, $process);
-        $this->assertIsInt($process->start()->milliseconds());
-        $this->assertSame(
-            (int) \date('Y'),
-            $process->start()->year()->toInt(),
-        );
-        $this->assertSame(
-            (int) \date('m'),
-            $process->start()->month()->toInt(),
-        );
-        $this->assertSame(
-            (int) \date('d'),
-            $process->start()->day()->toInt(),
-        );
+        $this->assertIsInt($process->start()->match(
+            static fn($start) => $start->milliseconds(),
+            static fn() => null,
+        ));
     }
 }

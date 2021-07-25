@@ -63,7 +63,13 @@ final class LoggerProcesses implements Processes
             'user' => $process->user()->toString(),
             'cpu' => $process->cpu()->toString(),
             'memory' => $process->memory()->toString(),
-            'start' => $process->start()->format(new ISO8601),
+            'start' => $process
+                ->start()
+                ->map(static fn($start) => $start->format(new ISO8601))
+                ->match(
+                    static fn($start) => $start,
+                    static fn() => null,
+                ),
             'command' => $process->command()->toString(),
         ];
     }

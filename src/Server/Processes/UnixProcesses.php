@@ -11,7 +11,6 @@ use Innmind\Server\Status\{
     Server\Process\Command,
     Server\Process\Memory,
     Server\Cpu\Percentage,
-    Clock\PointInTime\Delay,
     Exception\InformationNotAccessible,
 };
 use Innmind\TimeContinuum\Clock;
@@ -101,7 +100,7 @@ final class UnixProcesses implements Processes
                     new User($user),
                     new Percentage((float) $percentage),
                     new Memory((float) $memory),
-                    new Delay($this->clock, $start),
+                    $this->clock->at($start),
                     new Command($command),
                 ))
                 ->match(

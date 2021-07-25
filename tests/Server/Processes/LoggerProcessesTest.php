@@ -59,7 +59,7 @@ class LoggerProcessesTest extends TestCase
                 new User('root'),
                 new Percentage(1),
                 new Memory(1),
-                (new Clock)->now(),
+                Maybe::just((new Clock)->now()),
                 new Command('sleep 42'),
             )));
         $logger = $this->createMock(LoggerInterface::class);
