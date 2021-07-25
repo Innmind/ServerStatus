@@ -95,23 +95,26 @@ final class UnixDisk implements Disk
                 ->flatMap(static fn($index) => $parts->get($index));
             $size = $columns
                 ->indexOf('size')
-                ->flatMap(static fn($index) => $parts->get($index));
+                ->flatMap(static fn($index) => $parts->get($index))
+                ->flatMap(static fn($size) => Bytes::of($size));
             $available = $columns
                 ->indexOf('available')
-                ->flatMap(static fn($index) => $parts->get($index));
+                ->flatMap(static fn($index) => $parts->get($index))
+                ->flatMap(static fn($available) => Bytes::of($available));
             $used = $columns
                 ->indexOf('used')
-                ->flatMap(static fn($index) => $parts->get($index));
+                ->flatMap(static fn($index) => $parts->get($index))
+                ->flatMap(static fn($used) => Bytes::of($used));
             $usage = $columns
                 ->indexOf('usage')
                 ->flatMap(static fn($index) => $parts->get($index));
 
             return Maybe::all($mountPoint, $size, $available, $used, $usage)
-                ->map(static fn(string $mountPoint, string $size, string $available, string $used, string $usage) => new Volume(
+                ->map(static fn(string $mountPoint, Bytes $size, Bytes $available, Bytes $used, string $usage) => new Volume(
                     new MountPoint($mountPoint),
-                    Bytes::of($size),
-                    Bytes::of($available),
-                    Bytes::of($used),
+                    $size,
+                    $available,
+                    $used,
                     new Usage((float) $usage),
                 ));
         });

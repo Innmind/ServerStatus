@@ -3,11 +3,11 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Memory;
 
-use Innmind\Server\Status\Exception\{
-    BytesCannotBeNegative,
-    UnknownBytesFormat,
+use Innmind\Server\Status\Exception\BytesCannotBeNegative;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
 };
-use Innmind\Immutable\Str;
 
 /**
  * @psalm-immutable
@@ -85,74 +85,72 @@ final class Bytes
         return $this->string;
     }
 
-    public static function of(string $bytes): self
+    /**
+     * @return Maybe<self>
+     */
+    public static function of(string $bytes): Maybe
     {
         if ($bytes === (string) (int) $bytes) {
-            return new self((int) $bytes);
+            return Maybe::just(new self((int) $bytes));
         }
 
-        $bytes = Str::of($bytes);
-
-        if ($bytes->length() < 2) {
-            throw new UnknownBytesFormat($bytes->toString());
-        }
-
-        try {
-            return self::fromUnit(
-                $bytes->substring(0, -1),
-                $bytes->substring(-1),
-            );
-        } catch (UnknownBytesFormat $e) {
-            return self::fromUnit(
-                $bytes->substring(0, -2),
-                $bytes->substring(-2),
-            );
-        }
+        return Maybe::just(Str::of($bytes))
+            ->filter(static fn($bytes) => $bytes->length() >= 2)
+            ->flatMap(static fn($bytes) => self::attemptLinux($bytes)->otherwise(
+                static fn() => self::attemptDarwin($bytes),
+            ));
     }
 
-    private static function fromUnit(Str $bytes, Str $unit): self
+    /**
+     * @return Maybe<self>
+     */
+    private static function attemptDarwin(Str $bytes): Maybe
+    {
+        return self::fromUnit(
+            $bytes->substring(0, -2),
+            $bytes->substring(-2),
+        );
+    }
+
+    /**
+     * @return Maybe<self>
+     */
+    private static function attemptLinux(Str $bytes): Maybe
+    {
+        return self::fromUnit(
+            $bytes->substring(0, -1),
+             $bytes->substring(-1),
+        );
+    }
+
+    /**
+     * @return Maybe<self>
+     */
+    private static function fromUnit(Str $bytes, Str $unit): Maybe
     {
         if ($bytes->length() === 0) {
-            throw new UnknownBytesFormat($bytes->toString());
+            /** @var Maybe<self> */
+            return Maybe::nothing();
         }
 
-        switch ($unit->toString()) {
-            case 'B':
-            case 'Bi':
-                $multiplier = 1;
-                break;
+        $multiplier = match ($unit->toString()) {
+            'B' => 1,
+            'Bi' => 1,
+            'K' => self::BYTES,
+            'Ki' => self::BYTES,
+            'M' => self::KILOBYTES,
+            'Mi' => self::KILOBYTES,
+            'G' => self::MEGABYTES,
+            'Gi' => self::MEGABYTES,
+            'T' => self::GIGABYTES,
+            'Ti' => self::GIGABYTES,
+            'P' => self::TERABYTES,
+            'Pi' => self::TERABYTES,
+            default => null,
+        };
 
-            case 'K':
-            case 'Ki':
-                $multiplier = self::BYTES;
-                break;
-
-            case 'M':
-            case 'Mi':
-                $multiplier = self::KILOBYTES;
-                break;
-
-            case 'G':
-            case 'Gi':
-                $multiplier = self::MEGABYTES;
-                break;
-
-            case 'T':
-            case 'Ti':
-                $multiplier = self::GIGABYTES;
-                break;
-
-            case 'P':
-            case 'Pi':
-                $multiplier = self::TERABYTES;
-                break;
-
-            default:
-                throw new UnknownBytesFormat($bytes->toString());
-        }
-
-        return new self(
-            (int) (((float) $bytes->toString()) * $multiplier),
-        );
+        return Maybe::of($multiplier)
+            ->map(static fn($multiplier) => (int) (((float) $bytes->toString()) * $multiplier))
+            ->map(static fn($bytes) => new self($bytes));
     }
 }
