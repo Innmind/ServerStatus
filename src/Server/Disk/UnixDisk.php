@@ -8,7 +8,6 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
-    Exception\RuntimeException,
 };
 use Innmind\Immutable\{
     Str,
@@ -16,7 +15,6 @@ use Innmind\Immutable\{
     Set,
     Maybe,
 };
-use function Innmind\Immutable\join;
 use Symfony\Component\Process\Process;
 
 final class UnixDisk implements Disk
@@ -91,7 +89,7 @@ final class UnixDisk implements Disk
                     ->pregSplit('~ +~', $columns->size())
                     ->map(static fn($column) => $column->toString()),
             );
-        $volumes = $partsByLine->map(static function($parts) use ($columns): Volume {
+        $volumes = $partsByLine->map(static function($parts) use ($columns): Maybe {
             $mountPoint = $columns
                 ->indexOf('mountPoint')
                 ->flatMap(static fn($index) => $parts->get($index));
@@ -115,13 +113,16 @@ final class UnixDisk implements Disk
                     Bytes::of($available),
                     Bytes::of($used),
                     new Usage((float) $usage),
-                ))
-                ->match(
-                    static fn($volume) => $volume,
-                    static fn() => throw new RuntimeException(join(' ', $parts)->toString()),
-                );
+                ));
         });
 
-        return Set::of(...$volumes->toList());
+        /** @var Set<Volume> */
+        return $volumes->reduce(
+            Set::of(),
+            static fn(Set $volumes, Maybe $volume) => $volume->match(
+                static fn(Volume $volume) => ($volumes)($volume),
+                static fn() => $volumes,
+            ),
+        );
     }
 }

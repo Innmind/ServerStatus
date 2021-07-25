@@ -11,7 +11,6 @@ use Innmind\Server\Status\{
     Server\Process\Command,
     Server\Process\Memory,
     Server\Cpu\Percentage,
-    Exception\RuntimeException,
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\Immutable\{
@@ -84,7 +83,7 @@ final class UnixProcesses implements Processes
         $partsByLine = $lines
             ->drop(1) // columns name
             ->map(static fn($line) => $line->pregSplit('~ +~', 10)); // 6 columns + 4 spaces in the START column
-        $processes = $partsByLine->map(function(Sequence $parts): Process {
+        $processes = $partsByLine->map(function(Sequence $parts): Maybe {
             $startParts = $parts
                 ->take(5)
                 ->map(static fn(Str $part): string => $part->toString());
@@ -106,14 +105,17 @@ final class UnixProcesses implements Processes
                     new Memory((float) $memory),
                     $this->clock->at($start),
                     new Command($command),
-                ))
-                ->match(
-                    static fn($process) => $process,
-                    static fn() => throw new RuntimeException(join(' ', $parts)->toString()),
-                );
+                ));
         });
 
-        return Set::of(...$processes->toList());
+        /** @var Set<Process> */
+        return $processes->reduce(
+            Set::of(),
+            static fn(Set $processes, Maybe $process): Set => $process->match(
+                static fn(Process $process) => ($processes)($process),
+                static fn() => $processes,
+            ),
+        );
     }
 
     private function format(): string
