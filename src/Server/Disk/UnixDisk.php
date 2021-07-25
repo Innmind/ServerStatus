@@ -67,33 +67,23 @@ final class UnixDisk implements Disk
         $columns = $lines
             ->first()
             ->map(static fn($line) => $line->pregSplit('~ +~'))
-            ->map(static fn($parts) => $parts->reduce(
-                Sequence::strings(),
-                static function(Sequence $columns, Str $column): Sequence {
-                    $column = $column->toString();
-
-                    return ($columns)(self::$columns[$column] ?? $column);
-                },
+            ->map(static fn($columns) => $columns->map(
+                static fn($column) => $column->toString(),
             ))
             ->match(
                 static fn($columns) => $columns,
                 static fn() => Sequence::strings(),
-            );
+            )
+            ->map(static fn($column) => self::$columns[$column] ?? $column);
 
-        /** @var Sequence<Sequence<string>> */
         $partsByLine = $lines
             ->drop(1)
-            ->reduce(
-                Sequence::of(),
-                static function(Sequence $lines, Str $line) use ($columns): Sequence {
-                    return ($lines)(
-                        $line
-                            ->pregSplit('~ +~', $columns->size())
-                            ->map(static fn($part) => $part->toString()),
-                    );
-                },
+            ->map(
+                static fn($line) => $line
+                    ->pregSplit('~ +~', $columns->size())
+                    ->map(static fn($column) => $column->toString()),
             );
-        $volumes = $partsByLine->map(static function(Sequence $parts) use ($columns): Volume {
+        $volumes = $partsByLine->map(static function($parts) use ($columns): Volume {
             $mountPoint = $columns
                 ->indexOf('mountPoint')
                 ->flatMap(static fn($index) => $parts->get($index));
