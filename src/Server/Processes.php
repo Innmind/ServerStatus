@@ -8,16 +8,16 @@ use Innmind\Server\Status\Server\{
     Process\Pid,
 };
 use Innmind\Immutable\{
-    Map,
+    Set,
     Maybe,
 };
 
 interface Processes
 {
     /**
-     * @return Map<int, Process>
+     * @return Set<Process>
      */
-    public function all(): Map;
+    public function all(): Set;
 
     /**
      * @return Maybe<Process>

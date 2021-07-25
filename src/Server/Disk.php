@@ -8,16 +8,16 @@ use Innmind\Server\Status\Server\Disk\{
     Volume\MountPoint,
 };
 use Innmind\Immutable\{
-    Map,
+    Set,
     Maybe,
 };
 
 interface Disk
 {
     /**
-     * @return Map<string, Volume>
+     * @return Set<Volume>
      */
-    public function volumes(): Map;
+    public function volumes(): Set;
 
     /**
      * @return Maybe<Volume>

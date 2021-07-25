@@ -13,7 +13,7 @@ use Innmind\Server\Status\{
 use Innmind\Immutable\{
     Str,
     Sequence,
-    Map,
+    Set,
     Maybe,
 };
 use function Innmind\Immutable\join;
@@ -30,7 +30,7 @@ final class UnixDisk implements Disk
         'Mounted' => 'mountPoint',
     ];
 
-    public function volumes(): Map
+    public function volumes(): Set
     {
         return $this->parse(
             $this->run('df -lh'),
@@ -39,7 +39,9 @@ final class UnixDisk implements Disk
 
     public function get(MountPoint $point): Maybe
     {
-        return $this->volumes()->get($point->toString());
+        return $this
+            ->volumes()
+            ->find(static fn($volume) => $volume->mountPoint()->equals($point));
     }
 
     private function run(string $command): Str
@@ -55,9 +57,9 @@ final class UnixDisk implements Disk
     }
 
     /**
-     * @return Map<string, Volume>
+     * @return Set<Volume>
      */
-    private function parse(Str $output): Map
+    private function parse(Str $output): Set
     {
         $lines = $output
             ->trim()
@@ -122,15 +124,6 @@ final class UnixDisk implements Disk
                 );
         });
 
-        /** @var Map<string, Volume> */
-        return $volumes->reduce(
-            Map::of(),
-            static function(Map $volumes, Volume $volume): Map {
-                return ($volumes)(
-                    $volume->mountPoint()->toString(),
-                    $volume,
-                );
-            },
-        );
+        return Set::of(...$volumes->toList());
     }
 }

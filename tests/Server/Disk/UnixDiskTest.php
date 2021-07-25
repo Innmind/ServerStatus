@@ -10,7 +10,7 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Exception\DiskUsageNotAccessible,
 };
-use Innmind\Immutable\Map;
+use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
 
 class UnixDiskTest extends TestCase
@@ -28,9 +28,16 @@ class UnixDiskTest extends TestCase
 
         $volumes = (new UnixDisk)->volumes();
 
-        $this->assertInstanceOf(Map::class, $volumes);
+        $this->assertInstanceOf(Set::class, $volumes);
         $this->assertNotEmpty($volumes);
-        $this->assertTrue($volumes->contains('/'));
+        $this->assertTrue(
+            $volumes
+                ->find(static fn($volume) => $volume->mountPoint()->is('/'))
+                ->match(
+                    static fn() => true,
+                    static fn() => false,
+                ),
+        );
     }
 
     public function testGet()

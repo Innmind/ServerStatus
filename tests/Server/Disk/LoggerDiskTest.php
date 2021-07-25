@@ -12,7 +12,7 @@ use Innmind\Server\Status\{
     Server\Memory\Bytes,
 };
 use Innmind\Immutable\{
-    Map,
+    Set,
     Maybe,
 };
 use Psr\Log\LoggerInterface;
@@ -34,7 +34,7 @@ class LoggerDiskTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('volumes')
-            ->willReturn($all = Map::of());
+            ->willReturn($all = Set::of());
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())

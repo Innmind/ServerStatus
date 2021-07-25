@@ -18,7 +18,7 @@ use Innmind\TimeContinuum\Clock;
 use Innmind\Immutable\{
     Str,
     Sequence,
-    Map,
+    Set,
     Maybe,
 };
 use function Innmind\Immutable\join;
@@ -33,7 +33,7 @@ final class UnixProcesses implements Processes
         $this->clock = $clock;
     }
 
-    public function all(): Map
+    public function all(): Set
     {
         return $this->parse(
             $this->run('ps -eo '.$this->format()),
@@ -52,7 +52,7 @@ final class UnixProcesses implements Processes
             );
         }
 
-        return $processes->get($pid->toInt());
+        return $processes->find(static fn($process) => $process->pid()->equals($pid));
     }
 
     private function run(string $command): Str
@@ -70,25 +70,17 @@ final class UnixProcesses implements Processes
     }
 
     /**
-     * @return Map<int, Process>
+     * @return Set<Process>
      */
-    private function parse(Str $output): Map
+    private function parse(Str $output): Set
     {
         $lines = $output
             ->trim()
             ->split("\n");
 
-        /** @var Sequence<Sequence<Str>> */
         $partsByLine = $lines
             ->drop(1) // columns name
-            ->reduce(
-                Sequence::of(),
-                static function(Sequence $lines, Str $line): Sequence {
-                    return ($lines)(
-                        $line->pregSplit('~ +~', 10), // 6 columns + 4 spaces in the START column
-                    );
-                },
-            );
+            ->map(static fn($line) => $line->pregSplit('~ +~', 10)); // 6 columns + 4 spaces in the START column
         $processes = $partsByLine->map(function(Sequence $parts): Process {
             $startParts = $parts
                 ->take(5)
@@ -118,16 +110,7 @@ final class UnixProcesses implements Processes
                 );
         });
 
-        /** @var Map<int, Process> */
-        return $processes->reduce(
-            Map::of(),
-            static function(Map $processes, Process $process): Map {
-                return ($processes)(
-                    $process->pid()->toInt(),
-                    $process,
-                );
-            },
-        );
+        return Set::of(...$processes->toList());
     }
 
     private function format(): string

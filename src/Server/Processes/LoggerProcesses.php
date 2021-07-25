@@ -10,7 +10,7 @@ use Innmind\Server\Status\{
 };
 use Innmind\TimeContinuum\Earth\Format\ISO8601;
 use Innmind\Immutable\{
-    Map,
+    Set,
     Maybe,
 };
 use Psr\Log\LoggerInterface;
@@ -26,14 +26,14 @@ final class LoggerProcesses implements Processes
         $this->logger = $logger;
     }
 
-    public function all(): Map
+    public function all(): Set
     {
         $all = $this->processes->all();
         $this->logger->debug('{count} processes currently running', [
             'count' => $all->size(),
             'processes' => $all->reduce(
                 [],
-                function(array $processes, int $_, Process $process): array {
+                function(array $processes, Process $process): array {
                     $processes[] = $this->normalize($process);
 
                     return $processes;

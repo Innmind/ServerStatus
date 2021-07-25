@@ -15,7 +15,7 @@ use Innmind\Server\Status\{
 };
 use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\Immutable\{
-    Map,
+    Set,
     Maybe,
 };
 use Psr\Log\LoggerInterface;
@@ -37,7 +37,7 @@ class LoggerProcessesTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('all')
-            ->willReturn($all = Map::of());
+            ->willReturn($all = Set::of());
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())

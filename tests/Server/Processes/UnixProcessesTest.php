@@ -15,7 +15,7 @@ use Innmind\TimeContinuum\{
     Clock as ClockInterface,
     Earth\Clock,
 };
-use Innmind\Immutable\Map;
+use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
 
 class UnixProcessesTest extends TestCase
@@ -33,12 +33,12 @@ class UnixProcessesTest extends TestCase
 
         $all = (new UnixProcesses(new Clock))->all();
 
-        $this->assertInstanceOf(Map::class, $all);
+        $this->assertInstanceOf(Set::class, $all);
         $this->assertNotEmpty($all);
         $this->assertSame(
             'root',
             $all
-                ->get(1)
+                ->find(static fn($process) => $process->pid()->is(1))
                 ->map(static fn($process) => $process->user())
                 ->map(static fn($user) => $user->toString())
                 ->match(
@@ -85,7 +85,7 @@ class UnixProcessesTest extends TestCase
 
         $process = (new UnixProcesses($clock))
             ->all()
-            ->get(1)
+            ->find(static fn($process) => $process->pid()->is(1))
             ->match(
                 static fn($process) => $process,
                 static fn() => null,
@@ -106,7 +106,7 @@ class UnixProcessesTest extends TestCase
 
         $process = (new UnixProcesses(new Clock))
             ->all()
-            ->get(1)
+            ->find(static fn($process) => $process->pid()->is(1))
             ->match(
                 static fn($process) => $process,
                 static fn() => null,

@@ -18,6 +18,16 @@ final class Pid
         $this->value = $value;
     }
 
+    public function equals(self $pid): bool
+    {
+        return $pid->is($this->value);
+    }
+
+    public function is(int $value): bool
+    {
+        return $this->value === $value;
+    }
+
     public function toInt(): int
     {
         return $this->value;
