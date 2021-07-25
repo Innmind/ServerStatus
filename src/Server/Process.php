@@ -35,7 +35,7 @@ final class Process
         Percentage $cpu,
         Memory $memory,
         Maybe $start,
-        Command $command
+        Command $command,
     ) {
         $this->pid = $pid;
         $this->user = $user;

@@ -15,10 +15,6 @@ final class PhpFacade
         /** @var array{0: int, 1: int, 2: int} */
         $load = \sys_getloadavg();
 
-        return new LoadAverage(
-            $load[0],
-            $load[1],
-            $load[2],
-        );
+        return new LoadAverage($load[0], $load[1], $load[2]);
     }
 }

@@ -32,7 +32,7 @@ final class LinuxFacade
         $percentages = Str::of($process->getOutput())
             ->trim()
             ->capture(
-                '~^%Cpu\(s\): *(?P<user>\d+\.?\d*) us, *(?P<sys>\d+\.?\d*) sy, *(\d+\.?\d*) ni, *(?P<idle>\d+\.?\d*) id~'
+                '~^%Cpu\(s\): *(?P<user>\d+\.?\d*) us, *(?P<sys>\d+\.?\d*) sy, *(\d+\.?\d*) ni, *(?P<idle>\d+\.?\d*) id~',
             )
             ->map(static fn($_, $percentage) => $percentage->toString())
             ->map(static fn($_, $percentage) => (float) $percentage);

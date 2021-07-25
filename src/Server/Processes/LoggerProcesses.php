@@ -50,7 +50,10 @@ final class LoggerProcesses implements Processes
             ->processes
             ->get($pid)
             ->map(function($process) {
-                $this->logger->debug('Process {pid} currently running', $this->normalize($process));
+                $this->logger->debug(
+                    'Process {pid} currently running',
+                    $this->normalize($process),
+                );
 
                 return $process;
             });

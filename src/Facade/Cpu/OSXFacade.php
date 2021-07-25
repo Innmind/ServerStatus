@@ -32,7 +32,7 @@ final class OSXFacade
         $percentages = Str::of($process->getOutput())
             ->trim()
             ->capture(
-                '~^CPU usage: (?P<user>\d+\.?\d*)% user, (?P<sys>\d+\.?\d*)% sys, (?P<idle>\d+\.?\d*)% idle$~'
+                '~^CPU usage: (?P<user>\d+\.?\d*)% user, (?P<sys>\d+\.?\d*)% sys, (?P<idle>\d+\.?\d*)% idle$~',
             )
             ->map(static fn($_, $percentage) => $percentage->toString())
             ->map(static fn($_, $percentage) => (float) $percentage);
@@ -42,9 +42,7 @@ final class OSXFacade
 
         $cores = Str::of($process->getOutput())
             ->trim()
-            ->capture(
-                '~^hw.ncpu: (?P<cores>\d+)$~'
-            )
+            ->capture('~^hw.ncpu: (?P<cores>\d+)$~')
             ->get('cores')
             ->map(static fn($cores) => $cores->toString())
             ->map(static fn($cores) => (int) $cores)

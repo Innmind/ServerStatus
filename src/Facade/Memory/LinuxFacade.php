@@ -41,11 +41,9 @@ final class LinuxFacade
         $amounts = Str::of($process->getOutput())
             ->trim()
             ->split("\n")
-            ->filter(static function(Str $line): bool {
-                return $line->matches(
-                    '~^('.\implode('|', \array_keys(self::$entries)).'):~'
-                );
-            })
+            ->filter(static fn(Str $line) => $line->matches(
+                '~^('.\implode('|', \array_keys(self::$entries)).'):~',
+            ))
             ->reduce(
                 Map::of(),
                 static function(Map $map, Str $line): Map {

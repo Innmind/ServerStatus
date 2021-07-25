@@ -23,7 +23,7 @@ final class Memory
         Bytes $active,
         Bytes $free,
         Bytes $swap,
-        Bytes $used
+        Bytes $used,
     ) {
         $this->total = $total;
         $this->wired = $wired;

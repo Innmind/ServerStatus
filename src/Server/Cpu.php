@@ -22,7 +22,7 @@ final class Cpu
         Percentage $user,
         Percentage $system,
         Percentage $idle,
-        Cores $cores
+        Cores $cores,
     ) {
         $this->user = $user;
         $this->system = $system;

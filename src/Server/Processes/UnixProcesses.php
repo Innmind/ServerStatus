@@ -45,8 +45,16 @@ final class UnixProcesses implements Processes
     public function get(Pid $pid): Maybe
     {
         return $this
-            ->run(\sprintf('ps -o %s -p %s', $this->format(), $pid->toString()))
-            ->otherwise(fn() => $this->run(\sprintf('ps -o %s -q %s', $this->format(), $pid->toString())))
+            ->run(\sprintf(
+                'ps -o %s -p %s',
+                $this->format(),
+                $pid->toString(),
+            ))
+            ->otherwise(fn() => $this->run(\sprintf(
+                'ps -o %s -q %s',
+                $this->format(),
+                $pid->toString(),
+            )))
             ->map(fn($output) => $this->parse($output))
             ->flatMap(static fn($processes) => $processes->find(
                 static fn($process) => $process->pid()->equals($pid),
