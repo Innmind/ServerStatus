@@ -47,6 +47,7 @@ final class LinuxFacade
             ->reduce(
                 Map::of(),
                 static function(Map $map, Str $line): Map {
+                    \var_dump($line->toString());
                     $elements = $line
                         ->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~')
                         ->map(static fn($_, $part) => $part->toString());
