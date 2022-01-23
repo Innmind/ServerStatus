@@ -26,34 +26,53 @@ use Innmind\TimeContinuum\Earth\Clock;
 
 $server = ServerFactory::build(new Clock);
 
-$server->cpu()->user(); //percentage of the cpu used by the user
-$server->cpu()->system(); //percentage of the cpu used by the system
-$server->cpu()->idle(); //percentage of the cpu not used
-$server->cput()->cores(); //number of cores available
+$server->cpu()->match(
+    function($cpu) {
+        $cpu->user(); // percentage of the cpu used by the user
+        $cpu->system(); // percentage of the cpu used by the system
+        $cpu->idle(); // percentage of the cpu not used
+        $cpu->cores(); // number of cores available
+    },
+    fn() => null, // unable to retrieve the cpu information
+);
 
-$server->memory()->total(); //total memory of the server
-$server->memory()->wired(); //memory that cannot be taken out of ram
-$server->memory()->active(); //memory that is used by processes
-$server->memory()->free(); //memory that is not used
-$server->memory()->swap(); //memory that is used and located on disk
-$server->memory()->used(); //total - free
+$server->memory()->match(
+    function($memory) {
+        $memory->total(); // total memory of the server
+        $memory->active(); // memory that is used by processes
+        $memory->free(); // memory that is not used
+        $memory->swap(); // memory that is used and located on disk
+        $memory->used(); // total - free
+    },
+    fn() => null, // unable to retrieve the memory information
+);
 
 $server->loadAverage()->lastMinute();
 $server->loadAverage()->lastFiveMinutes();
 $server->loadAverage()->lastFifteenMinutes();
 
-$server->disk()->get(new MountPoint('/'))->size(); //total size of the volume
-$server->disk()->get(new MountPoint('/'))->available();
-$server->disk()->get(new MountPoint('/'))->used();
-$server->disk()->get(new MountPoint('/'))->usage(); //percentage of space being used
+$server->disk()->get(new MountPoint('/'))->match(
+    function($disk) {
+        $disk->size(); // total size of the volume
+        $disk->available();
+        $disk->used();
+        $disk->usage(); // percentage of space being used
+    },
+    fn() => null, // the mount point doesn't exist
+);
 
-$server->processes()->get(new Pid(1))->user(); //root in this case
-$server->processes()->get(new Pid(1))->cpu(); //percentage
-$server->processes()->get(new Pid(1))->memory(); //percentage
-$server->processes()->get(new Pid(1))->start(); //point in time at which the process started
-$server->processes()->get(new Pid(1))->command();
+$server->processes()->get(new Pid(1))->match(
+    function($process) {
+        $process->user(); // root in this case
+        $process->cpu(); // percentage
+        $process->memory(); // percentage
+        $process->start(); // point in time at which the process started
+        $process->command();
+    },
+    fn() => null, // the process doesn't exist
+);
 
-$server->tmp(); //path to temp directory
+$server->tmp(); // path to temp directory
 ```
 
 You can easily log all the informations gathered via a simple decorator:
