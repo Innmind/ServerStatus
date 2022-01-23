@@ -14,6 +14,9 @@ use Innmind\Immutable\{
 };
 use Symfony\Component\Process\Process;
 
+/**
+ * @internal
+ */
 final class OSXFacade
 {
     /**

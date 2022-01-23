@@ -8,6 +8,9 @@ use Innmind\Server\Status\{
     Server\LoadAverage,
 };
 
+/**
+ * @internal
+ */
 final class PhpFacade
 {
     public function __invoke(): LoadAverage
