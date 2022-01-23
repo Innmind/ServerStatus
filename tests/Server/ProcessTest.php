@@ -25,7 +25,7 @@ class ProcessTest extends TestCase
             $cpu = new Percentage(42),
             $memory = new Memory(42),
             $start = Maybe::just($this->createMock(PointInTime::class)),
-            $command = new Command('/sbin/launchd')
+            $command = new Command('/sbin/launchd'),
         );
 
         $this->assertSame($pid, $process->pid());

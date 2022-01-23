@@ -37,7 +37,7 @@ final class OSXFacade
             ->run('top -l 1 -s 0 | grep PhysMem')
             ->trim()
             ->capture(
-                '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired\), (?P<unused>\d+[KMGTP]) unused.$~'
+                '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired\), (?P<unused>\d+[KMGTP]) unused.$~',
             )
             ->map(static fn($_, $amount) => $amount->toString());
         $wired = $amounts

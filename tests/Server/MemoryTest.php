@@ -19,7 +19,7 @@ class MemoryTest extends TestCase
             $active = new Bytes(42),
             $free = new Bytes(42),
             $swap = new Bytes(42),
-            $used = new Bytes(42)
+            $used = new Bytes(42),
         );
 
         $this->assertSame($total, $memory->total());
