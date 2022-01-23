@@ -12,6 +12,9 @@ use Innmind\TimeContinuum\Clock;
 
 final class ServerFactory
 {
+    /**
+     * @throws UnsupportedOperatingSystem
+     */
     public static function build(Clock $clock): Server
     {
         switch (\PHP_OS) {

@@ -16,6 +16,9 @@ final class Command
 {
     private string $value;
 
+    /**
+     * @throws EmptyCommandNotAllowed
+     */
     public function __construct(string $value)
     {
         if ($value === '') {

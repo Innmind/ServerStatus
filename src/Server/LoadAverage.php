@@ -14,6 +14,9 @@ final class LoadAverage
     private float $lastFiveMinutes;
     private float $lastFifteenMinutes;
 
+    /**
+     * @throws LoadAverageCannotBeNegative
+     */
     public function __construct(
         float $lastMinute,
         float $lastFiveMinutes,

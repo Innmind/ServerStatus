@@ -24,6 +24,9 @@ final class Bytes
     private int $value;
     private string $string;
 
+    /**
+     * @throws BytesCannotBeNegative
+     */
     public function __construct(int $value)
     {
         if ($value < 0) {

@@ -12,6 +12,9 @@ final class Cores
 {
     private int $value;
 
+    /**
+     * @throws DomainException
+     */
     public function __construct(int $value)
     {
         if ($value < 1) {

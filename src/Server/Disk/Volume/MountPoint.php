@@ -9,6 +9,9 @@ final class MountPoint
 {
     private string $value;
 
+    /**
+     * @throws EmptyPathNotAllowed
+     */
     public function __construct(string $value)
     {
         if ($value === '') {

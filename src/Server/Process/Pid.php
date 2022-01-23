@@ -12,6 +12,9 @@ final class Pid
 {
     private int $value;
 
+    /**
+     * @throws LowestPidPossibleIsOne
+     */
     public function __construct(int $value)
     {
         if ($value < 1) {

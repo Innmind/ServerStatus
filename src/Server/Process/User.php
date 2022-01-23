@@ -12,6 +12,9 @@ final class User
 {
     private string $value;
 
+    /**
+     * @throws EmptyUserNotAllowed
+     */
     public function __construct(string $value)
     {
         if ($value === '') {
