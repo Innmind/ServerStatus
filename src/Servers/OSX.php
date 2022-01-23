@@ -5,8 +5,6 @@ namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
     Server,
-    Server\Cpu,
-    Server\Memory,
     Server\Processes,
     Server\LoadAverage,
     Facade\Cpu\OSXFacade as CpuFacade,
@@ -18,6 +16,7 @@ use Innmind\Server\Status\{
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
+use Innmind\Immutable\Maybe;
 
 final class OSX implements Server
 {
@@ -36,12 +35,12 @@ final class OSX implements Server
         $this->disk = new UnixDisk;
     }
 
-    public function cpu(): Cpu
+    public function cpu(): Maybe
     {
         return ($this->cpu)();
     }
 
-    public function memory(): Memory
+    public function memory(): Maybe
     {
         return ($this->memory)();
     }

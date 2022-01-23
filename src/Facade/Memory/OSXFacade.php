@@ -6,45 +6,64 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
-    Exception\MemoryUsageNotAccessible,
 };
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 use Symfony\Component\Process\Process;
 
+/**
+ * @internal
+ */
 final class OSXFacade
 {
-    public function __invoke(): Memory
+    /**
+     * @return Maybe<Memory>
+     */
+    public function __invoke(): Maybe
     {
         $total = $this
             ->run('sysctl hw.memsize')
             ->trim()
             ->capture('~^hw.memsize: (?P<total>\d+)$~')
-            ->get('total');
+            ->get('total')
+            ->map(static fn($total) => $total->toString());
         $swap = $this
             ->run('sysctl vm.swapusage')
             ->trim()
             ->capture('~used = (?P<swap>\d+[\.,]?\d*[KMGTP])~')
-            ->get('swap');
+            ->get('swap')
+            ->map(static fn($swap) => $swap->toString())
+            ->flatMap(static fn($swap) => Bytes::of($swap));
         $amounts = $this
             ->run('top -l 1 -s 0 | grep PhysMem')
             ->trim()
             ->capture(
-                '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired\), (?P<unused>\d+[KMGTP]) unused.$~'
-            );
+                '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired\), (?P<unused>\d+[KMGTP]) unused.$~',
+            )
+            ->map(static fn($_, $amount) => $amount->toString());
+        $unused = $amounts
+            ->get('unused')
+            ->flatMap(static fn($unused) => Bytes::of($unused));
+        $used = $amounts
+            ->get('used')
+            ->flatMap(static fn($used) => Bytes::of($used));
         $active = $this
             ->run('vm_stat | grep \'Pages active\'')
             ->trim()
             ->capture('~(?P<active>\d+)~')
-            ->get('active');
+            ->get('active')
+            ->map(static fn($active) => $active->toString());
 
-        return new Memory(
-            new Bytes((int) $total->toString()),
-            Bytes::of($amounts->get('wired')->toString()),
-            new Bytes(((int) $active->toString()) * 4096),
-            Bytes::of($amounts->get('unused')->toString()),
-            Bytes::of($swap->toString()),
-            Bytes::of($amounts->get('used')->toString()),
-        );
+        return Maybe::all($total, $active, $unused, $swap, $used)
+            ->map(static fn(string $total, string $active, Bytes $unused, Bytes $swap, Bytes $used) => new Memory(
+                new Bytes((int) $total),
+                new Bytes(((int) $active) * 4096),
+                $unused,
+                $swap,
+                $used,
+            ));
     }
 
     private function run(string $command): Str
@@ -53,7 +72,7 @@ final class OSXFacade
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new MemoryUsageNotAccessible;
+            return Str::of('');
         }
 
         return Str::of($process->getOutput());

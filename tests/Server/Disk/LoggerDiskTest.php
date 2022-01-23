@@ -11,7 +11,10 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
 };
-use Innmind\Immutable\Map;
+use Innmind\Immutable\{
+    Set,
+    Maybe,
+};
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +34,7 @@ class LoggerDiskTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('volumes')
-            ->willReturn($all = Map::of('string', Volume::class));
+            ->willReturn($all = Set::of());
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -48,13 +51,13 @@ class LoggerDiskTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('get')
-            ->willReturn($volume = new Volume(
+            ->willReturn($volume = Maybe::just(new Volume(
                 new MountPoint('/'),
                 new Bytes(1),
                 new Bytes(1),
                 new Bytes(1),
                 new Usage(1),
-            ));
+            )));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -62,6 +65,6 @@ class LoggerDiskTest extends TestCase
 
         $disk = new LoggerDisk($inner, $logger);
 
-        $this->assertSame($volume, $disk->get(new MountPoint('/')));
+        $this->assertEquals($volume, $disk->get(new MountPoint('/')));
     }
 }

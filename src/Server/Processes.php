@@ -7,13 +7,20 @@ use Innmind\Server\Status\Server\{
     Process,
     Process\Pid,
 };
-use Innmind\Immutable\Map;
+use Innmind\Immutable\{
+    Set,
+    Maybe,
+};
 
 interface Processes
 {
     /**
-     * @return Map<int, Process>
+     * @return Set<Process>
      */
-    public function all(): Map;
-    public function get(Pid $pid): Process;
+    public function all(): Set;
+
+    /**
+     * @return Maybe<Process>
+     */
+    public function get(Pid $pid): Maybe;
 }

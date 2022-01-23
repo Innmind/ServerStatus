@@ -9,6 +9,9 @@ final class Usage
 {
     private float $value;
 
+    /**
+     * @throws OutOfBoundsPercentage
+     */
     public function __construct(float $value)
     {
         if ($value < 0 || $value > 100) {

@@ -8,12 +8,12 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
-    Exception\DiskUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
     Sequence,
-    Map,
+    Set,
+    Maybe,
 };
 use Symfony\Component\Process\Process;
 
@@ -28,95 +28,104 @@ final class UnixDisk implements Disk
         'Mounted' => 'mountPoint',
     ];
 
-    public function volumes(): Map
+    public function volumes(): Set
     {
-        return $this->parse(
-            $this->run('df -lh'),
-        );
+        return $this
+            ->run('df -lh')
+            ->map(fn($output) => $this->parse($output))
+            ->match(
+                static fn($volumes) => $volumes,
+                static fn() => Set::of(),
+            );
     }
 
-    public function get(MountPoint $point): Volume
+    public function get(MountPoint $point): Maybe
     {
         return $this
             ->volumes()
-            ->get($point->toString());
+            ->find(static fn($volume) => $volume->mountPoint()->equals($point));
     }
 
-    private function run(string $command): Str
+    /**
+     * @return Maybe<Str>
+     */
+    private function run(string $command): Maybe
     {
         $process = Process::fromShellCommandline($command);
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new DiskUsageNotAccessible;
+            /** @var Maybe<Str> */
+            return Maybe::nothing();
         }
 
-        return Str::of($process->getOutput());
+        return Maybe::just(Str::of($process->getOutput()));
     }
 
     /**
-     * @return Map<string, Volume>
+     * @return Set<Volume>
      */
-    private function parse(Str $output): Map
+    private function parse(Str $output): Set
     {
         $lines = $output
             ->trim()
             ->split("\n");
         $columns = $lines
             ->first()
-            ->pregSplit('~ +~')
-            ->reduce(
-                Sequence::strings(),
-                static function(Sequence $columns, Str $column): Sequence {
-                    $column = $column->toString();
+            ->map(static fn($line) => $line->pregSplit('~ +~'))
+            ->map(static fn($columns) => $columns->map(
+                static fn($column) => $column->toString(),
+            ))
+            ->match(
+                static fn($columns) => $columns,
+                static fn() => Sequence::strings(),
+            )
+            ->map(static fn($column) => self::$columns[$column] ?? $column);
 
-                    return ($columns)(self::$columns[$column] ?? $column);
-                },
-            );
-
-        /** @var Sequence<Sequence<Str>> */
         $partsByLine = $lines
             ->drop(1)
-            ->reduce(
-                Sequence::of(Sequence::class),
-                static function(Sequence $lines, Str $line) use ($columns): Sequence {
-                    return ($lines)(
-                        $line->pregSplit('~ +~', $columns->size()),
-                    );
-                },
+            ->map(
+                static fn($line) => $line
+                    ->pregSplit('~ +~', $columns->size())
+                    ->map(static fn($column) => $column->toString()),
             );
-        $volumes = $partsByLine->mapTo(
-            Volume::class,
-            static function(Sequence $parts) use ($columns): Volume {
-                return new Volume(
-                    new MountPoint(
-                        $parts->get($columns->indexOf('mountPoint'))->toString(),
-                    ),
-                    Bytes::of(
-                        $parts->get($columns->indexOf('size'))->toString(),
-                    ),
-                    Bytes::of(
-                        $parts->get($columns->indexOf('available'))->toString(),
-                    ),
-                    Bytes::of(
-                        $parts->get($columns->indexOf('used'))->toString(),
-                    ),
-                    new Usage(
-                        (float) $parts->get($columns->indexOf('usage'))->toString(),
-                    ),
-                );
-            },
-        );
+        $volumes = $partsByLine->map(static function($parts) use ($columns): Maybe {
+            $mountPoint = $columns
+                ->indexOf('mountPoint')
+                ->flatMap(static fn($index) => $parts->get($index));
+            $size = $columns
+                ->indexOf('size')
+                ->flatMap(static fn($index) => $parts->get($index))
+                ->flatMap(static fn($size) => Bytes::of($size));
+            $available = $columns
+                ->indexOf('available')
+                ->flatMap(static fn($index) => $parts->get($index))
+                ->flatMap(static fn($available) => Bytes::of($available));
+            $used = $columns
+                ->indexOf('used')
+                ->flatMap(static fn($index) => $parts->get($index))
+                ->flatMap(static fn($used) => Bytes::of($used));
+            $usage = $columns
+                ->indexOf('usage')
+                ->flatMap(static fn($index) => $parts->get($index));
 
-        /** @var Map<string, Volume> */
+            return Maybe::all($mountPoint, $size, $available, $used, $usage)
+                ->map(static fn(string $mountPoint, Bytes $size, Bytes $available, Bytes $used, string $usage) => new Volume(
+                    new MountPoint($mountPoint),
+                    $size,
+                    $available,
+                    $used,
+                    new Usage((float) $usage),
+                ));
+        });
+
+        /** @var Set<Volume> */
         return $volumes->reduce(
-            Map::of('string', Volume::class),
-            static function(Map $volumes, Volume $volume): Map {
-                return ($volumes)(
-                    $volume->mountPoint()->toString(),
-                    $volume,
-                );
-            },
+            Set::of(),
+            static fn(Set $volumes, Maybe $volume) => $volume->match(
+                static fn(Volume $volume) => ($volumes)($volume),
+                static fn() => $volumes,
+            ),
         );
     }
 }

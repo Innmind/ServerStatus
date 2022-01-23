@@ -9,7 +9,10 @@ use Innmind\Server\Status\{
     Server\Process\Pid,
 };
 use Innmind\TimeContinuum\Earth\Format\ISO8601;
-use Innmind\Immutable\Map;
+use Innmind\Immutable\{
+    Set,
+    Maybe,
+};
 use Psr\Log\LoggerInterface;
 
 final class LoggerProcesses implements Processes
@@ -23,14 +26,14 @@ final class LoggerProcesses implements Processes
         $this->logger = $logger;
     }
 
-    public function all(): Map
+    public function all(): Set
     {
         $all = $this->processes->all();
         $this->logger->debug('{count} processes currently running', [
             'count' => $all->size(),
             'processes' => $all->reduce(
                 [],
-                function(array $processes, int $_, Process $process): array {
+                function(array $processes, Process $process): array {
                     $processes[] = $this->normalize($process);
 
                     return $processes;
@@ -41,12 +44,19 @@ final class LoggerProcesses implements Processes
         return $all;
     }
 
-    public function get(Pid $pid): Process
+    public function get(Pid $pid): Maybe
     {
-        $process = $this->processes->get($pid);
-        $this->logger->debug('Process {pid} currently running', $this->normalize($process));
+        return $this
+            ->processes
+            ->get($pid)
+            ->map(function($process) {
+                $this->logger->debug(
+                    'Process {pid} currently running',
+                    $this->normalize($process),
+                );
 
-        return $process;
+                return $process;
+            });
     }
 
     private function normalize(Process $process): array
@@ -56,7 +66,13 @@ final class LoggerProcesses implements Processes
             'user' => $process->user()->toString(),
             'cpu' => $process->cpu()->toString(),
             'memory' => $process->memory()->toString(),
-            'start' => $process->start()->format(new ISO8601),
+            'start' => $process
+                ->start()
+                ->map(static fn($start) => $start->format(new ISO8601))
+                ->match(
+                    static fn($start) => $start,
+                    static fn() => null,
+                ),
             'command' => $process->command()->toString(),
         ];
     }

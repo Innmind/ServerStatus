@@ -5,10 +5,16 @@ namespace Innmind\Server\Status\Server\Cpu;
 
 use Innmind\Server\Status\Exception\DomainException;
 
+/**
+ * @psalm-immutable
+ */
 final class Cores
 {
     private int $value;
 
+    /**
+     * @throws DomainException
+     */
     public function __construct(int $value)
     {
         if ($value < 1) {

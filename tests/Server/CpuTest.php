@@ -18,7 +18,7 @@ class CpuTest extends TestCase
             $user = new Percentage(31),
             $system = new Percentage(33),
             $idle = new Percentage(36),
-            $cores = new Cores(4)
+            $cores = new Cores(4),
         );
 
         $this->assertSame($user, $cpu->user());

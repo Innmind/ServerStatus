@@ -6,64 +6,77 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
-    Exception\MemoryUsageNotAccessible,
 };
 use Innmind\Immutable\{
     Str,
     Map,
+    Maybe,
 };
 use Symfony\Component\Process\Process;
 
+/**
+ * @internal
+ */
 final class LinuxFacade
 {
     private static array $entries = [
         'MemTotal' => 'total',
         'Active' => 'active',
-        'Inactive' => 'inactive',
         'MemFree' => 'free',
         'SwapCached' => 'swap',
     ];
 
-    public function __invoke(): Memory
+    /**
+     * @return Maybe<Memory>
+     */
+    public function __invoke(): Maybe
     {
         $process = Process::fromShellCommandline('cat /proc/meminfo');
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new MemoryUsageNotAccessible;
+            /** @var Maybe<Memory> */
+            return Maybe::nothing();
         }
 
         /** @var Map<string, int> */
         $amounts = Str::of($process->getOutput())
             ->trim()
             ->split("\n")
-            ->filter(static function(Str $line): bool {
-                return $line->matches(
-                    '~^('.\implode('|', \array_keys(self::$entries)).'):~'
-                );
-            })
+            ->filter(static fn(Str $line) => $line->matches(
+                '~^('.\implode('|', \array_keys(self::$entries)).'):~',
+            ))
             ->reduce(
-                Map::of('string', 'int'),
+                Map::of(),
                 static function(Map $map, Str $line): Map {
-                    $elements = $line->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~');
+                    $elements = $line
+                        ->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~')
+                        ->map(static fn($_, $part) => $part->toString());
 
-                    return ($map)(
-                        self::$entries[$elements->get('key')->toString()],
-                        ((int) $elements->get('value')->toString()) * Bytes::BYTES,
-                    );
+                    return Maybe::all($elements->get('key'), $elements->get('value'))
+                        ->map(static fn(string $key, string $value) => [$key, (int) $value])
+                        ->match(
+                            static fn($pair) => ($map)(
+                                self::$entries[$pair[0]],
+                                $pair[1] * 1024, // 1024 represents a kilobyte
+                            ),
+                            static fn() => $map,
+                        );
                 },
             );
+        $total = $amounts->get('total');
+        $free = $amounts->get('free');
+        $active = $amounts->get('active');
+        $swap = $amounts->get('swap');
+        $used = Maybe::all($total, $free)->map(static fn(int $total, int $free) => $total - $free);
 
-        $used = $amounts->get('total') - $amounts->get('free');
-        $wired = $used - $amounts->get('active') - $amounts->get('inactive');
-
-        return new Memory(
-            new Bytes($amounts->get('total')),
-            new Bytes($wired),
-            new Bytes($amounts->get('active')),
-            new Bytes($amounts->get('free')),
-            new Bytes($amounts->get('swap')),
-            new Bytes($used),
-        );
+        return Maybe::all($total, $active, $free, $swap, $used)
+            ->map(static fn(int $total, int $active, int $free, int $swap, int $used) => new Memory(
+                new Bytes($total),
+                new Bytes($active),
+                new Bytes($free),
+                new Bytes($swap),
+                new Bytes($used),
+            ));
     }
 }

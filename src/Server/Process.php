@@ -11,23 +11,31 @@ use Innmind\Server\Status\Server\{
     Cpu\Percentage,
 };
 use Innmind\TimeContinuum\PointInTime;
+use Innmind\Immutable\Maybe;
 
+/**
+ * @psalm-immutable
+ */
 final class Process
 {
     private Pid $pid;
     private User $user;
     private Percentage $cpu;
     private Memory $memory;
-    private PointInTime $start;
+    /** @var Maybe<PointInTime> */
+    private Maybe $start;
     private Command $command;
 
+    /**
+     * @param Maybe<PointInTime> $start
+     */
     public function __construct(
         Pid $pid,
         User $user,
         Percentage $cpu,
         Memory $memory,
-        PointInTime $start,
-        Command $command
+        Maybe $start,
+        Command $command,
     ) {
         $this->pid = $pid;
         $this->user = $user;
@@ -57,7 +65,10 @@ final class Process
         return $this->memory;
     }
 
-    public function start(): PointInTime
+    /**
+     * @return Maybe<PointInTime>
+     */
+    public function start(): Maybe
     {
         return $this->start;
     }

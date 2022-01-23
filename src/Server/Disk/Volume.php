@@ -22,7 +22,7 @@ final class Volume
         Bytes $size,
         Bytes $available,
         Bytes $used,
-        Usage $usage
+        Usage $usage,
     ) {
         $this->mountPoint = $mountPoint;
         $this->size = $size;
