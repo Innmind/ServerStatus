@@ -40,9 +40,6 @@ final class OSXFacade
                 '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired\), (?P<unused>\d+[KMGTP]) unused.$~',
             )
             ->map(static fn($_, $amount) => $amount->toString());
-        $wired = $amounts
-            ->get('wired')
-            ->flatMap(static fn($wired) => Bytes::of($wired));
         $unused = $amounts
             ->get('unused')
             ->flatMap(static fn($unused) => Bytes::of($unused));
@@ -56,10 +53,9 @@ final class OSXFacade
             ->get('active')
             ->map(static fn($active) => $active->toString());
 
-        return Maybe::all($total, $wired, $active, $unused, $swap, $used)
-            ->map(static fn(string $total, Bytes $wired, string $active, Bytes $unused, Bytes $swap, Bytes $used) => new Memory(
+        return Maybe::all($total, $active, $unused, $swap, $used)
+            ->map(static fn(string $total, string $active, Bytes $unused, Bytes $swap, Bytes $used) => new Memory(
                 new Bytes((int) $total),
-                $wired,
                 new Bytes(((int) $active) * 4096),
                 $unused,
                 $swap,

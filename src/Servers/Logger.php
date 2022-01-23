@@ -42,9 +42,8 @@ final class Logger implements Server
             ->server
             ->memory()
             ->map(function($memory) {
-                $this->logger->debug('Memory usage: {total} {wired} {active} {free} {swap} {used}', [
+                $this->logger->debug('Memory usage: {total} {active} {free} {swap} {used}', [
                     'total' => $memory->total()->toString(),
-                    'wired' => $memory->wired()->toString(),
                     'active' => $memory->active()->toString(),
                     'free' => $memory->free()->toString(),
                     'swap' => $memory->swap()->toString(),

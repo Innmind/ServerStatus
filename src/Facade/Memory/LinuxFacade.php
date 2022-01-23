@@ -19,7 +19,6 @@ final class LinuxFacade
     private static array $entries = [
         'MemTotal' => 'total',
         'Active' => 'active',
-        'Inactive' => 'inactive',
         'MemFree' => 'free',
         'SwapCached' => 'swap',
     ];
@@ -65,15 +64,12 @@ final class LinuxFacade
         $total = $amounts->get('total');
         $free = $amounts->get('free');
         $active = $amounts->get('active');
-        $inactive = $amounts->get('inactive');
         $swap = $amounts->get('swap');
         $used = Maybe::all($total, $free)->map(static fn(int $total, int $free) => $total - $free);
-        $wired = Maybe::all($active, $inactive)->map(static fn(int $active, int $inactive) => $active - $inactive);
 
-        return Maybe::all($total, $wired, $active, $free, $swap, $used)
-            ->map(static fn(int $total, int $wired, int $active, int $free, int $swap, int $used) => new Memory(
+        return Maybe::all($total, $active, $free, $swap, $used)
+            ->map(static fn(int $total, int $active, int $free, int $swap, int $used) => new Memory(
                 new Bytes($total),
-                new Bytes($wired),
                 new Bytes($active),
                 new Bytes($free),
                 new Bytes($swap),
