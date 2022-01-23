@@ -5,13 +5,12 @@ namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
     Server,
-    Server\Cpu,
-    Server\Memory,
     Server\Processes,
     Server\LoadAverage,
     Server\Disk,
 };
 use Innmind\Url\Path;
+use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Server
@@ -25,27 +24,34 @@ final class Logger implements Server
         $this->logger = $logger;
     }
 
-    public function cpu(): Cpu
+    public function cpu(): Maybe
     {
-        $cpu = $this->server->cpu();
-        $this->logger->debug($cpu->toString());
+        return $this
+            ->server
+            ->cpu()
+            ->map(function($cpu) {
+                $this->logger->debug($cpu->toString());
 
-        return $cpu;
+                return $cpu;
+            });
     }
 
-    public function memory(): Memory
+    public function memory(): Maybe
     {
-        $memory = $this->server->memory();
-        $this->logger->debug('Memory usage: {total} {wired} {active} {free} {swap} {used}', [
-            'total' => $memory->total()->toString(),
-            'wired' => $memory->wired()->toString(),
-            'active' => $memory->active()->toString(),
-            'free' => $memory->free()->toString(),
-            'swap' => $memory->swap()->toString(),
-            'used' => $memory->used()->toString(),
-        ]);
+        return $this
+            ->server
+            ->memory()
+            ->map(function($memory) {
+                $this->logger->debug('Memory usage: {total} {active} {free} {swap} {used}', [
+                    'total' => $memory->total()->toString(),
+                    'active' => $memory->active()->toString(),
+                    'free' => $memory->free()->toString(),
+                    'swap' => $memory->swap()->toString(),
+                    'used' => $memory->used()->toString(),
+                ]);
 
-        return $memory;
+                return $memory;
+            });
     }
 
     public function processes(): Processes

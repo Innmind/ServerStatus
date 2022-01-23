@@ -6,7 +6,6 @@ namespace Tests\Innmind\Server\Status\Server\Memory;
 use Innmind\Server\Status\{
     Server\Memory\Bytes,
     Exception\BytesCannotBeNegative,
-    Exception\UnknownBytesFormat,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -35,27 +34,32 @@ class BytesTest extends TestCase
      */
     public function testFromString($string, $expected)
     {
-        $bytes = Bytes::of($string);
+        $bytes = Bytes::of($string)->match(
+            static fn($bytes) => $bytes,
+            static fn() => null,
+        );
 
         $this->assertInstanceOf(Bytes::class, $bytes);
         $this->assertSame($expected, $bytes->toString());
     }
 
-    public function testThrowWhenUnknownFormat()
+    public function testReturnNothingWhenUnknownFormat()
     {
-        $this->expectException(UnknownBytesFormat::class);
-
-        Bytes::of('42Br');
+        $this->assertNull(Bytes::of('42Br')->match(
+            static fn($bytes) => $bytes,
+            static fn() => null,
+        ));
     }
 
     /**
      * @dataProvider invalidStrings
      */
-    public function testThrowWhenStringTooShort($string)
+    public function testReturnNothingWhenStringTooShort($string)
     {
-        $this->expectException(UnknownBytesFormat::class);
-
-        Bytes::of($string);
+        $this->assertNull(Bytes::of($string)->match(
+            static fn($bytes) => $bytes,
+            static fn() => null,
+        ));
     }
 
     public function steps(): array

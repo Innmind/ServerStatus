@@ -14,7 +14,10 @@ use Innmind\Server\Status\{
     Server\Cpu\Percentage,
 };
 use Innmind\TimeContinuum\Earth\Clock;
-use Innmind\Immutable\Map;
+use Innmind\Immutable\{
+    Set,
+    Maybe,
+};
 use Psr\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
 
@@ -34,7 +37,7 @@ class LoggerProcessesTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('all')
-            ->willReturn($all = Map::of('int', Process::class));
+            ->willReturn($all = Set::of());
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -51,14 +54,14 @@ class LoggerProcessesTest extends TestCase
         $inner
             ->expects($this->once())
             ->method('get')
-            ->willReturn($process = new Process(
+            ->willReturn($process = Maybe::just(new Process(
                 new Pid(1),
                 new User('root'),
                 new Percentage(1),
                 new Memory(1),
-                (new Clock)->now(),
+                Maybe::just((new Clock)->now()),
                 new Command('sleep 42'),
-            ));
+            )));
         $logger = $this->createMock(LoggerInterface::class);
         $logger
             ->expects($this->once())
@@ -66,6 +69,6 @@ class LoggerProcessesTest extends TestCase
 
         $processes = new LoggerProcesses($inner, $logger);
 
-        $this->assertSame($process, $processes->get(new Pid(1)));
+        $this->assertEquals($process, $processes->get(new Pid(1)));
     }
 }

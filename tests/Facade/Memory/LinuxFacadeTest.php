@@ -6,7 +6,6 @@ namespace Tests\Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Facade\Memory\LinuxFacade,
     Server\Memory,
-    Exception\MemoryUsageNotAccessible,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -20,17 +19,21 @@ class LinuxFacadeTest extends TestCase
 
         $facade = new LinuxFacade;
 
-        $this->assertInstanceOf(Memory::class, $facade());
+        $this->assertInstanceOf(Memory::class, $facade()->match(
+            static fn($memory) => $memory,
+            static fn() => null,
+        ));
     }
 
-    public function testThrowWhenProcessFails()
+    public function testReturnNohingWhenInfoNotAccessible()
     {
         if (\PHP_OS === 'Linux') {
             $this->markTestSkipped();
         }
 
-        $this->expectException(MemoryUsageNotAccessible::class);
-
-        (new LinuxFacade)();
+        $this->assertNull((new LinuxFacade)()->match(
+            static fn($memory) => $memory,
+            static fn() => null,
+        ));
     }
 }

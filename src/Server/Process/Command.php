@@ -9,10 +9,16 @@ use Innmind\Immutable\{
     Str,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Command
 {
     private string $value;
 
+    /**
+     * @throws EmptyCommandNotAllowed
+     */
     public function __construct(string $value)
     {
         if ($value === '') {

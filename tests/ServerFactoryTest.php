@@ -19,9 +19,6 @@ class ServerFactoryTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $server = (new ServerFactory(new Clock))();
-
-        $this->assertInstanceOf(Server::class, $server);
         $this->assertInstanceOf(Server::class, ServerFactory::build(new Clock));
     }
 
@@ -33,6 +30,6 @@ class ServerFactoryTest extends TestCase
 
         $this->expectException(UnsupportedOperatingSystem::class);
 
-        (new ServerFactory(new Clock))();
+        ServerFactory::build(new Clock);
     }
 }

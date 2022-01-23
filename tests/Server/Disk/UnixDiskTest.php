@@ -8,9 +8,8 @@ use Innmind\Server\Status\{
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
-    Exception\DiskUsageNotAccessible,
 };
-use Innmind\Immutable\Map;
+use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
 
 class UnixDiskTest extends TestCase
@@ -28,11 +27,16 @@ class UnixDiskTest extends TestCase
 
         $volumes = (new UnixDisk)->volumes();
 
-        $this->assertInstanceOf(Map::class, $volumes);
-        $this->assertSame('string', (string) $volumes->keyType());
-        $this->assertSame(Volume::class, (string) $volumes->valueType());
-        $this->assertTrue($volumes->size() > 0);
-        $this->assertTrue($volumes->contains('/'));
+        $this->assertInstanceOf(Set::class, $volumes);
+        $this->assertNotEmpty($volumes);
+        $this->assertTrue(
+            $volumes
+                ->find(static fn($volume) => $volume->mountPoint()->is('/'))
+                ->match(
+                    static fn() => true,
+                    static fn() => false,
+                ),
+        );
     }
 
     public function testGet()
@@ -41,7 +45,12 @@ class UnixDiskTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $volume = (new UnixDisk)->get(new MountPoint('/'));
+        $volume = (new UnixDisk)
+            ->get(new MountPoint('/'))
+            ->match(
+                static fn($volume) => $volume,
+                static fn() => null,
+            );
 
         $this->assertInstanceOf(Volume::class, $volume);
         $this->assertSame('/', $volume->mountPoint()->toString());
@@ -51,14 +60,12 @@ class UnixDiskTest extends TestCase
         $this->assertTrue($volume->usage()->toFloat() > 0);
     }
 
-    public function testThrowWhenCommandFails()
+    public function testReturnEmptyListWhenInfoNotAccessible()
     {
         if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
             $this->markTestSkipped();
         }
 
-        $this->expectException(DiskUsageNotAccessible::class);
-
-        (new UnixDisk)->volumes();
+        $this->assertEmpty((new UnixDisk)->volumes());
     }
 }

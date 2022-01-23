@@ -5,16 +5,22 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Exception\LoadAverageCannotBeNegative;
 
+/**
+ * @psalm-immutable
+ */
 final class LoadAverage
 {
     private float $lastMinute;
     private float $lastFiveMinutes;
     private float $lastFifteenMinutes;
 
+    /**
+     * @throws LoadAverageCannotBeNegative
+     */
     public function __construct(
         float $lastMinute,
         float $lastFiveMinutes,
-        float $lastFifteenMinutes
+        float $lastFifteenMinutes,
     ) {
         if ($lastMinute < 0 || $lastFiveMinutes < 0 || $lastFifteenMinutes < 0) {
             throw new LoadAverageCannotBeNegative(

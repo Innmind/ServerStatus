@@ -20,7 +20,7 @@ class VolumeTest extends TestCase
             $size = new Bytes(42),
             $available = new Bytes(42),
             $used = new Bytes(42),
-            $usage = new Usage(100)
+            $usage = new Usage(100),
         );
 
         $this->assertSame($mount, $volume->mountPoint());

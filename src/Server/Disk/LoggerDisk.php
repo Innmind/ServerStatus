@@ -7,7 +7,10 @@ use Innmind\Server\Status\{
     Server\Disk,
     Server\Disk\Volume\MountPoint,
 };
-use Innmind\Immutable\Map;
+use Innmind\Immutable\{
+    Set,
+    Maybe,
+};
 use Psr\Log\LoggerInterface;
 
 final class LoggerDisk implements Disk
@@ -21,14 +24,14 @@ final class LoggerDisk implements Disk
         $this->logger = $logger;
     }
 
-    public function volumes(): Map
+    public function volumes(): Set
     {
         $volumes = $this->disk->volumes();
         $this->logger->debug('{count} volumes currently mounted', [
             'count' => $volumes->size(),
             'volumes' => $volumes->reduce(
                 [],
-                function(array $volumes, string $_, Volume $volume): array {
+                function(array $volumes, Volume $volume): array {
                     $volumes[] = $this->normalize($volume);
 
                     return $volumes;
@@ -39,12 +42,19 @@ final class LoggerDisk implements Disk
         return $volumes;
     }
 
-    public function get(MountPoint $point): Volume
+    public function get(MountPoint $point): Maybe
     {
-        $volume = $this->disk->get($point);
-        $this->logger->debug('Volume currently mounted at {point}', $this->normalize($volume));
+        return $this
+            ->disk
+            ->get($point)
+            ->map(function($volume) {
+                $this->logger->debug(
+                    'Volume currently mounted at {point}',
+                    $this->normalize($volume),
+                );
 
-        return $volume;
+                return $volume;
+            });
     }
 
     private function normalize(Volume $volume): array

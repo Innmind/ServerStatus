@@ -11,16 +11,14 @@ use Innmind\Server\Status\{
     Server\Process\Command,
     Server\Process\Memory,
     Server\Cpu\Percentage,
-    Clock\PointInTime\Delay,
-    Exception\InformationNotAccessible,
 };
 use Innmind\TimeContinuum\Clock;
 use Innmind\Immutable\{
     Str,
     Sequence,
-    Map,
+    Set,
+    Maybe,
 };
-use function Innmind\Immutable\join;
 use Symfony\Component\Process\Process as SfProcess;
 
 final class UnixProcesses implements Processes
@@ -32,33 +30,40 @@ final class UnixProcesses implements Processes
         $this->clock = $clock;
     }
 
-    public function all(): Map
+    public function all(): Set
     {
-        return $this->parse(
-            $this->run('ps -eo '.$this->format()),
-        );
+        return $this
+            ->run('ps -eo '.$this->format())
+            ->map(fn($output) => $this->parse($output))
+            ->match(
+                static fn($processes) => $processes,
+                static fn() => Set::of(),
+            );
     }
 
-    public function get(Pid $pid): Process
+    public function get(Pid $pid): Maybe
     {
-        try {
-            $processes = $this->parse(
-                $this->run(\sprintf('ps -o %s -p %s', $this->format(), $pid->toString())),
-            );
-        } catch (InformationNotAccessible $e) {
-            $processes = $this->parse(
-                $this->run(\sprintf('ps -o %s -q %s', $this->format(), $pid->toString())),
-            );
-        }
-
-        if (!$processes->contains($pid->toInt())) {
-            throw new InformationNotAccessible;
-        }
-
-        return $processes->get($pid->toInt());
+        return $this
+            ->run(\sprintf(
+                'ps -o %s -p %s',
+                $this->format(),
+                $pid->toString(),
+            ))
+            ->otherwise(fn() => $this->run(\sprintf(
+                'ps -o %s -q %s',
+                $this->format(),
+                $pid->toString(),
+            )))
+            ->map(fn($output) => $this->parse($output))
+            ->flatMap(static fn($processes) => $processes->find(
+                static fn($process) => $process->pid()->equals($pid),
+            ));
     }
 
-    private function run(string $command): Str
+    /**
+     * @return Maybe<Str>
+     */
+    private function run(string $command): Maybe
     {
         $process = SfProcess::fromShellCommandline($command, null, [
             'TZ' => \date('e'),
@@ -66,64 +71,57 @@ final class UnixProcesses implements Processes
         $process->run();
 
         if (!$process->isSuccessful()) {
-            throw new InformationNotAccessible;
+            /** @var Maybe<Str> */
+            return Maybe::nothing();
         }
 
-        return Str::of($process->getOutput());
+        return Maybe::just(Str::of($process->getOutput()));
     }
 
     /**
-     * @return Map<int, Process>
+     * @return Set<Process>
      */
-    private function parse(Str $output): Map
+    private function parse(Str $output): Set
     {
         $lines = $output
             ->trim()
             ->split("\n");
 
-        /** @var Sequence<Sequence<Str>> */
         $partsByLine = $lines
             ->drop(1) // columns name
-            ->reduce(
-                Sequence::of(Sequence::class),
-                static function(Sequence $lines, Str $line): Sequence {
-                    return ($lines)(
-                        $line->pregSplit('~ +~', 10), // 6 columns + 4 spaces in the START column
-                    );
-                },
-            );
-        $processes = $partsByLine->mapTo(
-            Process::class,
-            function(Sequence $parts): Process {
-                $startParts = $parts
-                    ->take(5)
-                    ->mapTo('string', static fn(Str $part): string => $part->toString());
-                $start = join(' ', $startParts)->toString();
-                $parts = $parts->drop(5);
+            ->map(static fn($line) => $line->pregSplit('~ +~', 10)); // 6 columns + 4 spaces in the START column
+        $processes = $partsByLine->map(function(Sequence $parts): Maybe {
+            $startParts = $parts
+                ->take(5)
+                ->map(static fn(Str $part): string => $part->toString());
+            $start = Str::of(' ')->join($startParts)->toString();
+            $parts = $parts
+                ->drop(5)
+                ->map(static fn($part) => $part->toString());
+            $user = $parts->get(0);
+            $pid = $parts->get(1);
+            $percentage = $parts->get(2);
+            $memory = $parts->get(3);
+            $command = $parts->get(4);
 
-                return new Process(
-                    new Pid((int) $parts->get(1)->toString()),
-                    new User($parts->get(0)->toString()),
-                    new Percentage((float) $parts->get(2)->toString()),
-                    new Memory((float) $parts->get(3)->toString()),
-                    new Delay(
-                        $this->clock,
-                        $start, // see %c for strftime for the format
-                    ),
-                    new Command($parts->get(4)->toString()),
-                );
-            },
-        );
+            return Maybe::all($user, $pid, $percentage, $memory, $command)
+                ->map(fn(string $user, string $pid, string $percentage, string $memory, string $command) => new Process(
+                    new Pid((int) $pid),
+                    new User($user),
+                    new Percentage((float) $percentage),
+                    new Memory((float) $memory),
+                    $this->clock->at($start),
+                    new Command($command),
+                ));
+        });
 
-        /** @var Map<int, Process> */
+        /** @var Set<Process> */
         return $processes->reduce(
-            Map::of('int', Process::class),
-            static function(Map $processes, Process $process): Map {
-                return ($processes)(
-                    $process->pid()->toInt(),
-                    $process,
-                );
-            },
+            Set::of(),
+            static fn(Set $processes, Maybe $process): Set => $process->match(
+                static fn(Process $process) => ($processes)($process),
+                static fn() => $processes,
+            ),
         );
     }
 

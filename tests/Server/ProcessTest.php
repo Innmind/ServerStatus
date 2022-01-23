@@ -12,6 +12,7 @@ use Innmind\Server\Status\Server\{
     Cpu\Percentage,
 };
 use Innmind\TimeContinuum\PointInTime;
+use Innmind\Immutable\Maybe;
 use PHPUnit\Framework\TestCase;
 
 class ProcessTest extends TestCase
@@ -23,8 +24,8 @@ class ProcessTest extends TestCase
             $user = new User('root'),
             $cpu = new Percentage(42),
             $memory = new Memory(42),
-            $start = $this->createMock(PointInTime::class),
-            $command = new Command('/sbin/launchd')
+            $start = Maybe::just($this->createMock(PointInTime::class)),
+            $command = new Command('/sbin/launchd'),
         );
 
         $this->assertSame($pid, $process->pid());

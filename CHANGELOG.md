@@ -1,0 +1,31 @@
+# Changelog
+
+## [Unreleased]
+
+### Added
+
+- `Innmind\Server\Status\Server\Process\Pid::equals()`
+- `Innmind\Server\Status\Server\Process\Pid::is()`
+- `Innmind\Server\Status\Server\Disk\Volume\MountPoint::equals()`
+- `Innmind\Server\Status\Server\Disk\Volume\MountPoint::is()`
+
+### Changed
+
+- `Innmind\Server\Status\Server\Processes::all()` now returns `Innmind\Immutable\Set<Innmind\Server\Status\Server\Process>`
+- `Innmind\Server\Status\Server\Processes::get()` now returns `Innmind\Immutable\Maybe<Innmind\Server\Status\Server\Process>` instead of throwing an exception
+- `Innmind\Server\Status\Server\Process::start()` now returns `Innmind\Immutable\Maybe<Innmind\TimeContinuum\PointInTime>`
+- `Innmind\Server\Status\Server\Memory\Bytes::of()` now returns `Innmind\Immutable\Maybe<Innmind\Server\Status\Server\Memory\Bytes>` instead of throwing an exception
+- `Innmind\Server\Status\Server\Disk::volumes()` now return `Innmind\Immutable\Set<Innmind\Server\Status\Server\Disk\Volume>`
+- `Innmind\Server\Status\Server\Disk::get()` now return `Innmind\Immutable\Maybe<Innmind\Server\Status\Server\Disk\Volume>` instead of throwing an exception
+- `Innmind\Server\Status\Server::cpu()` now returns `Innmind\Immutable\Maybe<Innmind\Server\Status\Server\Cpu>` instead of throwing an exception
+- `Innmind\Server\Status\Server::memory()` now returns `Innmind\Immutable\Maybe<Innmind\Server\Status\Server\Memory>` instead of throwing an exception
+
+### Removed
+
+- `Innmind\Server\Status\Servers\Decorator\CacheMemory`
+- `Innmind\Server\Status\Servers\Decorator\CacheLoadAverage`
+- `Innmind\Server\Status\Servers\Decorator\CacheCpu`
+- `Innmind\Server\Status\ServerFactory::__invoke()`
+- `Innmind\Server\Status\Server\Memory\Bytes` public constants
+- `Innmind\Server\Status\Server\Memory::wired()`
+- Support for php 7

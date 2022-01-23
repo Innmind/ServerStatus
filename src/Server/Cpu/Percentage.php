@@ -5,10 +5,16 @@ namespace Innmind\Server\Status\Server\Cpu;
 
 use Innmind\Server\Status\Exception\OutOfBoundsPercentage;
 
+/**
+ * @psalm-immutable
+ */
 final class Percentage
 {
     private float $value;
 
+    /**
+     * @throws OutOfBoundsPercentage
+     */
     public function __construct(float $value)
     {
         if ($value < 0) {

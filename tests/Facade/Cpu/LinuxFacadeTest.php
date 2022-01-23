@@ -6,7 +6,6 @@ namespace Tests\Innmind\Server\Status\Facade\Cpu;
 use Innmind\Server\Status\{
     Facade\Cpu\LinuxFacade,
     Server\Cpu,
-    Exception\CpuUsageNotAccessible,
 };
 use PHPUnit\Framework\TestCase;
 
@@ -20,17 +19,21 @@ class LinuxFacadeTest extends TestCase
 
         $facade = new LinuxFacade;
 
-        $this->assertInstanceOf(Cpu::class, $facade());
+        $this->assertInstanceOf(Cpu::class, $facade()->match(
+            static fn($cpu) => $cpu,
+            static fn() => null,
+        ));
     }
 
-    public function testThrowWhenProcessFails()
+    public function testReturnNothingWhenInfoNotAccessible()
     {
         if (\PHP_OS === 'Linux') {
             $this->markTestSkipped();
         }
 
-        $this->expectException(CpuUsageNotAccessible::class);
-
-        (new LinuxFacade)();
+        $this->assertNull((new LinuxFacade)()->match(
+            static fn($cpu) => $cpu,
+            static fn() => null,
+        ));
     }
 }

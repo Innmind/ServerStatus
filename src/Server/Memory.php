@@ -5,10 +5,12 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\Memory\Bytes;
 
+/**
+ * @psalm-immutable
+ */
 final class Memory
 {
     private Bytes $total;
-    private Bytes $wired;
     private Bytes $active;
     private Bytes $free;
     private Bytes $swap;
@@ -16,14 +18,12 @@ final class Memory
 
     public function __construct(
         Bytes $total,
-        Bytes $wired,
         Bytes $active,
         Bytes $free,
         Bytes $swap,
-        Bytes $used
+        Bytes $used,
     ) {
         $this->total = $total;
-        $this->wired = $wired;
         $this->active = $active;
         $this->free = $free;
         $this->swap = $swap;
@@ -33,11 +33,6 @@ final class Memory
     public function total(): Bytes
     {
         return $this->total;
-    }
-
-    public function wired(): Bytes
-    {
-        return $this->wired;
     }
 
     public function active(): Bytes
