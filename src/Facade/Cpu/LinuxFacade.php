@@ -42,8 +42,7 @@ final class LinuxFacade
         $cores = 1;
 
         if ($process->isSuccessful()) {
-            /** @psalm-suppress RedundantCastGivenDocblockType */
-            $cores = ((int) (string) $process->getOutput()) ?: 1;
+            $cores = ((int) $process->getOutput()) ?: 1;
         }
 
         $user = $percentages->get('user');

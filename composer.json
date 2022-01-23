@@ -17,7 +17,7 @@
         "php": "~8.0",
         "innmind/immutable": "~4.0",
         "innmind/time-continuum": "~3.0",
-        "symfony/process": "~5.0",
+        "symfony/process": "~6.0",
         "innmind/url": "~4.0",
         "psr/log": "~3.0"
     },
