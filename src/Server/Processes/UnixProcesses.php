@@ -19,7 +19,6 @@ use Innmind\Immutable\{
     Set,
     Maybe,
 };
-use function Innmind\Immutable\join;
 use Symfony\Component\Process\Process as SfProcess;
 
 final class UnixProcesses implements Processes
@@ -95,7 +94,7 @@ final class UnixProcesses implements Processes
             $startParts = $parts
                 ->take(5)
                 ->map(static fn(Str $part): string => $part->toString());
-            $start = join(' ', $startParts)->toString();
+            $start = Str::of(' ')->join($startParts)->toString();
             $parts = $parts
                 ->drop(5)
                 ->map(static fn($part) => $part->toString());
