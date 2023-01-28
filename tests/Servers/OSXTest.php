@@ -75,6 +75,6 @@ class OSXTest extends TestCase
         $server = new OSX(new Clock);
 
         $this->assertInstanceOf(Path::class, $server->tmp());
-        $this->assertSame(\sys_get_temp_dir().'/', $server->tmp()->toString());
+        $this->assertSame(\sys_get_temp_dir(), $server->tmp()->toString());
     }
 }
