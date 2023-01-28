@@ -122,7 +122,7 @@ final class Bytes
     {
         return self::fromUnit(
             $bytes->substring(0, -1),
-             $bytes->substring(-1),
+            $bytes->substring(-1),
         );
     }
 
