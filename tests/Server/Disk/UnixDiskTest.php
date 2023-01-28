@@ -9,14 +9,31 @@ use Innmind\Server\Status\{
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
 };
+use Innmind\Server\Control\ServerFactory as Control;
+use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Streams;
 use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
 
 class UnixDiskTest extends TestCase
 {
+    private $disk;
+
+    public function setUp(): void
+    {
+        $this->disk = new UnixDisk(
+            Control::build(
+                new Clock,
+                Streams::fromAmbientAuthority(),
+                new Usleep,
+            )->processes(),
+        );
+    }
+
     public function testInterface()
     {
-        $this->assertInstanceOf(Disk::class, new UnixDisk);
+        $this->assertInstanceOf(Disk::class, $this->disk);
     }
 
     public function testVolumes()
@@ -25,7 +42,7 @@ class UnixDiskTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $volumes = (new UnixDisk)->volumes();
+        $volumes = $this->disk->volumes();
 
         $this->assertInstanceOf(Set::class, $volumes);
         $this->assertNotEmpty($volumes);
@@ -45,7 +62,8 @@ class UnixDiskTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $volume = (new UnixDisk)
+        $volume = $this
+            ->disk
             ->get(new MountPoint('/'))
             ->match(
                 static fn($volume) => $volume,
@@ -66,6 +84,6 @@ class UnixDiskTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $this->assertEmpty((new UnixDisk)->volumes());
+        $this->assertEmpty($this->disk->volumes());
     }
 }

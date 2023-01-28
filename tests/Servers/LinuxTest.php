@@ -12,15 +12,34 @@ use Innmind\Server\Status\{
     Server\Processes,
     Server\Disk
 };
+use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Streams;
 use Innmind\Url\Path;
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class LinuxTest extends TestCase
 {
+    private $server;
+
+    public function setUp(): void
+    {
+        $this->server = new Linux(
+            new Clock,
+            Control::build(
+                new Clock,
+                Streams::fromAmbientAuthority(),
+                new Usleep,
+            ),
+            Map::of(['PATH', $_SERVER['PATH']]),
+        );
+    }
+
     public function testInterface()
     {
-        $this->assertInstanceOf(Server::class, new Linux(new Clock));
+        $this->assertInstanceOf(Server::class, $this->server);
     }
 
     public function testCpu()
@@ -31,7 +50,8 @@ class LinuxTest extends TestCase
 
         $this->assertInstanceOf(
             Cpu::class,
-            (new Linux(new Clock))
+            $this
+                ->server
                 ->cpu()
                 ->match(
                     static fn($cpu) => $cpu,
@@ -48,7 +68,8 @@ class LinuxTest extends TestCase
 
         $this->assertInstanceOf(
             Memory::class,
-            (new Linux(new Clock))
+            $this
+                ->server
                 ->memory()
                 ->match(
                     static fn($memory) => $memory,
@@ -59,24 +80,22 @@ class LinuxTest extends TestCase
 
     public function testProcesses()
     {
-        $this->assertInstanceOf(Processes::class, (new Linux(new Clock))->processes());
+        $this->assertInstanceOf(Processes::class, $this->server->processes());
     }
 
     public function testLoadAverage()
     {
-        $this->assertInstanceOf(LoadAverage::class, (new Linux(new Clock))->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage());
     }
 
     public function testDisk()
     {
-        $this->assertInstanceOf(Disk::class, (new Linux(new Clock))->disk());
+        $this->assertInstanceOf(Disk::class, $this->server->disk());
     }
 
     public function testTmp()
     {
-        $server = new Linux(new Clock);
-
-        $this->assertInstanceOf(Path::class, $server->tmp());
-        $this->assertSame(\sys_get_temp_dir(), $server->tmp()->toString());
+        $this->assertInstanceOf(Path::class, $this->server->tmp());
+        $this->assertSame(\sys_get_temp_dir(), $this->server->tmp()->toString());
     }
 }

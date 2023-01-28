@@ -12,15 +12,34 @@ use Innmind\Server\Status\{
     Server\Processes,
     Server\Disk
 };
+use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Streams;
 use Innmind\Url\Path;
+use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class OSXTest extends TestCase
 {
+    private $server;
+
+    public function setUp(): void
+    {
+        $this->server = new OSX(
+            new Clock,
+            Control::build(
+                new Clock,
+                Streams::fromAmbientAuthority(),
+                new Usleep,
+            ),
+            Map::of(['PATH', $_SERVER['PATH']]),
+        );
+    }
+
     public function testInterface()
     {
-        $this->assertInstanceOf(Server::class, new OSX(new Clock));
+        $this->assertInstanceOf(Server::class, $this->server);
     }
 
     public function testCpu()
@@ -31,7 +50,7 @@ class OSXTest extends TestCase
 
         $this->assertInstanceOf(
             Cpu::class,
-            (new OSX(new Clock))->cpu()->match(
+            $this->server->cpu()->match(
                 static fn($cpu) => $cpu,
                 static fn() => null,
             ),
@@ -46,7 +65,8 @@ class OSXTest extends TestCase
 
         $this->assertInstanceOf(
             Memory::class,
-            (new OSX(new Clock))
+            $this
+                ->server
                 ->memory()
                 ->match(
                     static fn($memory) => $memory,
@@ -57,24 +77,22 @@ class OSXTest extends TestCase
 
     public function testProcesses()
     {
-        $this->assertInstanceOf(Processes::class, (new OSX(new Clock))->processes());
+        $this->assertInstanceOf(Processes::class, $this->server->processes());
     }
 
     public function testLoadAverage()
     {
-        $this->assertInstanceOf(LoadAverage::class, (new OSX(new Clock))->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage());
     }
 
     public function testDisk()
     {
-        $this->assertInstanceOf(Disk::class, (new OSX(new Clock))->disk());
+        $this->assertInstanceOf(Disk::class, $this->server->disk());
     }
 
     public function testTmp()
     {
-        $server = new OSX(new Clock);
-
-        $this->assertInstanceOf(Path::class, $server->tmp());
-        $this->assertSame(\sys_get_temp_dir(), $server->tmp()->toString());
+        $this->assertInstanceOf(Path::class, $this->server->tmp());
+        $this->assertSame(\sys_get_temp_dir(), $this->server->tmp()->toString());
     }
 }
