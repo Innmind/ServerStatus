@@ -96,6 +96,9 @@ class LinuxTest extends TestCase
     public function testTmp()
     {
         $this->assertInstanceOf(Path::class, $this->server->tmp());
-        $this->assertSame(\sys_get_temp_dir(), $this->server->tmp()->toString());
+        $this->assertSame(
+            \rtrim(\sys_get_temp_dir(), '/').'/',
+            $this->server->tmp()->toString(),
+        );
     }
 }
