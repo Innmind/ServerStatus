@@ -21,6 +21,7 @@ use Innmind\Server\Status\{
     ServerFactory,
     Server\Disk\Volume\MountPoint,
     Server\Process\Pid,
+    EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
@@ -34,6 +35,7 @@ $server = ServerFactory::build(
         Streams::fromAmbientAuthority(),
         new Usleep,
     ),
+    EnvironmentPath::of(\getenv('PATH')),
 );
 
 $server->cpu()->match(
