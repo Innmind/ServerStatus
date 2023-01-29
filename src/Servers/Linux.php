@@ -17,10 +17,7 @@ use Innmind\Server\Status\{
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
-use Innmind\Immutable\{
-    Maybe,
-    Map,
-};
+use Innmind\Immutable\Maybe;
 
 final class Linux implements Server
 {
@@ -30,10 +27,7 @@ final class Linux implements Server
     private LoadAverageFacade $loadAverage;
     private UnixDisk $disk;
 
-    /**
-     * @param Map<non-empty-string, string> $environment
-     */
-    public function __construct(Clock $clock, Control $control, Map $environment)
+    public function __construct(Clock $clock, Control $control)
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes());

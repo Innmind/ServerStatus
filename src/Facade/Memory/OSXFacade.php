@@ -6,6 +6,7 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
+    EnvironmentPath,
 };
 use Innmind\Server\Control\Server\{
     Processes,
@@ -14,7 +15,6 @@ use Innmind\Server\Control\Server\{
 use Innmind\Immutable\{
     Str,
     Maybe,
-    Map,
 };
 
 /**
@@ -23,16 +23,12 @@ use Innmind\Immutable\{
 final class OSXFacade
 {
     private Processes $processes;
-    /** @var Map<non-empty-string, string> */
-    private Map $environment;
+    private EnvironmentPath $path;
 
-    /**
-     * @param Map<non-empty-string, string> $environment
-     */
-    public function __construct(Processes $processes, Map $environment)
+    public function __construct(Processes $processes, EnvironmentPath $path)
     {
         $this->processes = $processes;
-        $this->environment = $environment;
+        $this->path = $path;
     }
 
     /**
@@ -106,8 +102,9 @@ final class OSXFacade
     {
         return $this
             ->processes
-            ->execute($command->withEnvironments(
-                $this->environment,
+            ->execute($command->withEnvironment(
+                'PATH',
+                $this->path->toString(),
             ))
             ->wait()
             ->match(

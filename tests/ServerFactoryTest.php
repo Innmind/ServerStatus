@@ -6,13 +6,13 @@ namespace Tests\Innmind\Server\Status;
 use Innmind\Server\Status\{
     ServerFactory,
     Server,
+    EnvironmentPath,
     Exception\UnsupportedOperatingSystem
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
-use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class ServerFactoryTest extends TestCase
@@ -30,7 +30,7 @@ class ServerFactoryTest extends TestCase
                 Streams::fromAmbientAuthority(),
                 new Usleep,
             ),
-            Map::of(),
+            EnvironmentPath::of(\getenv('PATH')),
         ));
     }
 
@@ -46,7 +46,7 @@ class ServerFactoryTest extends TestCase
             new Clock,
             Streams::fromAmbientAuthority(),
             new Usleep,
-            Map::of(),
+            EnvironmentPath::of(\getenv('PATH')),
         ));
     }
 }

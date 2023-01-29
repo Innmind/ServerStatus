@@ -13,14 +13,12 @@ use Innmind\Server\Status\{
     Server\Processes\UnixProcesses,
     Server\Disk,
     Server\Disk\UnixDisk,
+    EnvironmentPath,
 };
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
-use Innmind\Immutable\{
-    Maybe,
-    Map,
-};
+use Innmind\Immutable\Maybe;
 
 final class OSX implements Server
 {
@@ -30,13 +28,10 @@ final class OSX implements Server
     private LoadAverageFacade $loadAverage;
     private UnixDisk $disk;
 
-    /**
-     * @param Map<non-empty-string, string> $environment
-     */
-    public function __construct(Clock $clock, Control $control, Map $environment)
+    public function __construct(Clock $clock, Control $control, EnvironmentPath $path)
     {
         $this->cpu = new CpuFacade($control->processes());
-        $this->memory = new MemoryFacade($control->processes(), $environment);
+        $this->memory = new MemoryFacade($control->processes(), $path);
         $this->processes = new UnixProcesses($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
         $this->disk = new UnixDisk($control->processes());

@@ -17,7 +17,6 @@ use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
 use Innmind\Url\Path;
-use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class LinuxTest extends TestCase
@@ -33,7 +32,6 @@ class LinuxTest extends TestCase
                 Streams::fromAmbientAuthority(),
                 new Usleep,
             ),
-            Map::of(['PATH', $_SERVER['PATH']]),
         );
     }
 

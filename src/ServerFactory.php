@@ -10,26 +10,23 @@ use Innmind\Server\Status\{
 };
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
-use Innmind\Immutable\Map;
 
 final class ServerFactory
 {
     /**
-     * @param Map<non-empty-string, string> $environment
-     *
      * @throws UnsupportedOperatingSystem
      */
     public static function build(
         Clock $clock,
         Control $control,
-        Map $environment,
+        EnvironmentPath $path,
     ): Server {
         switch (\PHP_OS) {
             case 'Darwin':
-                return new OSX($clock, $control, $environment);
+                return new OSX($clock, $control, $path);
 
             case 'Linux':
-                return new Linux($clock, $control, $environment);
+                return new Linux($clock, $control);
         }
 
         throw new UnsupportedOperatingSystem;

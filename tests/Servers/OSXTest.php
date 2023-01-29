@@ -10,14 +10,14 @@ use Innmind\Server\Status\{
     Server\Memory,
     Server\LoadAverage,
     Server\Processes,
-    Server\Disk
+    Server\Disk,
+    EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
 use Innmind\Url\Path;
-use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class OSXTest extends TestCase
@@ -33,7 +33,7 @@ class OSXTest extends TestCase
                 Streams::fromAmbientAuthority(),
                 new Usleep,
             ),
-            Map::of(['PATH', $_SERVER['PATH']]),
+            EnvironmentPath::of(\getenv('PATH')),
         );
     }
 

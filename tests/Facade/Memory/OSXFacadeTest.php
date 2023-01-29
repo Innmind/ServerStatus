@@ -6,12 +6,12 @@ namespace Tests\Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Facade\Memory\OSXFacade,
     Server\Memory,
+    EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
-use Innmind\Immutable\Map;
 use PHPUnit\Framework\TestCase;
 
 class OSXFacadeTest extends TestCase
@@ -33,10 +33,10 @@ class OSXFacadeTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $facade = new OSXFacade($this->server->processes(), Map::of([
-            'PATH',
-            $_SERVER['PATH'],
-        ]));
+        $facade = new OSXFacade(
+            $this->server->processes(),
+            EnvironmentPath::of(\getenv('PATH')),
+        );
 
         $this->assertInstanceOf(Memory::class, $facade()->match(
             static fn($memory) => $memory,
@@ -50,10 +50,10 @@ class OSXFacadeTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $facade = new OSXFacade($this->server->processes(), Map::of([
-            'PATH',
-            $_SERVER['PATH'],
-        ]));
+        $facade = new OSXFacade(
+            $this->server->processes(),
+            EnvironmentPath::of(\getenv('PATH')),
+        );
 
         $this->assertNull($facade()->match(
             static fn($memory) => $memory,
