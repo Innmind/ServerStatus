@@ -12,6 +12,7 @@ use Innmind\Server\Status\{
     Server\Process\Memory,
     Server\Cpu\Percentage,
 };
+use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Immutable\{
     Str,
@@ -19,22 +20,26 @@ use Innmind\Immutable\{
     Set,
     Maybe,
 };
-use Symfony\Component\Process\Process as SfProcess;
 
 final class UnixProcesses implements Processes
 {
     private Clock $clock;
+    private Control\Processes $processes;
 
-    public function __construct(Clock $clock)
+    public function __construct(Clock $clock, Control\Processes $processes)
     {
         $this->clock = $clock;
+        $this->processes = $processes;
     }
 
     public function all(): Set
     {
         return $this
-            ->run('ps -eo '.$this->format())
-            ->map(fn($output) => $this->parse($output))
+            ->run(
+                Control\Command::foreground('ps')
+                    ->withShortOption('eo', $this->format()),
+            )
+            ->map($this->parse(...))
             ->match(
                 static fn($processes) => $processes,
                 static fn() => Set::of(),
@@ -44,17 +49,17 @@ final class UnixProcesses implements Processes
     public function get(Pid $pid): Maybe
     {
         return $this
-            ->run(\sprintf(
-                'ps -o %s -p %s',
-                $this->format(),
-                $pid->toString(),
+            ->run(
+                Control\Command::foreground('ps')
+                    ->withShortOption('o', $this->format())
+                    ->withShortOption('p', $pid->toString()),
+            )
+            ->otherwise(fn() => $this->run(
+                Control\Command::foreground('ps')
+                    ->withShortOption('o', $this->format())
+                    ->withShortOption('q', $pid->toString()),
             ))
-            ->otherwise(fn() => $this->run(\sprintf(
-                'ps -o %s -q %s',
-                $this->format(),
-                $pid->toString(),
-            )))
-            ->map(fn($output) => $this->parse($output))
+            ->map($this->parse(...))
             ->flatMap(static fn($processes) => $processes->find(
                 static fn($process) => $process->pid()->equals($pid),
             ));
@@ -63,19 +68,15 @@ final class UnixProcesses implements Processes
     /**
      * @return Maybe<Str>
      */
-    private function run(string $command): Maybe
+    private function run(Control\Command $command): Maybe
     {
-        $process = SfProcess::fromShellCommandline($command, null, [
-            'TZ' => \date('e'),
-        ]);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            /** @var Maybe<Str> */
-            return Maybe::nothing();
-        }
-
-        return Maybe::just(Str::of($process->getOutput()));
+        return $this
+            ->processes
+            ->execute($command->withEnvironment('TZ', 'UTC'))
+            ->wait()
+            ->maybe()
+            ->map(static fn($success) => $success->output()->toString())
+            ->map(Str::of(...));
     }
 
     /**

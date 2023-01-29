@@ -6,41 +6,68 @@ namespace Innmind\Server\Status\Facade\Memory;
 use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
+    EnvironmentPath,
+};
+use Innmind\Server\Control\Server\{
+    Processes,
+    Command,
 };
 use Innmind\Immutable\{
     Str,
     Maybe,
 };
-use Symfony\Component\Process\Process;
 
 /**
  * @internal
  */
 final class OSXFacade
 {
+    private Processes $processes;
+    private EnvironmentPath $path;
+
+    public function __construct(Processes $processes, EnvironmentPath $path)
+    {
+        $this->processes = $processes;
+        $this->path = $path;
+    }
+
     /**
      * @return Maybe<Memory>
      */
     public function __invoke(): Maybe
     {
         $total = $this
-            ->run('sysctl hw.memsize')
+            ->run(
+                Command::foreground('sysctl')
+                    ->withArgument('hw.memsize'),
+            )
             ->trim()
             ->capture('~^hw.memsize: (?P<total>\d+)$~')
             ->get('total')
             ->map(static fn($total) => $total->toString());
         $swap = $this
-            ->run('sysctl vm.swapusage')
+            ->run(
+                Command::foreground('sysctl')
+                    ->withArgument('vm.swapusage'),
+            )
             ->trim()
             ->capture('~used = (?P<swap>\d+[\.,]?\d*[KMGTP])~')
             ->get('swap')
             ->map(static fn($swap) => $swap->toString())
             ->flatMap(static fn($swap) => Bytes::of($swap));
         $amounts = $this
-            ->run('top -l 1 -s 0 | grep PhysMem')
+            ->run(
+                Command::foreground('top')
+                    ->withShortOption('l', '1')
+                    ->withShortOption('s', '0')
+                    ->pipe(
+                        Command::foreground('grep')
+                            ->withArgument('PhysMem'),
+                    ),
+            )
             ->trim()
             ->capture(
-                '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired\), (?P<unused>\d+[KMGTP]) unused.$~',
+                '~^PhysMem: (?P<used>\d+[KMGTP]) used \((?P<wired>\d+[KMGTP]) wired(, \d+[KMGTP] compressor)?\), (?P<unused>\d+[KMGTP]) unused.$~',
             )
             ->map(static fn($_, $amount) => $amount->toString());
         $unused = $amounts
@@ -50,7 +77,12 @@ final class OSXFacade
             ->get('used')
             ->flatMap(static fn($used) => Bytes::of($used));
         $active = $this
-            ->run('vm_stat | grep \'Pages active\'')
+            ->run(
+                Command::foreground('vm_stat')->pipe(
+                    Command::foreground('grep')
+                        ->withArgument('Pages active'),
+                ),
+            )
             ->trim()
             ->capture('~(?P<active>\d+)~')
             ->get('active')
@@ -66,15 +98,18 @@ final class OSXFacade
             ));
     }
 
-    private function run(string $command): Str
+    private function run(Command $command): Str
     {
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            return Str::of('');
-        }
-
-        return Str::of($process->getOutput());
+        return $this
+            ->processes
+            ->execute($command->withEnvironment(
+                'PATH',
+                $this->path->toString(),
+            ))
+            ->wait()
+            ->match(
+                static fn($success) => Str::of($success->output()->toString()),
+                static fn() => Str::of(''),
+            );
     }
 }

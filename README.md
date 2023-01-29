@@ -22,9 +22,19 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Server\Process\Pid,
 };
+use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Streams;
 
-$server = ServerFactory::build(new Clock);
+$server = ServerFactory::build(
+    $clock = new Clock,
+    Control::build(
+        $clock,
+        Streams::fromAmbientAuthority(),
+        new Usleep,
+    ),
+);
 
 $server->cpu()->match(
     function($cpu) {

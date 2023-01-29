@@ -9,13 +9,17 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
 };
+use Innmind\Server\Control\Server\{
+    Processes,
+    Command,
+    Process\Output,
+};
 use Innmind\Immutable\{
     Str,
     Sequence,
     Set,
     Maybe,
 };
-use Symfony\Component\Process\Process;
 
 final class UnixDisk implements Disk
 {
@@ -28,11 +32,31 @@ final class UnixDisk implements Disk
         'Mounted' => 'mountPoint',
     ];
 
+    private Processes $processes;
+
+    public function __construct(Processes $processes)
+    {
+        $this->processes = $processes;
+    }
+
     public function volumes(): Set
     {
         return $this
-            ->run('df -lh')
-            ->map(fn($output) => $this->parse($output))
+            ->processes
+            ->execute(
+                Command::foreground('df')
+                    ->withShortOption('lh'),
+            )
+            ->wait()
+            ->maybe()
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->filter(static fn($_, $type) => $type === Output\Type::output) // discard errors such as "df: getattrlist failed"
+                    ->toString(),
+            )
+            ->map(Str::of(...))
+            ->map($this->parse(...))
             ->match(
                 static fn($volumes) => $volumes,
                 static fn() => Set::of(),
@@ -44,22 +68,6 @@ final class UnixDisk implements Disk
         return $this
             ->volumes()
             ->find(static fn($volume) => $volume->mountPoint()->equals($point));
-    }
-
-    /**
-     * @return Maybe<Str>
-     */
-    private function run(string $command): Maybe
-    {
-        $process = Process::fromShellCommandline($command);
-        $process->run();
-
-        if (!$process->isSuccessful()) {
-            /** @var Maybe<Str> */
-            return Maybe::nothing();
-        }
-
-        return Maybe::just(Str::of($process->getOutput()));
     }
 
     /**

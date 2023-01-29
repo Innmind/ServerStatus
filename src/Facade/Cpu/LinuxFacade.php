@@ -8,31 +8,55 @@ use Innmind\Server\Status\{
     Server\Cpu\Percentage,
     Server\Cpu\Cores,
 };
+use Innmind\Server\Control\Server\{
+    Processes,
+    Command,
+};
 use Innmind\Immutable\{
     Str,
     Maybe,
 };
-use Symfony\Component\Process\Process;
 
 /**
  * @internal
  */
 final class LinuxFacade
 {
+    private Processes $processes;
+
+    public function __construct(Processes $processes)
+    {
+        $this->processes = $processes;
+    }
+
     /**
      * @return Maybe<Cpu>
      */
     public function __invoke(): Maybe
     {
-        $process = Process::fromShellCommandline('top -bn1 | grep \'%Cpu\'');
-        $process->run();
+        return $this
+            ->processes
+            ->execute(
+                Command::foreground('top')
+                    ->withShortOption('bn1')
+                    ->pipe(
+                        Command::foreground('grep')
+                            ->withArgument('%Cpu'),
+                    ),
+            )
+            ->wait()
+            ->maybe()
+            ->map(static fn($success) => $success->output()->toString())
+            ->map(Str::of(...))
+            ->flatMap($this->parse(...));
+    }
 
-        if (!$process->isSuccessful()) {
-            /** @var Maybe<Cpu> */
-            return Maybe::nothing();
-        }
-
-        $percentages = Str::of($process->getOutput())
+    /**
+     * @return Maybe<Cpu>
+     */
+    private function parse(Str $output): Maybe
+    {
+        $percentages = $output
             ->trim()
             ->capture(
                 '~^%Cpu\(s\): *(?P<user>\d+\.?\d*) us, *(?P<sys>\d+\.?\d*) sy, *(\d+\.?\d*) ni, *(?P<idle>\d+\.?\d*) id~',
@@ -40,13 +64,17 @@ final class LinuxFacade
             ->map(static fn($_, $percentage) => $percentage->toString())
             ->map(static fn($_, $percentage) => (float) $percentage);
 
-        $process = Process::fromShellCommandline('nproc');
-        $process->run();
-        $cores = 1;
-
-        if ($process->isSuccessful()) {
-            $cores = ((int) $process->getOutput()) ?: 1;
-        }
+        $cores = $this
+            ->processes
+            ->execute(Command::foreground('nproc'))
+            ->wait()
+            ->maybe()
+            ->map(static fn($success) => $success->output()->toString())
+            ->map(static fn($cores) => (int) $cores)
+            ->match(
+                static fn($cores) => $cores,
+                static fn() => 1,
+            );
 
         $user = $percentages->get('user');
         $sys = $percentages->get('sys');

@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- `Innmind\Server\Status\ServerFactory::build()` now expects `Innmind\Server\Control\Server` as second argument and `Innmind\Server\Status\EnvironmentPath` as third argument
+
 ## 3.0.0 - 2022-01-23
 
 ### Added
