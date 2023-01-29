@@ -19,10 +19,8 @@
         "innmind/time-continuum": "~3.0",
         "innmind/url": "~4.0",
         "psr/log": "~3.0",
-        "innmind/server-control": "dev-capabilities"
+        "innmind/server-control": "~5.0"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Innmind\\Server\\Status\\": "src/"
