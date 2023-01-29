@@ -8,6 +8,7 @@ use Innmind\Server\Status\{
     Servers\Linux,
     Exception\UnsupportedOperatingSystem,
 };
+use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 
 final class ServerFactory
@@ -15,14 +16,17 @@ final class ServerFactory
     /**
      * @throws UnsupportedOperatingSystem
      */
-    public static function build(Clock $clock): Server
-    {
+    public static function build(
+        Clock $clock,
+        Control $control,
+        EnvironmentPath $path,
+    ): Server {
         switch (\PHP_OS) {
             case 'Darwin':
-                return new OSX($clock);
+                return new OSX($clock, $control, $path);
 
             case 'Linux':
-                return new Linux($clock);
+                return new Linux($clock, $control);
         }
 
         throw new UnsupportedOperatingSystem;

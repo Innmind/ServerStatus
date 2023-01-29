@@ -7,12 +7,15 @@ use Innmind\Server\Status\{
     Server\Memory,
     Server\Memory\Bytes,
 };
+use Innmind\Server\Control\Server\{
+    Processes,
+    Command,
+};
 use Innmind\Immutable\{
     Str,
     Map,
     Maybe,
 };
-use Symfony\Component\Process\Process;
 
 /**
  * @internal
@@ -26,21 +29,38 @@ final class LinuxFacade
         'SwapCached' => 'swap',
     ];
 
+    private Processes $processes;
+
+    public function __construct(Processes $processes)
+    {
+        $this->processes = $processes;
+    }
+
     /**
      * @return Maybe<Memory>
      */
     public function __invoke(): Maybe
     {
-        $process = Process::fromShellCommandline('cat /proc/meminfo');
-        $process->run();
+        return $this
+            ->processes
+            ->execute(
+                Command::foreground('cat')
+                    ->withArgument('/proc/meminfo'),
+            )
+            ->wait()
+            ->maybe()
+            ->map(static fn($success) => $success->output()->toString())
+            ->map(Str::of(...))
+            ->flatMap($this->parse(...));
+    }
 
-        if (!$process->isSuccessful()) {
-            /** @var Maybe<Memory> */
-            return Maybe::nothing();
-        }
-
+    /**
+     * @return Maybe<Memory>
+     */
+    private function parse(Str $output): Maybe
+    {
         /** @var Map<string, int> */
-        $amounts = Str::of($process->getOutput())
+        $amounts = $output
             ->trim()
             ->split("\n")
             ->filter(static fn(Str $line) => $line->matches(

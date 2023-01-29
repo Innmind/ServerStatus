@@ -14,6 +14,7 @@ use Innmind\Server\Status\{
     Server\Disk,
     Server\Disk\UnixDisk,
 };
+use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
 use Innmind\Immutable\Maybe;
@@ -26,13 +27,13 @@ final class Linux implements Server
     private LoadAverageFacade $loadAverage;
     private UnixDisk $disk;
 
-    public function __construct(Clock $clock)
+    public function __construct(Clock $clock, Control $control)
     {
-        $this->cpu = new CpuFacade;
-        $this->memory = new MemoryFacade;
-        $this->processes = new UnixProcesses($clock);
+        $this->cpu = new CpuFacade($control->processes());
+        $this->memory = new MemoryFacade($control->processes());
+        $this->processes = new UnixProcesses($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
-        $this->disk = new UnixDisk;
+        $this->disk = new UnixDisk($control->processes());
     }
 
     public function cpu(): Maybe

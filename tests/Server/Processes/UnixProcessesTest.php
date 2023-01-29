@@ -10,18 +10,35 @@ use Innmind\Server\Status\{
     Server\Process\Pid,
     Clock\PointInTime\Delay,
 };
+use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\{
     Clock as ClockInterface,
     Earth\Clock,
 };
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Streams;
 use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
 
 class UnixProcessesTest extends TestCase
 {
+    private $processes;
+
+    public function setUp(): void
+    {
+        $this->processes = new UnixProcesses(
+            new Clock,
+            Control::build(
+                new Clock,
+                Streams::fromAmbientAuthority(),
+                new Usleep,
+            )->processes(),
+        );
+    }
+
     public function testInterface()
     {
-        $this->assertInstanceOf(Processes::class, new UnixProcesses(new Clock));
+        $this->assertInstanceOf(Processes::class, $this->processes);
     }
 
     public function testAll()
@@ -30,7 +47,7 @@ class UnixProcessesTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $all = (new UnixProcesses(new Clock))->all();
+        $all = $this->processes->all();
 
         $this->assertInstanceOf(Set::class, $all);
         $this->assertNotEmpty($all);
@@ -45,6 +62,19 @@ class UnixProcessesTest extends TestCase
                     static fn() => null,
                 ),
         );
+        $this->assertNotContains(
+            null,
+            $all
+                ->map(
+                    static fn($process) => $process
+                        ->start()
+                        ->match(
+                            static fn($point) => $point,
+                            static fn() => null,
+                        ),
+                )
+                ->toList(),
+        );
     }
 
     public function testGet()
@@ -53,7 +83,8 @@ class UnixProcessesTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $process = (new UnixProcesses(new Clock))
+        $process = $this
+            ->processes
             ->get(new Pid(1))
             ->match(
                 static fn($process) => $process,
@@ -67,7 +98,8 @@ class UnixProcessesTest extends TestCase
     public function testReturnNothingWhenProcessDoesntExist()
     {
         $this->assertNull(
-            (new UnixProcesses(new Clock))
+            $this
+                ->processes
                 ->get(new Pid(42424))
                 ->match(
                     static fn($process) => $process,
@@ -82,7 +114,8 @@ class UnixProcessesTest extends TestCase
             $this->markTestSkipped();
         }
 
-        $process = (new UnixProcesses(new Clock))
+        $process = $this
+            ->processes
             ->all()
             ->find(static fn($process) => $process->pid()->is(1))
             ->match(

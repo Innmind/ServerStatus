@@ -110,8 +110,8 @@ final class Bytes
     private static function attemptDarwin(Str $bytes): Maybe
     {
         return self::fromUnit(
-            $bytes->substring(0, -2),
-            $bytes->substring(-2),
+            $bytes->dropEnd(2),
+            $bytes->takeEnd(2),
         );
     }
 
@@ -121,8 +121,8 @@ final class Bytes
     private static function attemptLinux(Str $bytes): Maybe
     {
         return self::fromUnit(
-            $bytes->substring(0, -1),
-             $bytes->substring(-1),
+            $bytes->dropEnd(1),
+            $bytes->takeEnd(1),
         );
     }
 
