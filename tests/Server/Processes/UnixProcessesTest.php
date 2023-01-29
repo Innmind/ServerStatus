@@ -62,6 +62,19 @@ class UnixProcessesTest extends TestCase
                     static fn() => null,
                 ),
         );
+        $this->assertNotContains(
+            null,
+            $all
+                ->map(
+                    static fn($process) => $process
+                        ->start()
+                        ->match(
+                            static fn($point) => $point,
+                            static fn() => null,
+                        ),
+                )
+                ->toList(),
+        );
     }
 
     public function testGet()
