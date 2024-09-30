@@ -45,7 +45,7 @@ final class UnixDisk implements Disk
             ->processes
             ->execute(
                 Command::foreground('df')
-                    ->withShortOption('lh'),
+                    ->withShortOption('h'),
             )
             ->wait()
             ->maybe()

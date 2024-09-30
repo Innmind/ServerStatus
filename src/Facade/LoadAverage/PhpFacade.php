@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Facade\LoadAverage;
 
-use Innmind\Server\Status\{
-    Facade\LoadAverageFacade,
-    Server\LoadAverage,
-};
+use Innmind\Server\Status\Server\LoadAverage;
 
 /**
  * @internal

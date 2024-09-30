@@ -8,13 +8,9 @@ use Innmind\Server\Status\{
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
-    Clock\PointInTime\Delay,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\{
-    Clock as ClockInterface,
-    Earth\Clock,
-};
+use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
 use Innmind\Immutable\Set;
