@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server;
 
-use Innmind\Server\Status\Server\{
-    Process,
-    Process\Pid,
-};
+use Innmind\Server\Status\Server\Process\Pid;
 use Innmind\Immutable\{
     Set,
     Maybe,
