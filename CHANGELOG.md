@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Networks Volumes are now listed in the `Innmind\Server\Status\Server\Disk::volumes()` method
+
 ## 4.1.0 - 2023-09-23
 
 ### Added
