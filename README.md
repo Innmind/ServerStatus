@@ -6,7 +6,8 @@
 
 Give an easy access to the cpu, memory, disk usages and the list of processes running on the machine.
 
-**Note**: only works for Mac OSX and Linux for now.
+> [!NOTE]
+> only works for Mac OSX and Linux for now.
 
 ## Installation
 
@@ -24,46 +25,39 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 
 $server = ServerFactory::build(
-    $clock = new Clock,
+    $clock = Clock::live(),
     Control::build(
         $clock,
-        Streams::fromAmbientAuthority(),
-        new Usleep,
+        IO::fromAmbientAuthority(),
+        Usleep::new(),
     ),
     EnvironmentPath::of(\getenv('PATH')),
 );
 
-$server->cpu()->match(
-    function($cpu) {
-        $cpu->user(); // percentage of the cpu used by the user
-        $cpu->system(); // percentage of the cpu used by the system
-        $cpu->idle(); // percentage of the cpu not used
-        $cpu->cores(); // number of cores available
-    },
-    fn() => null, // unable to retrieve the cpu information
-);
+$cpu = $server->cpu()->unwrap();
+$cpu->user(); // percentage of the cpu used by the user
+$cpu->system(); // percentage of the cpu used by the system
+$cpu->idle(); // percentage of the cpu not used
+$cpu->cores(); // number of cores available
 
-$server->memory()->match(
-    function($memory) {
-        $memory->total(); // total memory of the server
-        $memory->active(); // memory that is used by processes
-        $memory->free(); // memory that is not used
-        $memory->swap(); // memory that is used and located on disk
-        $memory->used(); // total - free
-    },
-    fn() => null, // unable to retrieve the memory information
-);
+$memory = $server->memory()->unwrap();
+$memory->total(); // total memory of the server
+$memory->active(); // memory that is used by processes
+$memory->free(); // memory that is not used
+$memory->swap(); // memory that is used and located on disk
+$memory->used(); // total - free
 
-$server->loadAverage()->lastMinute();
-$server->loadAverage()->lastFiveMinutes();
-$server->loadAverage()->lastFifteenMinutes();
+$loadAverage = $server->loadAverage()->unwrap();
+$loadAverage->lastMinute();
+$loadAverage->lastFiveMinutes();
+$loadAverage->lastFifteenMinutes();
 
-$server->disk()->get(new MountPoint('/'))->match(
+$server->disk()->get(MountPoint::of('/'))->match(
     function($disk) {
         $disk->size(); // total size of the volume
         $disk->available();
@@ -73,7 +67,7 @@ $server->disk()->get(new MountPoint('/'))->match(
     fn() => null, // the mount point doesn't exist
 );
 
-$server->processes()->get(new Pid(1))->match(
+$server->processes()->get(Pid::of(1))->match(
     function($process) {
         $process->user(); // root in this case
         $process->cpu(); // percentage
@@ -93,5 +87,5 @@ You can easily log all the informations gathered via a simple decorator:
 use Innmind\Server\Status\Server\Logger;
 use Psr\Log\LoggerInterface;
 
-$server = new Logger($server, /** instance of LoggerInterface */);
+$server = Logger::of($server, /** instance of LoggerInterface */);
 ```
