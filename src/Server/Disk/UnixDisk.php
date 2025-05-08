@@ -118,13 +118,7 @@ final class UnixDisk implements Disk
                 ->flatMap(Usage::maybe(...));
 
             return Maybe::all($mountPoint, $size, $available, $used, $usage)
-                ->map(static fn(MountPoint $mountPoint, Bytes $size, Bytes $available, Bytes $used, Usage $usage) => new Volume(
-                    $mountPoint,
-                    $size,
-                    $available,
-                    $used,
-                    $usage,
-                ));
+                ->map(Volume::of(...));
         });
 
         return $volumes

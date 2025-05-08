@@ -11,24 +11,23 @@ use Innmind\Server\Status\Server\{
 
 final class Volume
 {
-    private MountPoint $mountPoint;
-    private Bytes $size;
-    private Bytes $available;
-    private Bytes $used;
-    private Usage $usage;
+    private function __construct(
+        private MountPoint $mountPoint,
+        private Bytes $size,
+        private Bytes $available,
+        private Bytes $used,
+        private Usage $usage,
+    ) {
+    }
 
-    public function __construct(
+    public static function of(
         MountPoint $mountPoint,
         Bytes $size,
         Bytes $available,
         Bytes $used,
         Usage $usage,
-    ) {
-        $this->mountPoint = $mountPoint;
-        $this->size = $size;
-        $this->available = $available;
-        $this->used = $used;
-        $this->usage = $usage;
+    ): self {
+        return new self($mountPoint, $size, $available, $used, $usage);
     }
 
     public function mountPoint(): MountPoint
