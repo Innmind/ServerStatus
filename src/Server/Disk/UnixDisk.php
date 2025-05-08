@@ -18,6 +18,7 @@ use Innmind\Immutable\{
     Str,
     Set,
     Maybe,
+    Map,
 };
 
 final class UnixDisk implements Disk
@@ -90,26 +91,21 @@ final class UnixDisk implements Disk
                 static fn($line) => $line
                     ->pregSplit('~ +~', $columns->size())
                     ->map(static fn($column) => $column->toString()),
-            );
-        $volumes = $partsByLine->map(static function($parts) use ($columns): Maybe {
-            $mountPoint = $columns
-                ->indexOf('mountPoint')
-                ->flatMap(static fn($index) => $parts->get($index));
-            $size = $columns
-                ->indexOf('size')
-                ->flatMap(static fn($index) => $parts->get($index))
+            )
+            ->map(static fn($parts) => $columns->zip($parts))
+            ->map(static fn($parts) => Map::of(...$parts->toList()));
+        $volumes = $partsByLine->map(static function($parts): Maybe {
+            $mountPoint = $parts->get('mountPoint');
+            $size = $parts
+                ->get('size')
                 ->flatMap(static fn($size) => Bytes::of($size));
-            $available = $columns
-                ->indexOf('available')
-                ->flatMap(static fn($index) => $parts->get($index))
+            $available = $parts
+                ->get('available')
                 ->flatMap(static fn($available) => Bytes::of($available));
-            $used = $columns
-                ->indexOf('used')
-                ->flatMap(static fn($index) => $parts->get($index))
+            $used = $parts
+                ->get('used')
                 ->flatMap(static fn($used) => Bytes::of($used));
-            $usage = $columns
-                ->indexOf('usage')
-                ->flatMap(static fn($index) => $parts->get($index));
+            $usage = $parts->get('usage');
 
             return Maybe::all($mountPoint, $size, $available, $used, $usage)
                 ->map(static fn(string $mountPoint, Bytes $size, Bytes $available, Bytes $used, string $usage) => new Volume(
