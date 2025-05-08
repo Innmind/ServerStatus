@@ -66,10 +66,9 @@ final class Unix implements Disk
                     ->fold(new Concat),
             )
             ->map($this->parse(...))
-            ->match(
-                static fn($volumes) => $volumes,
-                static fn() => Set::of(),
-            );
+            ->toSequence()
+            ->toSet()
+            ->flatMap(static fn($volumes) => $volumes);
     }
 
     #[\Override]

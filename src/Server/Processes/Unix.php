@@ -51,10 +51,9 @@ final class Unix implements Processes
                     ->withShortOption('eo', $this->format()),
             )
             ->map($this->parse(...))
-            ->match(
-                static fn($processes) => $processes,
-                static fn() => Set::of(),
-            );
+            ->toSequence()
+            ->toSet()
+            ->flatMap(static fn($processes) => $processes);
     }
 
     #[\Override]
@@ -149,14 +148,9 @@ final class Unix implements Processes
                 ));
         });
 
-        /** @var Set<Process> */
-        return $processes->reduce(
-            Set::of(),
-            static fn(Set $processes, Maybe $process): Set => $process->match(
-                static fn(Process $process) => ($processes)($process),
-                static fn() => $processes,
-            ),
-        );
+        return $processes
+            ->flatMap(static fn($process) => $process->toSequence()) // discard process that failed to be parsed
+            ->toSet();
     }
 
     private function format(): string
