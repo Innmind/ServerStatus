@@ -26,15 +26,12 @@ use Innmind\Immutable\{
     Monoid\Concat,
 };
 
-final class UnixProcesses implements Processes
+final class Unix implements Processes
 {
-    private Clock $clock;
-    private Control\Processes $processes;
-
-    private function __construct(Clock $clock, Control\Processes $processes)
-    {
-        $this->clock = $clock;
-        $this->processes = $processes;
+    private function __construct(
+        private Clock $clock,
+        private Control\Processes $processes,
+    ) {
     }
 
     /**
@@ -54,10 +51,9 @@ final class UnixProcesses implements Processes
                     ->withShortOption('eo', $this->format()),
             )
             ->map($this->parse(...))
-            ->match(
-                static fn($processes) => $processes,
-                static fn() => Set::of(),
-            );
+            ->toSequence()
+            ->toSet()
+            ->flatMap(static fn($processes) => $processes);
     }
 
     #[\Override]
@@ -140,26 +136,17 @@ final class UnixProcesses implements Processes
                 ->get(4)
                 ->keep(Is::string()->nonEmpty()->asPredicate())
                 ->map(Command::of(...));
+            $start = Maybe::just(
+                $this->clock->at($start, Format::of('D M j H:i:s Y')),
+            );
 
-            return Maybe::all($user, $pid, $percentage, $memory, $command)
-                ->map(fn(User $user, Pid $pid, Percentage $percentage, Memory $memory, Command $command) => Process::of(
-                    $pid,
-                    $user,
-                    $percentage,
-                    $memory,
-                    $this->clock->at($start, Format::of('D M j H:i:s Y')),
-                    $command,
-                ));
+            return Maybe::all($pid, $user, $percentage, $memory, $start, $command)
+                ->map(Process::of(...));
         });
 
-        /** @var Set<Process> */
-        return $processes->reduce(
-            Set::of(),
-            static fn(Set $processes, Maybe $process): Set => $process->match(
-                static fn(Process $process) => ($processes)($process),
-                static fn() => $processes,
-            ),
-        );
+        return $processes
+            ->flatMap(static fn($process) => $process->toSequence()) // discard process that failed to be parsed
+            ->toSet();
     }
 
     private function format(): string

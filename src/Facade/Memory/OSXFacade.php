@@ -24,13 +24,10 @@ use Innmind\Immutable\{
  */
 final class OSXFacade
 {
-    private Processes $processes;
-    private EnvironmentPath $path;
-
-    public function __construct(Processes $processes, EnvironmentPath $path)
-    {
-        $this->processes = $processes;
-        $this->path = $path;
+    public function __construct(
+        private Processes $processes,
+        private EnvironmentPath $path,
+    ) {
     }
 
     /**

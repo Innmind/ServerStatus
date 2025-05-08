@@ -14,13 +14,10 @@ use Psr\Log\LoggerInterface;
 
 final class Logger implements Server
 {
-    private Server $server;
-    private LoggerInterface $logger;
-
-    private function __construct(Server $server, LoggerInterface $logger)
-    {
-        $this->server = $server;
-        $this->logger = $logger;
+    private function __construct(
+        private Server $server,
+        private LoggerInterface $logger,
+    ) {
     }
 
     public static function of(Server $server, LoggerInterface $logger): self
@@ -63,7 +60,7 @@ final class Logger implements Server
     #[\Override]
     public function processes(): Processes
     {
-        return Processes\LoggerProcesses::of(
+        return Processes\Logger::of(
             $this->server->processes(),
             $this->logger,
         );
@@ -86,7 +83,7 @@ final class Logger implements Server
     #[\Override]
     public function disk(): Disk
     {
-        return Disk\LoggerDisk::of(
+        return Disk\Logger::of(
             $this->server->disk(),
             $this->logger,
         );

@@ -9,9 +9,7 @@ use Innmind\Server\Status\{
     Facade\Cpu\LinuxFacade as CpuFacade,
     Facade\Memory\LinuxFacade as MemoryFacade,
     Facade\LoadAverage\PhpFacade as LoadAverageFacade,
-    Server\Processes\UnixProcesses,
     Server\Disk,
-    Server\Disk\UnixDisk,
 };
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
@@ -22,17 +20,17 @@ final class Linux implements Server
 {
     private CpuFacade $cpu;
     private MemoryFacade $memory;
-    private UnixProcesses $processes;
+    private Processes\Unix $processes;
     private LoadAverageFacade $loadAverage;
-    private UnixDisk $disk;
+    private Disk\Unix $disk;
 
     private function __construct(Clock $clock, Control $control)
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes());
-        $this->processes = UnixProcesses::of($clock, $control->processes());
+        $this->processes = Processes\Unix::of($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
-        $this->disk = UnixDisk::of($control->processes());
+        $this->disk = Disk\Unix::of($control->processes());
     }
 
     /**

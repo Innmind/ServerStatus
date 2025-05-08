@@ -8,11 +8,9 @@ namespace Innmind\Server\Status;
  */
 final class EnvironmentPath
 {
-    private string $value;
-
-    private function __construct(string $value)
-    {
-        $this->value = $value;
+    private function __construct(
+        private string $value,
+    ) {
     }
 
     /**

@@ -23,7 +23,7 @@ use Innmind\Immutable\{
     Monoid\Concat,
 };
 
-final class UnixDisk implements Disk
+final class Unix implements Disk
 {
     private static array $columns = [
         'Size' => 'size',
@@ -34,11 +34,9 @@ final class UnixDisk implements Disk
         'Mounted' => 'mountPoint',
     ];
 
-    private Processes $processes;
-
-    private function __construct(Processes $processes)
-    {
-        $this->processes = $processes;
+    private function __construct(
+        private Processes $processes,
+    ) {
     }
 
     /**
@@ -68,10 +66,9 @@ final class UnixDisk implements Disk
                     ->fold(new Concat),
             )
             ->map($this->parse(...))
-            ->match(
-                static fn($volumes) => $volumes,
-                static fn() => Set::of(),
-            );
+            ->toSequence()
+            ->toSet()
+            ->flatMap(static fn($volumes) => $volumes);
     }
 
     #[\Override]

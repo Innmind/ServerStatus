@@ -59,7 +59,7 @@ class LoggerTest extends TestCase
             new NullLogger,
         );
 
-        $this->assertInstanceOf(Processes\LoggerProcesses::class, $server->processes());
+        $this->assertInstanceOf(Processes\Logger::class, $server->processes());
     }
 
     public function testLoadAverage()
@@ -76,7 +76,7 @@ class LoggerTest extends TestCase
             new NullLogger,
         );
 
-        $this->assertInstanceOf(Disk\LoggerDisk::class, $server->disk());
+        $this->assertInstanceOf(Disk\Logger::class, $server->disk());
     }
 
     public function testTmp()

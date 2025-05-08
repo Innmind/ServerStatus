@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Memory;
 
+use Innmind\IO\Stream\Size;
 use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
@@ -50,29 +51,7 @@ final class Bytes
 
     public function toString(): string
     {
-        return match (true) {
-            $this->value < self::BYTES => $this->value.'B',
-            $this->value < self::KILOBYTES => \sprintf(
-                '%sKB',
-                \round($this->value/self::BYTES, 3),
-            ),
-            $this->value < self::MEGABYTES => \sprintf(
-                '%sMB',
-                \round($this->value/self::KILOBYTES, 3),
-            ),
-            $this->value < self::GIGABYTES => \sprintf(
-                '%sGB',
-                \round($this->value/self::MEGABYTES, 3),
-            ),
-            $this->value < self::TERABYTES => \sprintf(
-                '%sTB',
-                \round($this->value/self::GIGABYTES, 3),
-            ),
-            $this->value < self::PETABYTES => \sprintf(
-                '%sPB',
-                \round($this->value/self::TERABYTES, 3),
-            ),
-        };
+        return Size::of($this->value)->toString();
     }
 
     /**

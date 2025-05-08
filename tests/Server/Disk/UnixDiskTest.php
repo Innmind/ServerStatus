@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Disk;
 
 use Innmind\Server\Status\{
-    Server\Disk\UnixDisk,
+    Server\Disk\Unix,
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
@@ -22,7 +22,7 @@ class UnixDiskTest extends TestCase
 
     public function setUp(): void
     {
-        $this->disk = UnixDisk::of(
+        $this->disk = Unix::of(
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
