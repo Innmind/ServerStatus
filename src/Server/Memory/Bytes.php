@@ -30,6 +30,7 @@ final class Bytes
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @param int<0, max> $value
@@ -75,6 +76,7 @@ final class Bytes
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @return Maybe<self>

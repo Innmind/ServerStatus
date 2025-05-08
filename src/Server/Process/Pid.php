@@ -17,6 +17,7 @@ final class Pid
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @param int<1, max> $value

@@ -37,6 +37,9 @@ final class UnixProcesses implements Processes
         $this->processes = $processes;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Clock $clock, Control\Processes $processes): self
     {
         return new self($clock, $processes);

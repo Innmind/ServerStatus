@@ -16,6 +16,7 @@ final class Percentage
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @return Maybe<self>

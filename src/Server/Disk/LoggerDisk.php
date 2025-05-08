@@ -24,6 +24,9 @@ final class LoggerDisk implements Disk
         $this->logger = $logger;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Disk $disk, LoggerInterface $logger): self
     {
         return new self($disk, $logger);

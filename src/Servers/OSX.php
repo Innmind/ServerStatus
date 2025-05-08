@@ -36,6 +36,9 @@ final class OSX implements Server
         $this->disk = UnixDisk::of($control->processes());
     }
 
+    /**
+     * @internal
+     */
     public static function of(Clock $clock, Control $control, EnvironmentPath $path): self
     {
         return new self($clock, $control, $path);

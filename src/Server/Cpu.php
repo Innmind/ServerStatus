@@ -22,6 +22,7 @@ final class Cpu
     }
 
     /**
+     * @internal
      * @psalm-pure
      */
     public static function of(

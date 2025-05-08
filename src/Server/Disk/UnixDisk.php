@@ -41,6 +41,9 @@ final class UnixDisk implements Disk
         $this->processes = $processes;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Processes $processes): self
     {
         return new self($processes);

@@ -35,6 +35,9 @@ final class Linux implements Server
         $this->disk = UnixDisk::of($control->processes());
     }
 
+    /**
+     * @internal
+     */
     public static function of(Clock $clock, Control $control): self
     {
         return new self($clock, $control);

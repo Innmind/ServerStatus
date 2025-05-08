@@ -16,6 +16,7 @@ final class Memory
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @return Maybe<self>

@@ -17,6 +17,7 @@ final class Cores
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @param int<1, max> $value

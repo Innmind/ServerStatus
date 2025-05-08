@@ -18,6 +18,7 @@ final class LoadAverage
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @return Maybe<self>

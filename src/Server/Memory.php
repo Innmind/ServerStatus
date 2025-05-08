@@ -20,6 +20,7 @@ final class Memory
     }
 
     /**
+     * @internal
      * @psalm-pure
      */
     public static function of(

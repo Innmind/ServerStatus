@@ -22,6 +22,7 @@ final class Command
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @param non-empty-string $value
