@@ -17,10 +17,15 @@ final class Logger implements Server
     private Server $server;
     private LoggerInterface $logger;
 
-    public function __construct(Server $server, LoggerInterface $logger)
+    private function __construct(Server $server, LoggerInterface $logger)
     {
         $this->server = $server;
         $this->logger = $logger;
+    }
+
+    public static function of(Server $server, LoggerInterface $logger): self
+    {
+        return new self($server, $logger);
     }
 
     #[\Override]
