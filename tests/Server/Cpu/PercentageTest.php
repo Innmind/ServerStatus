@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Cpu\Percentage,
     Exception\OutOfBoundsPercentage,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class PercentageTest extends TestCase
 {

@@ -13,14 +13,16 @@ use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class ServerFactoryTest extends TestCase
 {
     public function testMake()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertInstanceOf(Server::class, ServerFactory::build(
@@ -37,7 +39,9 @@ class ServerFactoryTest extends TestCase
     public function testThrowWhenUnsupportedOS()
     {
         if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->expectException(UnsupportedOperatingSystem::class);

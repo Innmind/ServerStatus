@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Process\Pid,
     Exception\LowestPidPossibleIsOne,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class PidTest extends TestCase
 {

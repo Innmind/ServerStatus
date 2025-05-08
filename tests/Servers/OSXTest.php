@@ -18,7 +18,7 @@ use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
 use Innmind\Url\Path;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class OSXTest extends TestCase
 {
@@ -45,7 +45,9 @@ class OSXTest extends TestCase
     public function testCpu()
     {
         if (\PHP_OS !== 'Darwin') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertInstanceOf(
@@ -60,7 +62,9 @@ class OSXTest extends TestCase
     public function testMemory()
     {
         if (\PHP_OS !== 'Darwin') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertInstanceOf(

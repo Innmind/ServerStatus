@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Process\User,
     Exception\EmptyUserNotAllowed,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
 {

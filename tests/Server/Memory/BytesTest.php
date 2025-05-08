@@ -7,10 +7,8 @@ use Innmind\Server\Status\{
     Server\Memory\Bytes,
     Exception\BytesCannotBeNegative,
 };
-use PHPUnit\Framework\{
-    TestCase,
-    Attributes\DataProvider,
-};
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class BytesTest extends TestCase
 {

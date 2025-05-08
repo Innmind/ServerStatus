@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Cpu\Cores,
     Exception\DomainException,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class CoresTest extends TestCase
 {

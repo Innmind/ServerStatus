@@ -14,7 +14,7 @@ use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
 use Innmind\Immutable\Set;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UnixDiskTest extends TestCase
 {
@@ -39,13 +39,15 @@ class UnixDiskTest extends TestCase
     public function testVolumes()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $volumes = $this->disk->volumes();
 
         $this->assertInstanceOf(Set::class, $volumes);
-        $this->assertNotEmpty($volumes);
+        $this->assertGreaterThanOrEqual(1, $volumes->size());
         $this->assertTrue(
             $volumes
                 ->find(static fn($volume) => $volume->mountPoint()->is('/'))
@@ -59,7 +61,9 @@ class UnixDiskTest extends TestCase
     public function testGet()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $volume = $this
@@ -81,7 +85,9 @@ class UnixDiskTest extends TestCase
     public function testReturnEmptyListWhenInfoNotAccessible()
     {
         if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertEmpty($this->disk->volumes());

@@ -9,7 +9,7 @@ use Innmind\Server\Status\Server\{
     Disk\Volume\Usage,
     Memory\Bytes,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class VolumeTest extends TestCase
 {

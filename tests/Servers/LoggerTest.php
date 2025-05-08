@@ -20,7 +20,7 @@ use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
 use Innmind\Url\Path;
 use Psr\Log\NullLogger;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LoggerTest extends TestCase
 {

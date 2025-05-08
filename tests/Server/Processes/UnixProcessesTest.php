@@ -14,7 +14,7 @@ use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
 use Innmind\Immutable\Set;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UnixProcessesTest extends TestCase
 {
@@ -40,13 +40,15 @@ class UnixProcessesTest extends TestCase
     public function testAll()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $all = $this->processes->all();
 
         $this->assertInstanceOf(Set::class, $all);
-        $this->assertNotEmpty($all);
+        $this->assertGreaterThanOrEqual(1, $all->size());
         $this->assertSame(
             'root',
             $all
@@ -76,7 +78,9 @@ class UnixProcessesTest extends TestCase
     public function testGet()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $process = $this
@@ -107,7 +111,9 @@ class UnixProcessesTest extends TestCase
     public function testProcessTimeIsStillAccessible()
     {
         if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $process = $this

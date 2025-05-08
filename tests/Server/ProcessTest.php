@@ -13,8 +13,10 @@ use Innmind\Server\Status\Server\{
 };
 use Innmind\Immutable\Maybe;
 use Fixtures\Innmind\TimeContinuum\Earth\PointInTime;
-use Innmind\BlackBox\PHPUnit\BlackBox;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    PHPUnit\Framework\TestCase,
+};
 
 class ProcessTest extends TestCase
 {
