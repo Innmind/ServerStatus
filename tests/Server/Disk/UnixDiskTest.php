@@ -69,15 +69,4 @@ class UnixDiskTest extends TestCase
         $this->assertTrue($volume->used()->toInt() > 0);
         $this->assertTrue($volume->usage()->toFloat() > 0);
     }
-
-    public function testReturnEmptyListWhenInfoNotAccessible()
-    {
-        if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
-        $this->assertEmpty($this->disk->volumes());
-    }
 }

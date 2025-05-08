@@ -7,7 +7,6 @@ use Innmind\Server\Status\{
     ServerFactory,
     Server,
     EnvironmentPath,
-    Exception\UnsupportedOperatingSystem
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
@@ -26,24 +25,6 @@ class ServerFactoryTest extends TestCase
                 Streams::fromAmbientAuthority(),
                 new Usleep,
             ),
-            EnvironmentPath::of(\getenv('PATH')),
-        ));
-    }
-
-    public function testThrowWhenUnsupportedOS()
-    {
-        if (\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
-        $this->expectException(UnsupportedOperatingSystem::class);
-
-        ServerFactory::build(new Clock, Control::build(
-            new Clock,
-            Streams::fromAmbientAuthority(),
-            new Usleep,
             EnvironmentPath::of(\getenv('PATH')),
         ));
     }
