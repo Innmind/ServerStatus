@@ -6,6 +6,7 @@
 
 - Requires `innmind/immutable:~5.14`
 - `Innmind\Server\Status\Server::cpu()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Cpu>`
+- `Innmind\Server\Status\Server::memory()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Memory>`
 
 ## 4.1.1 - 2024-09-30
 

@@ -12,7 +12,6 @@ use Innmind\Server\Status\Server\{
 };
 use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
-use Innmind\Immutable\Maybe;
 
 interface Server
 {
@@ -22,9 +21,9 @@ interface Server
     public function cpu(): Attempt;
 
     /**
-     * @return Maybe<Memory>
+     * @return Attempt<Memory>
      */
-    public function memory(): Maybe;
+    public function memory(): Attempt;
     public function processes(): Processes;
     public function loadAverage(): LoadAverage;
     public function disk(): Disk;

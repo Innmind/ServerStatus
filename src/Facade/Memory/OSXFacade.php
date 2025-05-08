@@ -14,6 +14,7 @@ use Innmind\Server\Control\Server\{
 };
 use Innmind\Immutable\{
     Str,
+    Attempt,
     Maybe,
     Monoid\Concat,
 };
@@ -33,9 +34,9 @@ final class OSXFacade
     }
 
     /**
-     * @return Maybe<Memory>
+     * @return Attempt<Memory>
      */
-    public function __invoke(): Maybe
+    public function __invoke(): Attempt
     {
         $total = $this
             ->run(
@@ -96,7 +97,11 @@ final class OSXFacade
                 $unused,
                 $swap,
                 $used,
-            ));
+            ))
+            ->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to parse memory usage')),
+            );
     }
 
     private function run(Command $command): Str

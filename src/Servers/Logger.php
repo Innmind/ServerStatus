@@ -11,7 +11,6 @@ use Innmind\Server\Status\{
 };
 use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
-use Innmind\Immutable\Maybe;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Server
@@ -39,7 +38,7 @@ final class Logger implements Server
     }
 
     #[\Override]
-    public function memory(): Maybe
+    public function memory(): Attempt
     {
         return $this
             ->server

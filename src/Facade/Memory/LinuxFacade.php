@@ -14,6 +14,7 @@ use Innmind\Server\Control\Server\{
 use Innmind\Immutable\{
     Str,
     Map,
+    Attempt,
     Maybe,
     Monoid\Concat,
 };
@@ -38,9 +39,9 @@ final class LinuxFacade
     }
 
     /**
-     * @return Maybe<Memory>
+     * @return Attempt<Memory>
      */
-    public function __invoke(): Maybe
+    public function __invoke(): Attempt
     {
         return $this
             ->processes
@@ -48,8 +49,10 @@ final class LinuxFacade
                 Command::foreground('cat')
                     ->withArgument('/proc/meminfo'),
             )
-            ->maybe()
-            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->flatMap(static fn($process) => $process->wait()->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to retrieve memory usage')),
+            ))
             ->map(
                 static fn($success) => $success
                     ->output()
@@ -60,9 +63,9 @@ final class LinuxFacade
     }
 
     /**
-     * @return Maybe<Memory>
+     * @return Attempt<Memory>
      */
-    private function parse(Str $output): Maybe
+    private function parse(Str $output): Attempt
     {
         /** @var Map<string, int> */
         $amounts = $output
@@ -102,6 +105,10 @@ final class LinuxFacade
                 new Bytes($free),
                 new Bytes($swap),
                 new Bytes($used),
-            ));
+            ))
+            ->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to parse memory usage')),
+            );
     }
 }
