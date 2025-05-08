@@ -153,7 +153,7 @@ final class Bytes
         };
 
         return Maybe::of($multiplier)
-            ->map(static fn($multiplier) => (int) (((float) $bytes->toString()) * $multiplier))
+            ->map(static fn($multiplier) => (int) (((float) $bytes->toString()) * (float) $multiplier))
             ->map(static fn($bytes) => new self($bytes));
     }
 }
