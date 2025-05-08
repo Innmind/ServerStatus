@@ -25,11 +25,9 @@ use Innmind\Immutable\{
  */
 final class OSXFacade
 {
-    private Processes $processes;
-
-    public function __construct(Processes $processes)
-    {
-        $this->processes = $processes;
+    public function __construct(
+        private Processes $processes,
+    ) {
     }
 
     /**

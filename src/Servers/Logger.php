@@ -14,13 +14,10 @@ use Psr\Log\LoggerInterface;
 
 final class Logger implements Server
 {
-    private Server $server;
-    private LoggerInterface $logger;
-
-    private function __construct(Server $server, LoggerInterface $logger)
-    {
-        $this->server = $server;
-        $this->logger = $logger;
+    private function __construct(
+        private Server $server,
+        private LoggerInterface $logger,
+    ) {
     }
 
     public static function of(Server $server, LoggerInterface $logger): self

@@ -28,13 +28,10 @@ use Innmind\Immutable\{
 
 final class UnixProcesses implements Processes
 {
-    private Clock $clock;
-    private Control\Processes $processes;
-
-    private function __construct(Clock $clock, Control\Processes $processes)
-    {
-        $this->clock = $clock;
-        $this->processes = $processes;
+    private function __construct(
+        private Clock $clock,
+        private Control\Processes $processes,
+    ) {
     }
 
     /**

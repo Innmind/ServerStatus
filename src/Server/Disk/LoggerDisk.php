@@ -15,13 +15,10 @@ use Psr\Log\LoggerInterface;
 
 final class LoggerDisk implements Disk
 {
-    private Disk $disk;
-    private LoggerInterface $logger;
-
-    private function __construct(Disk $disk, LoggerInterface $logger)
-    {
-        $this->disk = $disk;
-        $this->logger = $logger;
+    private function __construct(
+        private Disk $disk,
+        private LoggerInterface $logger,
+    ) {
     }
 
     /**

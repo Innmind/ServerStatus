@@ -34,11 +34,9 @@ final class UnixDisk implements Disk
         'Mounted' => 'mountPoint',
     ];
 
-    private Processes $processes;
-
-    private function __construct(Processes $processes)
-    {
-        $this->processes = $processes;
+    private function __construct(
+        private Processes $processes,
+    ) {
     }
 
     /**

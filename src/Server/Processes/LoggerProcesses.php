@@ -17,13 +17,10 @@ use Psr\Log\LoggerInterface;
 
 final class LoggerProcesses implements Processes
 {
-    private Processes $processes;
-    private LoggerInterface $logger;
-
-    private function __construct(Processes $processes, LoggerInterface $logger)
-    {
-        $this->processes = $processes;
-        $this->logger = $logger;
+    private function __construct(
+        private Processes $processes,
+        private LoggerInterface $logger,
+    ) {
     }
 
     /**
