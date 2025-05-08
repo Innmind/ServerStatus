@@ -92,15 +92,21 @@ final class LinuxFacade
                 static fn() => 1,
             );
 
-        $user = $percentages->get('user');
-        $sys = $percentages->get('sys');
-        $idle = $percentages->get('idle');
+        $user = $percentages
+            ->get('user')
+            ->flatMap(Percentage::maybe(...));
+        $sys = $percentages
+            ->get('sys')
+            ->flatMap(Percentage::maybe(...));
+        $idle = $percentages
+            ->get('idle')
+            ->flatMap(Percentage::maybe(...));
 
         return Maybe::all($user, $sys, $idle)
-            ->map(static fn(float $user, float $sys, float $idle) => new Cpu(
-                new Percentage($user),
-                new Percentage($sys),
-                new Percentage($idle),
+            ->map(static fn(Percentage $user, Percentage $sys, Percentage $idle) => new Cpu(
+                $user,
+                $sys,
+                $idle,
                 Cores::of($cores),
             ))
             ->match(

@@ -30,7 +30,10 @@ class ProcessTest extends TestCase
                 $process = new Process(
                     $pid = new Pid(1),
                     $user = new User('root'),
-                    $cpu = new Percentage(42),
+                    $cpu = Percentage::maybe(42)->match(
+                        static fn($percentage) => $percentage,
+                        static fn() => throw new \Exception('Should be valid'),
+                    ),
                     $memory = new Memory(42),
                     $start = Maybe::just($pointInTime),
                     $command = new Command('/sbin/launchd'),
