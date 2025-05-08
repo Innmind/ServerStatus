@@ -8,7 +8,7 @@ use Innmind\Server\Status\{
     Server\Process,
     Server\Process\Pid,
 };
-use Innmind\TimeContinuum\Earth\Format\ISO8601;
+use Innmind\TimeContinuum\Format;
 use Innmind\Immutable\{
     Set,
     Maybe,
@@ -70,7 +70,7 @@ final class LoggerProcesses implements Processes
             'memory' => $process->memory()->toString(),
             'start' => $process
                 ->start()
-                ->map(static fn($start) => $start->format(new ISO8601))
+                ->map(static fn($start) => $start->format(Format::iso8601()))
                 ->match(
                     static fn($start) => $start,
                     static fn() => null,

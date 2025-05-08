@@ -10,9 +10,12 @@ use Innmind\Server\Status\{
     Server\Process\Pid,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\{
+    Clock,
+    PointInTime,
+};
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Immutable\Set;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -23,11 +26,11 @@ class UnixProcessesTest extends TestCase
     public function setUp(): void
     {
         $this->processes = new UnixProcesses(
-            new Clock,
+            Clock::live(),
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             )->processes(),
         );
     }
@@ -108,8 +111,8 @@ class UnixProcessesTest extends TestCase
             );
 
         $this->assertInstanceOf(Process::class, $process);
-        $this->assertIsInt($process->start()->match(
-            static fn($start) => $start->milliseconds(),
+        $this->assertInstanceOf(PointInTime::class, $process->start()->match(
+            static fn($start) => $start,
             static fn() => null,
         ));
     }

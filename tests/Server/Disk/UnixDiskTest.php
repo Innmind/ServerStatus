@@ -10,9 +10,9 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Immutable\Set;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -24,9 +24,9 @@ class UnixDiskTest extends TestCase
     {
         $this->disk = new UnixDisk(
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             )->processes(),
         );
     }

@@ -12,7 +12,7 @@ use Innmind\Server\Status\Server\{
     Cpu\Percentage,
 };
 use Innmind\Immutable\Maybe;
-use Fixtures\Innmind\TimeContinuum\Earth\PointInTime;
+use Fixtures\Innmind\TimeContinuum\PointInTime;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
     PHPUnit\Framework\TestCase,

@@ -14,9 +14,9 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Url\Path;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -27,11 +27,11 @@ class OSXTest extends TestCase
     public function setUp(): void
     {
         $this->server = new OSX(
-            new Clock,
+            Clock::live(),
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             ),
             EnvironmentPath::of(\getenv('PATH')),
         );

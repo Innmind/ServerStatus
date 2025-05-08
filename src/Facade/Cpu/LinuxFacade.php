@@ -15,6 +15,7 @@ use Innmind\Server\Control\Server\{
 use Innmind\Immutable\{
     Str,
     Maybe,
+    Monoid\Concat,
 };
 
 /**
@@ -44,10 +45,14 @@ final class LinuxFacade
                             ->withArgument('%Cpu'),
                     ),
             )
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
-            ->map(Str::of(...))
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            )
             ->flatMap($this->parse(...));
     }
 
@@ -67,9 +72,15 @@ final class LinuxFacade
         $cores = $this
             ->processes
             ->execute(Command::foreground('nproc'))
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat)
+                    ->toString(),
+            )
             ->map(static fn($cores) => (int) $cores)
             ->match(
                 static fn($cores) => $cores,
