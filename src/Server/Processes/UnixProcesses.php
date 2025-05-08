@@ -134,7 +134,7 @@ final class UnixProcesses implements Processes
                 ->map(Command::of(...));
 
             return Maybe::all($user, $pid, $percentage, $memory, $command)
-                ->map(fn(User $user, Pid $pid, Percentage $percentage, Memory $memory, Command $command) => new Process(
+                ->map(fn(User $user, Pid $pid, Percentage $percentage, Memory $memory, Command $command) => Process::of(
                     $pid,
                     $user,
                     $percentage,

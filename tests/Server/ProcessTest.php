@@ -27,7 +27,7 @@ class ProcessTest extends TestCase
         $this
             ->forAll(PointInTime::any())
             ->then(function($pointInTime) {
-                $process = new Process(
+                $process = Process::of(
                     $pid = Pid::of(1),
                     $user = User::of('root'),
                     $cpu = Percentage::maybe(42)->match(
