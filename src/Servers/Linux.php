@@ -26,13 +26,18 @@ final class Linux implements Server
     private LoadAverageFacade $loadAverage;
     private UnixDisk $disk;
 
-    public function __construct(Clock $clock, Control $control)
+    private function __construct(Clock $clock, Control $control)
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes());
-        $this->processes = new UnixProcesses($clock, $control->processes());
+        $this->processes = UnixProcesses::of($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
-        $this->disk = new UnixDisk($control->processes());
+        $this->disk = UnixDisk::of($control->processes());
+    }
+
+    public static function of(Clock $clock, Control $control): self
+    {
+        return new self($clock, $control);
     }
 
     #[\Override]

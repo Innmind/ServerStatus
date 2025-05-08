@@ -20,10 +20,15 @@ final class LoggerProcesses implements Processes
     private Processes $processes;
     private LoggerInterface $logger;
 
-    public function __construct(Processes $processes, LoggerInterface $logger)
+    private function __construct(Processes $processes, LoggerInterface $logger)
     {
         $this->processes = $processes;
         $this->logger = $logger;
+    }
+
+    public static function of(Processes $processes, LoggerInterface $logger): self
+    {
+        return new self($processes, $logger);
     }
 
     #[\Override]

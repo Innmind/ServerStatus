@@ -58,7 +58,7 @@ final class Logger implements Server
     #[\Override]
     public function processes(): Processes
     {
-        return new Processes\LoggerProcesses(
+        return Processes\LoggerProcesses::of(
             $this->server->processes(),
             $this->logger,
         );
@@ -81,7 +81,7 @@ final class Logger implements Server
     #[\Override]
     public function disk(): Disk
     {
-        return new Disk\LoggerDisk(
+        return Disk\LoggerDisk::of(
             $this->server->disk(),
             $this->logger,
         );

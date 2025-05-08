@@ -31,10 +31,15 @@ final class UnixProcesses implements Processes
     private Clock $clock;
     private Control\Processes $processes;
 
-    public function __construct(Clock $clock, Control\Processes $processes)
+    private function __construct(Clock $clock, Control\Processes $processes)
     {
         $this->clock = $clock;
         $this->processes = $processes;
+    }
+
+    public static function of(Clock $clock, Control\Processes $processes): self
+    {
+        return new self($clock, $processes);
     }
 
     #[\Override]

@@ -18,8 +18,8 @@ final class ServerFactory
         EnvironmentPath $path,
     ): Server {
         return match (\PHP_OS) {
-            'Darwin' => new OSX($clock, $control, $path),
-            'Linux' => new Linux($clock, $control),
+            'Darwin' => OSX::of($clock, $control, $path),
+            'Linux' => Linux::of($clock, $control),
             default => throw new \LogicException('Unsupported operating system '.\PHP_OS),
         };
     }

@@ -36,9 +36,14 @@ final class UnixDisk implements Disk
 
     private Processes $processes;
 
-    public function __construct(Processes $processes)
+    private function __construct(Processes $processes)
     {
         $this->processes = $processes;
+    }
+
+    public static function of(Processes $processes): self
+    {
+        return new self($processes);
     }
 
     #[\Override]
