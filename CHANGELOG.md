@@ -19,6 +19,9 @@
 - `Innmind\Server\Status\Exception\EmptyUserNotAllowed`
 - `Innmind\Server\Status\Exception\LoadAverageCannotBeNegative`
 - `Innmind\Server\Status\Exception\DomainException`
+- `Innmind\Server\Status\Exception\UnsupportedOperatingSystem`
+- `Innmind\Server\Status\Exception\RuntimeException`
+- `Innmind\Server\Status\Exception\Exception`
 
 ## 4.1.1 - 2024-09-30
 
