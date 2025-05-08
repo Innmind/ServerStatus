@@ -136,16 +136,12 @@ final class Unix implements Processes
                 ->get(4)
                 ->keep(Is::string()->nonEmpty()->asPredicate())
                 ->map(Command::of(...));
+            $start = Maybe::just(
+                $this->clock->at($start, Format::of('D M j H:i:s Y')),
+            );
 
-            return Maybe::all($user, $pid, $percentage, $memory, $command)
-                ->map(fn(User $user, Pid $pid, Percentage $percentage, Memory $memory, Command $command) => Process::of(
-                    $pid,
-                    $user,
-                    $percentage,
-                    $memory,
-                    $this->clock->at($start, Format::of('D M j H:i:s Y')),
-                    $command,
-                ));
+            return Maybe::all($pid, $user, $percentage, $memory, $start, $command)
+                ->map(Process::of(...));
         });
 
         return $processes
