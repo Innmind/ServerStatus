@@ -87,10 +87,8 @@ final class LinuxFacade
             )
             ->map(static fn($cores) => (int) $cores)
             ->keep(Is::int()->positive()->asPredicate())
-            ->match(
-                static fn($cores) => $cores,
-                static fn() => 1,
-            );
+            ->otherwise(static fn() => Maybe::just(1))
+            ->map(Cores::of(...));
 
         $user = $percentages
             ->get('user')
@@ -102,13 +100,8 @@ final class LinuxFacade
             ->get('idle')
             ->flatMap(Percentage::maybe(...));
 
-        return Maybe::all($user, $sys, $idle)
-            ->map(static fn(Percentage $user, Percentage $sys, Percentage $idle) => new Cpu(
-                $user,
-                $sys,
-                $idle,
-                Cores::of($cores),
-            ))
+        return Maybe::all($user, $sys, $idle, $cores)
+            ->map(Cpu::of(...))
             ->match(
                 Attempt::result(...),
                 static fn() => Attempt::error(new \RuntimeException('Failed to parse CPU usage')),

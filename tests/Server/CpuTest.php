@@ -14,7 +14,7 @@ class CpuTest extends TestCase
 {
     public function testInterface()
     {
-        $cpu = new Cpu(
+        $cpu = Cpu::of(
             $user = Percentage::maybe(31)->match(
                 static fn($percentage) => $percentage,
                 static fn() => throw new \Exception('Should be valid'),
