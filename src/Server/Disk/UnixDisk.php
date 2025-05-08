@@ -16,7 +16,6 @@ use Innmind\Server\Control\Server\{
 };
 use Innmind\Immutable\{
     Str,
-    Sequence,
     Set,
     Maybe,
 };
@@ -80,14 +79,9 @@ final class UnixDisk implements Disk
             ->split("\n");
         $columns = $lines
             ->first()
-            ->map(static fn($line) => $line->pregSplit('~ +~'))
-            ->map(static fn($columns) => $columns->map(
-                static fn($column) => $column->toString(),
-            ))
-            ->match(
-                static fn($columns) => $columns,
-                static fn() => Sequence::strings(),
-            )
+            ->toSequence()
+            ->flatMap(static fn($line) => $line->pregSplit('~ +~'))
+            ->map(static fn($column) => $column->toString())
             ->map(static fn($column) => self::$columns[$column] ?? $column);
 
         $partsByLine = $lines
@@ -127,13 +121,8 @@ final class UnixDisk implements Disk
                 ));
         });
 
-        /** @var Set<Volume> */
-        return $volumes->reduce(
-            Set::of(),
-            static fn(Set $volumes, Maybe $volume) => $volume->match(
-                static fn(Volume $volume) => ($volumes)($volume),
-                static fn() => $volumes,
-            ),
-        );
+        return $volumes
+            ->flatMap(static fn($volume) => $volume->toSequence()) // discard unparsed volumes
+            ->toSet();
     }
 }
