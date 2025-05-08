@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Requires `innmind/immutable:~5.14`
+
 ## 4.1.1 - 2024-09-30
 
 ### Fixed
