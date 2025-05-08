@@ -3,22 +3,22 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Disk\Volume;
 
-use Innmind\Server\Status\Exception\EmptyPathNotAllowed;
-
 final class MountPoint
 {
-    private string $value;
+    /**
+     * @param non-empty-string $value
+     */
+    private function __construct(
+        private string $value,
+    ) {
+    }
 
     /**
-     * @throws EmptyPathNotAllowed
+     * @param non-empty-string $value
      */
-    public function __construct(string $value)
+    public static function of(string $value): self
     {
-        if ($value === '') {
-            throw new EmptyPathNotAllowed;
-        }
-
-        $this->value = $value;
+        return new self($value);
     }
 
     public function equals(self $point): bool

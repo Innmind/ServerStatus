@@ -14,6 +14,7 @@ use Innmind\Server\Control\Server\{
     Command,
     Process\Output,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Set,
@@ -98,7 +99,10 @@ final class UnixDisk implements Disk
             ->map(static fn($parts) => $columns->zip($parts))
             ->map(static fn($parts) => Map::of(...$parts->toList()));
         $volumes = $partsByLine->map(static function($parts): Maybe {
-            $mountPoint = $parts->get('mountPoint');
+            $mountPoint = $parts
+                ->get('mountPoint')
+                ->keep(Is::string()->nonEmpty()->asPredicate())
+                ->map(MountPoint::of(...));
             $size = $parts
                 ->get('size')
                 ->flatMap(static fn($size) => Bytes::of($size));
@@ -111,8 +115,8 @@ final class UnixDisk implements Disk
             $usage = $parts->get('usage');
 
             return Maybe::all($mountPoint, $size, $available, $used, $usage)
-                ->map(static fn(string $mountPoint, Bytes $size, Bytes $available, Bytes $used, string $usage) => new Volume(
-                    new MountPoint($mountPoint),
+                ->map(static fn(MountPoint $mountPoint, Bytes $size, Bytes $available, Bytes $used, string $usage) => new Volume(
+                    $mountPoint,
                     $size,
                     $available,
                     $used,

@@ -16,7 +16,7 @@ class VolumeTest extends TestCase
     public function testInterface()
     {
         $volume = new Volume(
-            $mount = new MountPoint('/'),
+            $mount = MountPoint::of('/'),
             $size = new Bytes(42),
             $available = new Bytes(42),
             $used = new Bytes(42),
