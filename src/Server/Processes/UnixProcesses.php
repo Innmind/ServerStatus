@@ -117,18 +117,21 @@ final class UnixProcesses implements Processes
                 ->get(2)
                 ->map(static fn($value) => (float) $value)
                 ->flatMap(Percentage::maybe(...));
-            $memory = $parts->get(3);
+            $memory = $parts
+                ->get(3)
+                ->map(static fn($value) => (float) $value)
+                ->flatMap(Memory::maybe(...));
             $command = $parts
                 ->get(4)
                 ->keep(Is::string()->nonEmpty()->asPredicate())
                 ->map(Command::of(...));
 
             return Maybe::all($user, $pid, $percentage, $memory, $command)
-                ->map(fn(string $user, string $pid, Percentage $percentage, string $memory, Command $command) => new Process(
+                ->map(fn(string $user, string $pid, Percentage $percentage, Memory $memory, Command $command) => new Process(
                     new Pid((int) $pid),
                     new User($user),
                     $percentage,
-                    new Memory((float) $memory),
+                    $memory,
                     $this->clock->at($start, Format::of('D M j H:i:s Y')),
                     $command,
                 ));

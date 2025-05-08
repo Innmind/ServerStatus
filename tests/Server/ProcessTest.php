@@ -34,7 +34,10 @@ class ProcessTest extends TestCase
                         static fn($percentage) => $percentage,
                         static fn() => throw new \Exception('Should be valid'),
                     ),
-                    $memory = new Memory(42),
+                    $memory = Memory::maybe(42)->match(
+                        static fn($memory) => $memory,
+                        static fn() => throw new \Exception('Should be valid'),
+                    ),
                     $start = Maybe::just($pointInTime),
                     $command = Command::of('/sbin/launchd'),
                 );
