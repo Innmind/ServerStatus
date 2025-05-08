@@ -3,7 +3,6 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Process;
 
-use Innmind\Server\Status\Exception\EmptyCommandNotAllowed;
 use Innmind\Immutable\{
     RegExp,
     Str,
@@ -14,18 +13,20 @@ use Innmind\Immutable\{
  */
 final class Command
 {
-    private string $value;
+    /**
+     * @param non-empty-string $value
+     */
+    private function __construct(
+        private string $value,
+    ) {
+    }
 
     /**
-     * @throws EmptyCommandNotAllowed
+     * @param non-empty-string $value
      */
-    public function __construct(string $value)
+    public static function of(string $value): self
     {
-        if ($value === '') {
-            throw new EmptyCommandNotAllowed;
-        }
-
-        $this->value = $value;
+        return new self($value);
     }
 
     public function matches(RegExp $pattern): bool
@@ -33,6 +34,9 @@ final class Command
         return $pattern->matches(Str::of($this->value));
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function toString(): string
     {
         return $this->value;

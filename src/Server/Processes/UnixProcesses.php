@@ -17,6 +17,7 @@ use Innmind\TimeContinuum\{
     Clock,
     Format,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Sequence,
@@ -117,16 +118,19 @@ final class UnixProcesses implements Processes
                 ->map(static fn($value) => (float) $value)
                 ->flatMap(Percentage::maybe(...));
             $memory = $parts->get(3);
-            $command = $parts->get(4);
+            $command = $parts
+                ->get(4)
+                ->keep(Is::string()->nonEmpty()->asPredicate())
+                ->map(Command::of(...));
 
             return Maybe::all($user, $pid, $percentage, $memory, $command)
-                ->map(fn(string $user, string $pid, Percentage $percentage, string $memory, string $command) => new Process(
+                ->map(fn(string $user, string $pid, Percentage $percentage, string $memory, Command $command) => new Process(
                     new Pid((int) $pid),
                     new User($user),
                     $percentage,
                     new Memory((float) $memory),
                     $this->clock->at($start, Format::of('D M j H:i:s Y')),
-                    new Command($command),
+                    $command,
                 ));
         });
 

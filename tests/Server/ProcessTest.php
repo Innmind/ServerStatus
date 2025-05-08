@@ -36,7 +36,7 @@ class ProcessTest extends TestCase
                     ),
                     $memory = new Memory(42),
                     $start = Maybe::just($pointInTime),
-                    $command = new Command('/sbin/launchd'),
+                    $command = Command::of('/sbin/launchd'),
                 );
 
                 $this->assertSame($pid, $process->pid());

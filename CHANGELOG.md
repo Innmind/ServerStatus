@@ -12,6 +12,7 @@
 
 - `Innmind\Server\Status\Exception\EmptyPathNotAllowed`
 - `Innmind\Server\Status\Exception\BytesCannotBeNegative`
+- `Innmind\Server\Status\Exception\EmptyCommandNotAllowed`
 
 ## 4.1.1 - 2024-09-30
 
