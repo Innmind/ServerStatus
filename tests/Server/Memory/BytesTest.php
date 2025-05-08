@@ -7,13 +7,14 @@ use Innmind\Server\Status\{
     Server\Memory\Bytes,
     Exception\BytesCannotBeNegative,
 };
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\{
+    TestCase,
+    Attributes\DataProvider,
+};
 
 class BytesTest extends TestCase
 {
-    /**
-     * @dataProvider steps
-     */
+    #[DataProvider('steps')]
     public function testInterface($value, $expected)
     {
         $bytes = new Bytes($value);
@@ -29,9 +30,7 @@ class BytesTest extends TestCase
         new Bytes(-1);
     }
 
-    /**
-     * @dataProvider strings
-     */
+    #[DataProvider('strings')]
     public function testFromString($string, $expected)
     {
         $bytes = Bytes::of($string)->match(
@@ -51,9 +50,7 @@ class BytesTest extends TestCase
         ));
     }
 
-    /**
-     * @dataProvider invalidStrings
-     */
+    #[DataProvider('invalidStrings')]
     public function testReturnNothingWhenStringTooShort($string)
     {
         $this->assertNull(Bytes::of($string)->match(
@@ -62,7 +59,7 @@ class BytesTest extends TestCase
         ));
     }
 
-    public function steps(): array
+    public static function steps(): array
     {
         return [
             [512, '512B'],
@@ -80,7 +77,7 @@ class BytesTest extends TestCase
         ];
     }
 
-    public function strings(): array
+    public static function strings(): array
     {
         return [
             ['42', '42B'],
@@ -99,7 +96,7 @@ class BytesTest extends TestCase
         ];
     }
 
-    public function invalidStrings(): array
+    public static function invalidStrings(): array
     {
         return [
             [''],
