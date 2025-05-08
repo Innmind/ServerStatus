@@ -93,7 +93,10 @@ final class LinuxFacade
                         )
                         ->map(Bytes::of(...)),
                 )
-                    ->map(static fn(string $key, Bytes $value) => [$key, $value])
+                    ->map(static fn(string $key, Bytes $value) => [
+                        self::$entries[$key],
+                        $value,
+                    ])
                     ->toSequence(),
             );
         dump($amounts);
