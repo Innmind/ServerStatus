@@ -96,6 +96,7 @@ final class LinuxFacade
                     ->map(static fn(string $key, Bytes $value) => [$key, $value])
                     ->toSequence(),
             );
+        dump($amounts);
         $amounts = Map::of(...$amounts->toList())
             ->map(static fn($_, $value) => Bytes::of(
                 $value->toInt() * 1024, // 1024 represents a kilobyte
