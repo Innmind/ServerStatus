@@ -73,10 +73,7 @@ class LinuxTest extends TestCase
             $this
                 ->server
                 ->memory()
-                ->match(
-                    static fn($memory) => $memory,
-                    static fn() => null,
-                ),
+                ->unwrap(),
         );
     }
 

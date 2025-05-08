@@ -36,10 +36,7 @@ class LinuxFacadeTest extends TestCase
 
         $facade = new LinuxFacade($this->server->processes());
 
-        $this->assertInstanceOf(Memory::class, $facade()->match(
-            static fn($memory) => $memory,
-            static fn() => null,
-        ));
+        $this->assertInstanceOf(Memory::class, $facade()->unwrap());
     }
 
     public function testReturnNohingWhenInfoNotAccessible()
