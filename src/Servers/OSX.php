@@ -37,31 +37,37 @@ final class OSX implements Server
         $this->disk = new UnixDisk($control->processes());
     }
 
+    #[\Override]
     public function cpu(): Maybe
     {
         return ($this->cpu)();
     }
 
+    #[\Override]
     public function memory(): Maybe
     {
         return ($this->memory)();
     }
 
+    #[\Override]
     public function processes(): Processes
     {
         return $this->processes;
     }
 
+    #[\Override]
     public function loadAverage(): LoadAverage
     {
         return ($this->loadAverage)();
     }
 
+    #[\Override]
     public function disk(): Disk
     {
         return $this->disk;
     }
 
+    #[\Override]
     public function tmp(): Path
     {
         return Path::of(\rtrim(\sys_get_temp_dir(), '/').'/');

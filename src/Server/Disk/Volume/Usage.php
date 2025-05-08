@@ -28,6 +28,9 @@ final class Usage
 
     public function toString(): string
     {
-        return $this->value.'%';
+        return \sprintf(
+            '%s%%',
+            $this->value,
+        );
     }
 }

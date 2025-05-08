@@ -24,6 +24,7 @@ final class LoggerDisk implements Disk
         $this->logger = $logger;
     }
 
+    #[\Override]
     public function volumes(): Set
     {
         $volumes = $this->disk->volumes();
@@ -42,6 +43,7 @@ final class LoggerDisk implements Disk
         return $volumes;
     }
 
+    #[\Override]
     public function get(MountPoint $point): Maybe
     {
         return $this
