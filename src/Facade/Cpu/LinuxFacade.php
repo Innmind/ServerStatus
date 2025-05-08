@@ -12,6 +12,7 @@ use Innmind\Server\Control\Server\{
     Processes,
     Command,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Attempt,
@@ -85,6 +86,7 @@ final class LinuxFacade
                     ->toString(),
             )
             ->map(static fn($cores) => (int) $cores)
+            ->keep(Is::int()->positive()->asPredicate())
             ->match(
                 static fn($cores) => $cores,
                 static fn() => 1,
@@ -99,7 +101,7 @@ final class LinuxFacade
                 new Percentage($user),
                 new Percentage($sys),
                 new Percentage($idle),
-                new Cores($cores),
+                Cores::of($cores),
             ))
             ->match(
                 Attempt::result(...),

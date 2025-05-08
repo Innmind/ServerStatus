@@ -12,6 +12,7 @@ use Innmind\Server\Control\Server\{
     Processes,
     Command,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Attempt,
@@ -96,17 +97,21 @@ final class OSXFacade
             ->flatMap(static fn($output) => $output->get('cores'))
             ->map(static fn($cores) => $cores->toString())
             ->map(static fn($cores) => (int) $cores)
-            ->otherwise(static fn() => Maybe::just(1));
+            ->keep(Is::int()->positive()->asPredicate())
+            ->match(
+                static fn($cores) => $cores,
+                static fn() => 1,
+            );
         $user = $percentages->get('user');
         $sys = $percentages->get('sys');
         $idle = $percentages->get('idle');
 
-        return Maybe::all($user, $sys, $idle, $cores)
-            ->map(static fn(float $user, float $sys, float $idle, int $cores) => new Cpu(
+        return Maybe::all($user, $sys, $idle)
+            ->map(static fn(float $user, float $sys, float $idle) => new Cpu(
                 new Percentage($user),
                 new Percentage($sys),
                 new Percentage($idle),
-                new Cores($cores),
+                Cores::of($cores),
             ))
             ->match(
                 Attempt::result(...),
