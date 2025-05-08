@@ -105,13 +105,13 @@ final class UnixDisk implements Disk
                 ->map(MountPoint::of(...));
             $size = $parts
                 ->get('size')
-                ->flatMap(static fn($size) => Bytes::of($size));
+                ->flatMap(Bytes::maybe(...));
             $available = $parts
                 ->get('available')
-                ->flatMap(static fn($available) => Bytes::of($available));
+                ->flatMap(Bytes::maybe(...));
             $used = $parts
                 ->get('used')
-                ->flatMap(static fn($used) => Bytes::of($used));
+                ->flatMap(Bytes::maybe(...));
             $usage = $parts
                 ->get('usage')
                 ->map(static fn($value) => (float) $value)

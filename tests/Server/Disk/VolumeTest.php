@@ -17,9 +17,9 @@ class VolumeTest extends TestCase
     {
         $volume = Volume::of(
             $mount = MountPoint::of('/'),
-            $size = new Bytes(42),
-            $available = new Bytes(42),
-            $used = new Bytes(42),
+            $size = Bytes::of(42),
+            $available = Bytes::of(42),
+            $used = Bytes::of(42),
             $usage = Usage::maybe(100)->match(
                 static fn($usage) => $usage,
                 static fn() => throw new \Exception('Should be valid'),

@@ -46,7 +46,8 @@ final class OSXFacade
             ->trim()
             ->capture('~^hw.memsize: (?P<total>\d+)$~')
             ->get('total')
-            ->map(static fn($total) => $total->toString());
+            ->map(static fn($total) => $total->toString())
+            ->flatMap(Bytes::maybe(...));
         $swap = $this
             ->run(
                 Command::foreground('sysctl')
@@ -56,7 +57,7 @@ final class OSXFacade
             ->capture('~used = (?P<swap>\d+[\.,]?\d*[KMGTP])~')
             ->get('swap')
             ->map(static fn($swap) => $swap->toString())
-            ->flatMap(static fn($swap) => Bytes::of($swap));
+            ->flatMap(Bytes::maybe(...));
         $amounts = $this
             ->run(
                 Command::foreground('top')
@@ -74,10 +75,10 @@ final class OSXFacade
             ->map(static fn($_, $amount) => $amount->toString());
         $unused = $amounts
             ->get('unused')
-            ->flatMap(static fn($unused) => Bytes::of($unused));
+            ->flatMap(Bytes::maybe(...));
         $used = $amounts
             ->get('used')
-            ->flatMap(static fn($used) => Bytes::of($used));
+            ->flatMap(Bytes::maybe(...));
         $active = $this
             ->run(
                 Command::foreground('vm_stat')->pipe(
@@ -88,12 +89,15 @@ final class OSXFacade
             ->trim()
             ->capture('~(?P<active>\d+)~')
             ->get('active')
-            ->map(static fn($active) => $active->toString());
+            ->map(static fn($active) => $active->toString())
+            ->flatMap(Bytes::maybe(...))
+            ->map(static fn($bytes) => $bytes->toInt() * 4096)
+            ->map(Bytes::of(...));
 
         return Maybe::all($total, $active, $unused, $swap, $used)
-            ->map(static fn(string $total, string $active, Bytes $unused, Bytes $swap, Bytes $used) => new Memory(
-                new Bytes((int) $total),
-                new Bytes(((int) $active) * 4096),
+            ->map(static fn(Bytes $total, Bytes $active, Bytes $unused, Bytes $swap, Bytes $used) => new Memory(
+                $total,
+                $active,
                 $unused,
                 $swap,
                 $used,

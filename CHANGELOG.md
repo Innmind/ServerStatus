@@ -11,6 +11,7 @@
 ### Removed
 
 - `Innmind\Server\Status\Exception\EmptyPathNotAllowed`
+- `Innmind\Server\Status\Exception\BytesCannotBeNegative`
 
 ## 4.1.1 - 2024-09-30
 
