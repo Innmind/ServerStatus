@@ -7,7 +7,7 @@ use Innmind\Server\Status\Server\{
     Memory,
     Memory\Bytes,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class MemoryTest extends TestCase
 {

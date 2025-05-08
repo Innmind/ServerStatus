@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\LoadAverage,
     Exception\LoadAverageCannotBeNegative,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LoadAverageTest extends TestCase
 {

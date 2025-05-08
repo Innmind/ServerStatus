@@ -8,7 +8,7 @@ use Innmind\Server\Status\{
     Exception\EmptyCommandNotAllowed,
 };
 use Innmind\Immutable\RegExp;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class CommandTest extends TestCase
 {

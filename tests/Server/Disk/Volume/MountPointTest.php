@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
     Exception\EmptyPathNotAllowed,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class MountPointTest extends TestCase
 {

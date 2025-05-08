@@ -11,7 +11,7 @@ use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Earth\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
 use Innmind\Stream\Streams;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class OSXFacadeTest extends TestCase
 {
@@ -29,7 +29,9 @@ class OSXFacadeTest extends TestCase
     public function testInterface()
     {
         if (\PHP_OS !== 'Darwin') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $facade = new OSXFacade($this->server->processes());
@@ -43,7 +45,9 @@ class OSXFacadeTest extends TestCase
     public function testReturnNothingWhenInfoNotAccessible()
     {
         if (\PHP_OS === 'Darwin') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertNull((new OSXFacade($this->server->processes()))()->match(

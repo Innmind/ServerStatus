@@ -8,7 +8,7 @@ use Innmind\Server\Status\Server\{
     Cpu\Percentage,
     Cpu\Cores,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class CpuTest extends TestCase
 {

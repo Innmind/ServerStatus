@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\Usage,
     Exception\OutOfBoundsPercentage,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UsageTest extends TestCase
 {
