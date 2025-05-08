@@ -18,6 +18,8 @@ final class LoadAverage
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(

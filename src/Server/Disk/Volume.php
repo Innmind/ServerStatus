@@ -9,6 +9,9 @@ use Innmind\Server\Status\Server\{
     Memory\Bytes,
 };
 
+/**
+ * @psalm-immutable
+ */
 final class Volume
 {
     private function __construct(
@@ -20,6 +23,9 @@ final class Volume
     ) {
     }
 
+    /**
+     * @psalm-pure
+     */
     public static function of(
         MountPoint $mountPoint,
         Bytes $size,

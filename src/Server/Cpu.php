@@ -21,6 +21,9 @@ final class Cpu
     ) {
     }
 
+    /**
+     * @psalm-pure
+     */
     public static function of(
         Percentage $user,
         Percentage $system,

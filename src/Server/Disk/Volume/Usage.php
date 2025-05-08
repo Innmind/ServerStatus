@@ -5,6 +5,9 @@ namespace Innmind\Server\Status\Server\Disk\Volume;
 
 use Innmind\Immutable\Maybe;
 
+/**
+ * @psalm-immutable
+ */
 final class Usage
 {
     private function __construct(
@@ -13,6 +16,8 @@ final class Usage
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(float $value): Maybe

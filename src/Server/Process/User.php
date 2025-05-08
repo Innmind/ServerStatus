@@ -17,6 +17,8 @@ final class User
     }
 
     /**
+     * @psalm-pure
+     *
      * @param non-empty-string $value
      */
     public static function of(string $value): self

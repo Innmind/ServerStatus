@@ -30,6 +30,8 @@ final class Bytes
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<0, max> $value
      */
     public static function of(int $value): self
@@ -73,6 +75,8 @@ final class Bytes
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(string $bytes): Maybe
@@ -96,6 +100,8 @@ final class Bytes
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     private static function attemptDarwin(Str $bytes): Maybe
@@ -107,6 +113,8 @@ final class Bytes
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     private static function attemptLinux(Str $bytes): Maybe
@@ -118,6 +126,8 @@ final class Bytes
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     private static function fromUnit(Str $bytes, Str $unit): Maybe

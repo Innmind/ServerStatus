@@ -19,6 +19,9 @@ final class Memory
     ) {
     }
 
+    /**
+     * @psalm-pure
+     */
     public static function of(
         Bytes $total,
         Bytes $active,

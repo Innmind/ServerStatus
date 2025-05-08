@@ -32,6 +32,8 @@ final class Process
     }
 
     /**
+     * @psalm-pure
+     *
      * @param Maybe<PointInTime> $start
      */
     public static function of(

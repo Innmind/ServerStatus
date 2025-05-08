@@ -16,6 +16,8 @@ final class Percentage
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(float $value): Maybe

@@ -3,6 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Disk\Volume;
 
+/**
+ * @psalm-immutable
+ */
 final class MountPoint
 {
     /**
@@ -14,6 +17,8 @@ final class MountPoint
     }
 
     /**
+     * @psalm-pure
+     *
      * @param non-empty-string $value
      */
     public static function of(string $value): self

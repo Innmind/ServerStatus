@@ -17,6 +17,8 @@ final class Pid
     }
 
     /**
+     * @psalm-pure
+     *
      * @param int<1, max> $value
      */
     public static function of(int $value): self

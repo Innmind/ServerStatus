@@ -16,6 +16,8 @@ final class Memory
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     public static function maybe(float $value): Maybe
