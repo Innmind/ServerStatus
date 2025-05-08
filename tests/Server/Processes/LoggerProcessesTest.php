@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes\LoggerProcesses,
+    Server\Processes\Logger,
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
@@ -23,7 +23,7 @@ class LoggerProcessesTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Processes::class, LoggerProcesses::of(
+        $this->assertInstanceOf(Processes::class, Logger::of(
             $this->processes(),
             new NullLogger,
         ));
@@ -31,14 +31,14 @@ class LoggerProcessesTest extends TestCase
 
     public function testAll()
     {
-        $processes = LoggerProcesses::of($this->processes(), new NullLogger);
+        $processes = Logger::of($this->processes(), new NullLogger);
 
         $this->assertInstanceOf(Set::class, $processes->all());
     }
 
     public function testGet()
     {
-        $processes = LoggerProcesses::of($this->processes(), new NullLogger);
+        $processes = Logger::of($this->processes(), new NullLogger);
 
         $this->assertInstanceOf(Process::class, $processes->get(Pid::of(1))->match(
             static fn($process) => $process,

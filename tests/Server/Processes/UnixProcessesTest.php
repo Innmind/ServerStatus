@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes\UnixProcesses,
+    Server\Processes\Unix,
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
@@ -25,7 +25,7 @@ class UnixProcessesTest extends TestCase
 
     public function setUp(): void
     {
-        $this->processes = UnixProcesses::of(
+        $this->processes = Unix::of(
             Clock::live(),
             Control::build(
                 Clock::live(),

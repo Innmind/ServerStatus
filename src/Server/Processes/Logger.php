@@ -15,7 +15,7 @@ use Innmind\Immutable\{
 };
 use Psr\Log\LoggerInterface;
 
-final class LoggerProcesses implements Processes
+final class Logger implements Processes
 {
     private function __construct(
         private Processes $processes,

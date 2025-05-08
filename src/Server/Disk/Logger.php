@@ -13,7 +13,7 @@ use Innmind\Immutable\{
 };
 use Psr\Log\LoggerInterface;
 
-final class LoggerDisk implements Disk
+final class Logger implements Disk
 {
     private function __construct(
         private Disk $disk,

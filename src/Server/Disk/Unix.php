@@ -23,7 +23,7 @@ use Innmind\Immutable\{
     Monoid\Concat,
 };
 
-final class UnixDisk implements Disk
+final class Unix implements Disk
 {
     private static array $columns = [
         'Size' => 'size',

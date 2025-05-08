@@ -26,7 +26,7 @@ use Innmind\Immutable\{
     Monoid\Concat,
 };
 
-final class UnixProcesses implements Processes
+final class Unix implements Processes
 {
     private function __construct(
         private Clock $clock,

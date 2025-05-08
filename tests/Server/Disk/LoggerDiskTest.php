@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Disk;
 
 use Innmind\Server\Status\{
-    Server\Disk\LoggerDisk,
+    Server\Disk\Logger,
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
@@ -23,7 +23,7 @@ class LoggerDiskTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Disk::class, LoggerDisk::of(
+        $this->assertInstanceOf(Disk::class, Logger::of(
             $this->disk(),
             new NullLogger,
         ));
@@ -31,14 +31,14 @@ class LoggerDiskTest extends TestCase
 
     public function testVolumes()
     {
-        $disk = LoggerDisk::of($this->disk(), new NullLogger);
+        $disk = Logger::of($this->disk(), new NullLogger);
 
         $this->assertInstanceOf(Set::class, $disk->volumes());
     }
 
     public function testGet()
     {
-        $disk = LoggerDisk::of($this->disk(), new NullLogger);
+        $disk = Logger::of($this->disk(), new NullLogger);
 
         $this->assertInstanceOf(Volume::class, $disk->get(MountPoint::of('/'))->match(
             static fn($volume) => $volume,
