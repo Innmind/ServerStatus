@@ -5,6 +5,7 @@
 ### Changed
 
 - Requires `innmind/immutable:~5.14`
+- `Innmind\Server\Status\Server::cpu()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Cpu>`
 
 ## 4.1.1 - 2024-09-30
 

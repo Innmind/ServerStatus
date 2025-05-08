@@ -11,14 +11,15 @@ use Innmind\Server\Status\Server\{
     Disk,
 };
 use Innmind\Url\Path;
+use Innmind\Immutable\Attempt;
 use Innmind\Immutable\Maybe;
 
 interface Server
 {
     /**
-     * @return Maybe<Cpu>
+     * @return Attempt<Cpu>
      */
-    public function cpu(): Maybe;
+    public function cpu(): Attempt;
 
     /**
      * @return Maybe<Memory>

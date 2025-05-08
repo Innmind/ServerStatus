@@ -18,6 +18,7 @@ use Innmind\Server\Status\{
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
+use Innmind\Immutable\Attempt;
 use Innmind\Immutable\Maybe;
 
 final class OSX implements Server
@@ -38,7 +39,7 @@ final class OSX implements Server
     }
 
     #[\Override]
-    public function cpu(): Maybe
+    public function cpu(): Attempt
     {
         return ($this->cpu)();
     }
