@@ -26,6 +26,7 @@ final class LoggerProcesses implements Processes
         $this->logger = $logger;
     }
 
+    #[\Override]
     public function all(): Set
     {
         $all = $this->processes->all();
@@ -44,6 +45,7 @@ final class LoggerProcesses implements Processes
         return $all;
     }
 
+    #[\Override]
     public function get(Pid $pid): Maybe
     {
         return $this

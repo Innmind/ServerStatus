@@ -39,6 +39,7 @@ final class UnixDisk implements Disk
         $this->processes = $processes;
     }
 
+    #[\Override]
     public function volumes(): Set
     {
         return $this
@@ -63,6 +64,7 @@ final class UnixDisk implements Disk
             );
     }
 
+    #[\Override]
     public function get(MountPoint $point): Maybe
     {
         return $this

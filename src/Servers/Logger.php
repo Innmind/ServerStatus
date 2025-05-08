@@ -24,6 +24,7 @@ final class Logger implements Server
         $this->logger = $logger;
     }
 
+    #[\Override]
     public function cpu(): Maybe
     {
         return $this
@@ -36,6 +37,7 @@ final class Logger implements Server
             });
     }
 
+    #[\Override]
     public function memory(): Maybe
     {
         return $this
@@ -54,6 +56,7 @@ final class Logger implements Server
             });
     }
 
+    #[\Override]
     public function processes(): Processes
     {
         return new Processes\LoggerProcesses(
@@ -62,6 +65,7 @@ final class Logger implements Server
         );
     }
 
+    #[\Override]
     public function loadAverage(): LoadAverage
     {
         $loadAverage = $this->server->loadAverage();
@@ -74,6 +78,7 @@ final class Logger implements Server
         return $loadAverage;
     }
 
+    #[\Override]
     public function disk(): Disk
     {
         return new Disk\LoggerDisk(
@@ -82,6 +87,7 @@ final class Logger implements Server
         );
     }
 
+    #[\Override]
     public function tmp(): Path
     {
         $tmp = $this->server->tmp();

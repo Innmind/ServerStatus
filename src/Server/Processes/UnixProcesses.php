@@ -32,6 +32,7 @@ final class UnixProcesses implements Processes
         $this->processes = $processes;
     }
 
+    #[\Override]
     public function all(): Set
     {
         return $this
@@ -46,6 +47,7 @@ final class UnixProcesses implements Processes
             );
     }
 
+    #[\Override]
     public function get(Pid $pid): Maybe
     {
         return $this
