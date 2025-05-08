@@ -22,7 +22,6 @@ final class Bytes
     private const PETABYTES = 1024 ** 6;
 
     private int $value;
-    private string $string;
 
     /**
      * @throws BytesCannotBeNegative
@@ -34,48 +33,6 @@ final class Bytes
         }
 
         $this->value = $value;
-        $this->string = $value.'B';
-
-        switch (true) {
-            case $value < self::BYTES:
-                $this->string = $value.'B';
-                break;
-
-            case $value < self::KILOBYTES:
-                $this->string = \sprintf(
-                    '%sKB',
-                    \round($value/self::BYTES, 3),
-                );
-                break;
-
-            case $value < self::MEGABYTES:
-                $this->string = \sprintf(
-                    '%sMB',
-                    \round($value/self::KILOBYTES, 3),
-                );
-                break;
-
-            case $value < self::GIGABYTES:
-                $this->string = \sprintf(
-                    '%sGB',
-                    \round($value/self::MEGABYTES, 3),
-                );
-                break;
-
-            case $value < self::TERABYTES:
-                $this->string = \sprintf(
-                    '%sTB',
-                    \round($value/self::GIGABYTES, 3),
-                );
-                break;
-
-            case $value < self::PETABYTES:
-                $this->string = \sprintf(
-                    '%sPB',
-                    \round($value/self::TERABYTES, 3),
-                );
-                break;
-        }
     }
 
     public function toInt(): int
@@ -85,7 +42,29 @@ final class Bytes
 
     public function toString(): string
     {
-        return $this->string;
+        return match (true) {
+            $this->value < self::BYTES => $this->value.'B',
+            $this->value < self::KILOBYTES => \sprintf(
+                '%sKB',
+                \round($this->value/self::BYTES, 3),
+            ),
+            $this->value < self::MEGABYTES => \sprintf(
+                '%sMB',
+                \round($this->value/self::KILOBYTES, 3),
+            ),
+            $this->value < self::GIGABYTES => \sprintf(
+                '%sGB',
+                \round($this->value/self::MEGABYTES, 3),
+            ),
+            $this->value < self::TERABYTES => \sprintf(
+                '%sTB',
+                \round($this->value/self::GIGABYTES, 3),
+            ),
+            $this->value < self::PETABYTES => \sprintf(
+                '%sPB',
+                \round($this->value/self::TERABYTES, 3),
+            ),
+        };
     }
 
     /**
