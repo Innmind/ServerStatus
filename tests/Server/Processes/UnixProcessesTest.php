@@ -76,7 +76,7 @@ class UnixProcessesTest extends TestCase
     {
         $process = $this
             ->processes
-            ->get(new Pid(1))
+            ->get(Pid::of(1))
             ->match(
                 static fn($process) => $process,
                 static fn() => null,
@@ -91,7 +91,7 @@ class UnixProcessesTest extends TestCase
         $this->assertNull(
             $this
                 ->processes
-                ->get(new Pid(42424))
+                ->get(Pid::of(42424))
                 ->match(
                     static fn($process) => $process,
                     static fn() => null,

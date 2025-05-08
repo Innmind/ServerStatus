@@ -40,7 +40,7 @@ class LoggerProcessesTest extends TestCase
     {
         $processes = new LoggerProcesses($this->processes(), new NullLogger);
 
-        $this->assertInstanceOf(Process::class, $processes->get(new Pid(1))->match(
+        $this->assertInstanceOf(Process::class, $processes->get(Pid::of(1))->match(
             static fn($process) => $process,
             static fn() => null,
         ));
