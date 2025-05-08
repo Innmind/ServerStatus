@@ -17,6 +17,7 @@ final class User
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @param non-empty-string $value

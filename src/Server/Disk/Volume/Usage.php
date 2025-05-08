@@ -16,6 +16,7 @@ final class Usage
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @return Maybe<self>

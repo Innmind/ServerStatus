@@ -24,6 +24,7 @@ final class Volume
     }
 
     /**
+     * @internal
      * @psalm-pure
      */
     public static function of(

@@ -26,6 +26,9 @@ final class LoggerProcesses implements Processes
         $this->logger = $logger;
     }
 
+    /**
+     * @internal
+     */
     public static function of(Processes $processes, LoggerInterface $logger): self
     {
         return new self($processes, $logger);

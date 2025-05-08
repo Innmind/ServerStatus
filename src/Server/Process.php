@@ -32,6 +32,7 @@ final class Process
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @param Maybe<PointInTime> $start

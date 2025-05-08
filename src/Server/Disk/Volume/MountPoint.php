@@ -17,6 +17,7 @@ final class MountPoint
     }
 
     /**
+     * @internal
      * @psalm-pure
      *
      * @param non-empty-string $value
