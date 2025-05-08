@@ -3,25 +3,28 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Process;
 
-use Innmind\Server\Status\Exception\LowestPidPossibleIsOne;
-
 /**
  * @psalm-immutable
  */
 final class Pid
 {
-    private int $value;
+    /**
+     * @param int<1, max> $value
+     */
+    private function __construct(
+        private int $value,
+    ) {
+    }
 
     /**
-     * @throws LowestPidPossibleIsOne
+     * @internal
+     * @psalm-pure
+     *
+     * @param int<1, max> $value
      */
-    public function __construct(int $value)
+    public static function of(int $value): self
     {
-        if ($value < 1) {
-            throw new LowestPidPossibleIsOne((string) $value);
-        }
-
-        $this->value = $value;
+        return new self($value);
     }
 
     public function equals(self $pid): bool
@@ -34,6 +37,9 @@ final class Pid
         return $this->value === $value;
     }
 
+    /**
+     * @return int<1, max>
+     */
     public function toInt(): int
     {
         return $this->value;

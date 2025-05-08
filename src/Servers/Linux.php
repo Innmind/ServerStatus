@@ -6,61 +6,72 @@ namespace Innmind\Server\Status\Servers;
 use Innmind\Server\Status\{
     Server,
     Server\Processes,
-    Server\LoadAverage,
     Facade\Cpu\LinuxFacade as CpuFacade,
     Facade\Memory\LinuxFacade as MemoryFacade,
     Facade\LoadAverage\PhpFacade as LoadAverageFacade,
-    Server\Processes\UnixProcesses,
     Server\Disk,
-    Server\Disk\UnixDisk,
 };
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
 final class Linux implements Server
 {
     private CpuFacade $cpu;
     private MemoryFacade $memory;
-    private UnixProcesses $processes;
+    private Processes\Unix $processes;
     private LoadAverageFacade $loadAverage;
-    private UnixDisk $disk;
+    private Disk\Unix $disk;
 
-    public function __construct(Clock $clock, Control $control)
+    private function __construct(Clock $clock, Control $control)
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes());
-        $this->processes = new UnixProcesses($clock, $control->processes());
+        $this->processes = Processes\Unix::of($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
-        $this->disk = new UnixDisk($control->processes());
+        $this->disk = Disk\Unix::of($control->processes());
     }
 
-    public function cpu(): Maybe
+    /**
+     * @internal
+     */
+    public static function of(Clock $clock, Control $control): self
+    {
+        return new self($clock, $control);
+    }
+
+    #[\Override]
+    public function cpu(): Attempt
     {
         return ($this->cpu)();
     }
 
-    public function memory(): Maybe
+    #[\Override]
+    public function memory(): Attempt
     {
         return ($this->memory)();
     }
 
+    #[\Override]
     public function processes(): Processes
     {
         return $this->processes;
     }
 
-    public function loadAverage(): LoadAverage
+    #[\Override]
+    public function loadAverage(): Attempt
     {
         return ($this->loadAverage)();
     }
 
+    #[\Override]
     public function disk(): Disk
     {
         return $this->disk;
     }
 
+    #[\Override]
     public function tmp(): Path
     {
         return Path::of(\rtrim(\sys_get_temp_dir(), '/').'/');

@@ -7,18 +7,18 @@ use Innmind\Server\Status\Server\{
     Memory,
     Memory\Bytes,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class MemoryTest extends TestCase
 {
     public function testInterface()
     {
-        $memory = new Memory(
-            $total = new Bytes(42),
-            $active = new Bytes(42),
-            $free = new Bytes(42),
-            $swap = new Bytes(42),
-            $used = new Bytes(42),
+        $memory = Memory::of(
+            $total = Bytes::of(42),
+            $active = Bytes::of(42),
+            $free = Bytes::of(42),
+            $swap = Bytes::of(42),
+            $used = Bytes::of(42),
         );
 
         $this->assertSame($total, $memory->total());

@@ -3,25 +3,32 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Process;
 
-use Innmind\Server\Status\Exception\OutOfBoundsPercentage;
+use Innmind\Immutable\Maybe;
 
 /**
  * @psalm-immutable
  */
 final class Memory
 {
-    private float $value;
+    private function __construct(
+        private float $value,
+    ) {
+    }
 
     /**
-     * @throws OutOfBoundsPercentage
+     * @internal
+     * @psalm-pure
+     *
+     * @return Maybe<self>
      */
-    public function __construct(float $value)
+    public static function maybe(float $value): Maybe
     {
         if ($value < 0 || $value > 100) {
-            throw new OutOfBoundsPercentage((string) $value);
+            /** @var Maybe<self> */
+            return Maybe::nothing();
         }
 
-        $this->value = $value;
+        return Maybe::just(new self($value));
     }
 
     public function toFloat(): float
@@ -31,6 +38,9 @@ final class Memory
 
     public function toString(): string
     {
-        return $this->value.'%';
+        return \sprintf(
+            '%s%%',
+            $this->value,
+        );
     }
 }

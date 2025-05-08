@@ -3,7 +3,8 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Memory;
 
-use Innmind\Server\Status\Exception\BytesCannotBeNegative;
+use Innmind\IO\Stream\Size;
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Maybe,
@@ -21,63 +22,28 @@ final class Bytes
     private const TERABYTES = 1024 ** 5;
     private const PETABYTES = 1024 ** 6;
 
-    private int $value;
-    private string $string;
-
     /**
-     * @throws BytesCannotBeNegative
+     * @param int<0, max> $value
      */
-    public function __construct(int $value)
-    {
-        if ($value < 0) {
-            throw new BytesCannotBeNegative((string) $value);
-        }
-
-        $this->value = $value;
-        $this->string = $value.'B';
-
-        switch (true) {
-            case $value < self::BYTES:
-                $this->string = $value.'B';
-                break;
-
-            case $value < self::KILOBYTES:
-                $this->string = \sprintf(
-                    '%sKB',
-                    \round($value/self::BYTES, 3),
-                );
-                break;
-
-            case $value < self::MEGABYTES:
-                $this->string = \sprintf(
-                    '%sMB',
-                    \round($value/self::KILOBYTES, 3),
-                );
-                break;
-
-            case $value < self::GIGABYTES:
-                $this->string = \sprintf(
-                    '%sGB',
-                    \round($value/self::MEGABYTES, 3),
-                );
-                break;
-
-            case $value < self::TERABYTES:
-                $this->string = \sprintf(
-                    '%sTB',
-                    \round($value/self::GIGABYTES, 3),
-                );
-                break;
-
-            case $value < self::PETABYTES:
-                $this->string = \sprintf(
-                    '%sPB',
-                    \round($value/self::TERABYTES, 3),
-                );
-                break;
-        }
+    private function __construct(
+        private int $value,
+    ) {
     }
 
+    /**
+     * @internal
+     * @psalm-pure
+     *
+     * @param int<0, max> $value
+     */
+    public static function of(int $value): self
+    {
+        return new self($value);
+    }
+
+    /**
+     * @return int<0, max>
+     */
     public function toInt(): int
     {
         return $this->value;
@@ -85,26 +51,38 @@ final class Bytes
 
     public function toString(): string
     {
-        return $this->string;
+        return Size::of($this->value)->toString();
     }
 
     /**
+     * @internal
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
-    public static function of(string $bytes): Maybe
+    public static function maybe(string $bytes): Maybe
     {
         if ($bytes === (string) (int) $bytes) {
-            return Maybe::just(new self((int) $bytes));
+            return Maybe::just((int) $bytes)
+                ->keep(
+                    Is::int()
+                        ->positive()
+                        ->or(Is::value(0))
+                        ->asPredicate(),
+                )
+                ->map(static fn($value) => new self($value));
         }
 
-        return Maybe::just(Str::of($bytes))
-            ->filter(static fn($bytes) => $bytes->length() >= 2)
+        return Str::of($bytes)
+            ->maybe(static fn($bytes) => $bytes->length() >= 2)
             ->flatMap(static fn($bytes) => self::attemptLinux($bytes)->otherwise(
                 static fn() => self::attemptDarwin($bytes),
             ));
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     private static function attemptDarwin(Str $bytes): Maybe
@@ -116,6 +94,8 @@ final class Bytes
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     private static function attemptLinux(Str $bytes): Maybe
@@ -127,6 +107,8 @@ final class Bytes
     }
 
     /**
+     * @psalm-pure
+     *
      * @return Maybe<self>
      */
     private static function fromUnit(Str $bytes, Str $unit): Maybe
@@ -153,7 +135,13 @@ final class Bytes
         };
 
         return Maybe::of($multiplier)
-            ->map(static fn($multiplier) => (int) (((float) $bytes->toString()) * $multiplier))
+            ->map(static fn($multiplier) => (int) (((float) $bytes->toString()) * (float) $multiplier))
+            ->keep(
+                Is::int()
+                    ->positive()
+                    ->or(Is::value(0))
+                    ->asPredicate(),
+            )
             ->map(static fn($bytes) => new self($bytes));
     }
 }

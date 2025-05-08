@@ -14,11 +14,11 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Url\Path;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class OSXTest extends TestCase
 {
@@ -26,12 +26,12 @@ class OSXTest extends TestCase
 
     public function setUp(): void
     {
-        $this->server = new OSX(
-            new Clock,
+        $this->server = OSX::of(
+            Clock::live(),
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             ),
             EnvironmentPath::of(\getenv('PATH')),
         );
@@ -45,7 +45,9 @@ class OSXTest extends TestCase
     public function testCpu()
     {
         if (\PHP_OS !== 'Darwin') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertInstanceOf(
@@ -60,7 +62,9 @@ class OSXTest extends TestCase
     public function testMemory()
     {
         if (\PHP_OS !== 'Darwin') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertInstanceOf(
@@ -82,7 +86,7 @@ class OSXTest extends TestCase
 
     public function testLoadAverage()
     {
-        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage()->unwrap());
     }
 
     public function testDisk()

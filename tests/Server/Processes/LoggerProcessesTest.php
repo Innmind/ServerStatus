@@ -4,71 +4,58 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes\LoggerProcesses,
+    Server\Processes\Logger,
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
-    Server\Process\User,
-    Server\Process\Command,
-    Server\Process\Memory,
-    Server\Cpu\Percentage,
+    ServerFactory,
+    EnvironmentPath,
 };
-use Innmind\TimeContinuum\Earth\Clock;
-use Innmind\Immutable\{
-    Set,
-    Maybe,
-};
-use Psr\Log\LoggerInterface;
-use PHPUnit\Framework\TestCase;
+use Innmind\Server\Control\ServerFactory as Control;
+use Innmind\TimeContinuum\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\IO\IO;
+use Innmind\Immutable\Set;
+use Psr\Log\NullLogger;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LoggerProcessesTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Processes::class, new LoggerProcesses(
-            $this->createMock(Processes::class),
-            $this->createMock(LoggerInterface::class),
+        $this->assertInstanceOf(Processes::class, Logger::of(
+            $this->processes(),
+            new NullLogger,
         ));
     }
 
     public function testAll()
     {
-        $inner = $this->createMock(Processes::class);
-        $inner
-            ->expects($this->once())
-            ->method('all')
-            ->willReturn($all = Set::of());
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $processes = Logger::of($this->processes(), new NullLogger);
 
-        $processes = new LoggerProcesses($inner, $logger);
-
-        $this->assertSame($all, $processes->all());
+        $this->assertInstanceOf(Set::class, $processes->all());
     }
 
     public function testGet()
     {
-        $inner = $this->createMock(Processes::class);
-        $inner
-            ->expects($this->once())
-            ->method('get')
-            ->willReturn($process = Maybe::just(new Process(
-                new Pid(1),
-                new User('root'),
-                new Percentage(1),
-                new Memory(1),
-                Maybe::just((new Clock)->now()),
-                new Command('sleep 42'),
-            )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $processes = Logger::of($this->processes(), new NullLogger);
 
-        $processes = new LoggerProcesses($inner, $logger);
+        $this->assertInstanceOf(Process::class, $processes->get(Pid::of(1))->match(
+            static fn($process) => $process,
+            static fn() => null,
+        ));
+    }
 
-        $this->assertEquals($process, $processes->get(new Pid(1)));
+    private function processes(): Processes
+    {
+        return ServerFactory::build(
+            Clock::live(),
+            Control::build(
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
+            ),
+            EnvironmentPath::of(\getenv('PATH')),
+        )->processes();
     }
 }

@@ -8,10 +8,10 @@ use Innmind\Server\Status\{
     Server\Cpu,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
-use PHPUnit\Framework\TestCase;
+use Innmind\IO\IO;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LinuxFacadeTest extends TestCase
 {
@@ -20,16 +20,18 @@ class LinuxFacadeTest extends TestCase
     public function setUp(): void
     {
         $this->server = Control::build(
-            new Clock,
-            Streams::fromAmbientAuthority(),
-            new Usleep,
+            Clock::live(),
+            IO::fromAmbientAuthority(),
+            Usleep::new(),
         );
     }
 
     public function testInterface()
     {
         if (\PHP_OS !== 'Linux') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $facade = new LinuxFacade($this->server->processes());
@@ -43,7 +45,9 @@ class LinuxFacadeTest extends TestCase
     public function testReturnNothingWhenInfoNotAccessible()
     {
         if (\PHP_OS === 'Linux') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertNull((new LinuxFacade($this->server->processes()))()->match(

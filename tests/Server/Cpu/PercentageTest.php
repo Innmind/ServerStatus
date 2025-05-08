@@ -3,26 +3,28 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Cpu;
 
-use Innmind\Server\Status\{
-    Server\Cpu\Percentage,
-    Exception\OutOfBoundsPercentage,
-};
-use PHPUnit\Framework\TestCase;
+use Innmind\Server\Status\Server\Cpu\Percentage;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class PercentageTest extends TestCase
 {
     public function testInterface()
     {
-        $percentage = new Percentage(42.24);
+        $percentage = Percentage::maybe(42.24)->match(
+            static fn($percentage) => $percentage,
+            static fn() => null,
+        );
 
+        $this->assertNotNull($percentage);
         $this->assertSame(42.24, $percentage->toFloat());
         $this->assertSame('42.24%', $percentage->toString());
     }
 
-    public function testThrowWhenPercentageLowerThanZero()
+    public function testReturnNothingWhenPercentageLowerThanZero()
     {
-        $this->expectException(OutOfBoundsPercentage::class);
-
-        new Percentage(-1);
+        $this->assertNull(Percentage::maybe(-1)->match(
+            static fn($percentage) => $percentage,
+            static fn() => null,
+        ));
     }
 }

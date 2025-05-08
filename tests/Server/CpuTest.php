@@ -8,17 +8,26 @@ use Innmind\Server\Status\Server\{
     Cpu\Percentage,
     Cpu\Cores,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class CpuTest extends TestCase
 {
     public function testInterface()
     {
-        $cpu = new Cpu(
-            $user = new Percentage(31),
-            $system = new Percentage(33),
-            $idle = new Percentage(36),
-            $cores = new Cores(4),
+        $cpu = Cpu::of(
+            $user = Percentage::maybe(31)->match(
+                static fn($percentage) => $percentage,
+                static fn() => throw new \Exception('Should be valid'),
+            ),
+            $system = Percentage::maybe(33)->match(
+                static fn($percentage) => $percentage,
+                static fn() => throw new \Exception('Should be valid'),
+            ),
+            $idle = Percentage::maybe(36)->match(
+                static fn($percentage) => $percentage,
+                static fn() => throw new \Exception('Should be valid'),
+            ),
+            $cores = Cores::of(4),
         );
 
         $this->assertSame($user, $cpu->user());

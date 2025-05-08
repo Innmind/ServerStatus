@@ -12,9 +12,12 @@ use Innmind\Server\Control\Server\{
     Processes,
     Command,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
+    Attempt,
     Maybe,
+    Monoid\Concat,
 };
 
 /**
@@ -22,17 +25,15 @@ use Innmind\Immutable\{
  */
 final class OSXFacade
 {
-    private Processes $processes;
-
-    public function __construct(Processes $processes)
-    {
-        $this->processes = $processes;
+    public function __construct(
+        private Processes $processes,
+    ) {
     }
 
     /**
-     * @return Maybe<Cpu>
+     * @return Attempt<Cpu>
      */
-    public function __invoke(): Maybe
+    public function __invoke(): Attempt
     {
         return $this
             ->processes
@@ -45,18 +46,25 @@ final class OSXFacade
                             ->withArgument('CPU usage'),
                     ),
             )
-            ->wait()
-            ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
+            ->flatMap(static fn($process) => $process->wait()->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to retrieve CPU usage')),
+            ))
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            )
             ->flatMap($this->parse(...));
     }
 
     /**
-     * @return Maybe<Cpu>
+     * @return Attempt<Cpu>
      */
-    private function parse(string $output): Maybe
+    private function parse(Str $output): Attempt
     {
-        $percentages = Str::of($output)
+        $percentages = $output
             ->trim()
             ->capture(
                 '~^CPU usage: (?P<user>\d+\.?\d*)% user, (?P<sys>\d+\.?\d*)% sys, (?P<idle>\d+\.?\d*)% idle$~',
@@ -74,26 +82,37 @@ final class OSXFacade
                             ->withArgument('hw.ncpu:'),
                     ),
             )
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
-            ->map(Str::of(...))
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            )
             ->map(static fn($output) => $output->trim())
             ->map(static fn($output) => $output->capture('~^hw.ncpu: (?P<cores>\d+)$~'))
             ->flatMap(static fn($output) => $output->get('cores'))
             ->map(static fn($cores) => $cores->toString())
             ->map(static fn($cores) => (int) $cores)
-            ->otherwise(static fn() => Maybe::just(1));
-        $user = $percentages->get('user');
-        $sys = $percentages->get('sys');
-        $idle = $percentages->get('idle');
+            ->keep(Is::int()->positive()->asPredicate())
+            ->otherwise(static fn() => Maybe::just(1))
+            ->map(Cores::of(...));
+        $user = $percentages
+            ->get('user')
+            ->flatMap(Percentage::maybe(...));
+        $sys = $percentages
+            ->get('sys')
+            ->flatMap(Percentage::maybe(...));
+        $idle = $percentages
+            ->get('idle')
+            ->flatMap(Percentage::maybe(...));
 
         return Maybe::all($user, $sys, $idle, $cores)
-            ->map(static fn(float $user, float $sys, float $idle, int $cores) => new Cpu(
-                new Percentage($user),
-                new Percentage($sys),
-                new Percentage($idle),
-                new Cores($cores),
-            ));
+            ->map(Cpu::of(...))
+            ->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to parse CPU usage')),
+            );
     }
 }

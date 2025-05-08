@@ -3,33 +3,36 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Disk\Volume;
 
-use Innmind\Server\Status\{
-    Server\Disk\Volume\Usage,
-    Exception\OutOfBoundsPercentage,
-};
-use PHPUnit\Framework\TestCase;
+use Innmind\Server\Status\Server\Disk\Volume\Usage;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UsageTest extends TestCase
 {
     public function testInterface()
     {
-        $usage = new Usage(42.24);
+        $usage = Usage::maybe(42.24)->match(
+            static fn($usage) => $usage,
+            static fn() => null,
+        );
 
+        $this->assertNotNull($usage);
         $this->assertSame(42.24, $usage->toFloat());
         $this->assertSame('42.24%', $usage->toString());
     }
 
-    public function testThrowWhenUsageLowerThanZero()
+    public function testReturnNothingWhenUsageLowerThanZero()
     {
-        $this->expectException(OutOfBoundsPercentage::class);
-
-        new Usage(-1);
+        $this->assertNull(Usage::maybe(-1)->match(
+            static fn($usage) => $usage,
+            static fn() => null,
+        ));
     }
 
-    public function testThrowWhenUsageHigherThanHundred()
+    public function testReturnNothingWhenUsageHigherThanHundred()
     {
-        $this->expectException(OutOfBoundsPercentage::class);
-
-        new Usage(101);
+        $this->assertNull(Usage::maybe(101)->match(
+            static fn($usage) => $usage,
+            static fn() => null,
+        ));
     }
 }

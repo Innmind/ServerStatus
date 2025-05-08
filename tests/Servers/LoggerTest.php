@@ -10,120 +10,92 @@ use Innmind\Server\Status\{
     Server\Memory,
     Server\LoadAverage,
     Server\Processes,
-    Server\Disk
+    Server\Disk,
+    ServerFactory,
+    EnvironmentPath,
 };
+use Innmind\Server\Control\ServerFactory as Control;
+use Innmind\TimeContinuum\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\IO\IO;
 use Innmind\Url\Path;
-use Innmind\Immutable\Maybe;
-use Psr\Log\LoggerInterface;
-use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LoggerTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Server::class, new Logger(
-            $this->createMock(Server::class),
-            $this->createMock(LoggerInterface::class),
+        $this->assertInstanceOf(Server::class, Logger::of(
+            $this->server(),
+            new NullLogger,
         ));
     }
 
     public function testCpu()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('cpu')
-            ->willReturn($cpu = Maybe::just(new Cpu(
-                new Cpu\Percentage(1),
-                new Cpu\Percentage(1),
-                new Cpu\Percentage(1),
-                new Cpu\Cores(1),
-            )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $server = Logger::of($this->server(), new NullLogger);
 
-        $server = new Logger($inner, $logger);
-
-        $this->assertEquals($cpu, $server->cpu());
+        $this->assertInstanceOf(Cpu::class, $server->cpu()->match(
+            static fn($cpu) => $cpu,
+            static fn() => null,
+        ));
     }
 
     public function testMemory()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('memory')
-            ->willReturn($memory = Maybe::just(new Memory(
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-            )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $server = Logger::of($this->server(), new NullLogger);
 
-        $server = new Logger($inner, $logger);
-
-        $this->assertEquals($memory, $server->memory());
+        $this->assertInstanceOf(Memory::class, $server->memory()->match(
+            static fn($memory) => $memory,
+            static fn() => null,
+        ));
     }
 
     public function testProcesses()
     {
-        $server = new Logger(
-            $this->createMock(Server::class),
-            $this->createMock(LoggerInterface::class),
+        $server = Logger::of(
+            $this->server(),
+            new NullLogger,
         );
 
-        $this->assertInstanceOf(Processes\LoggerProcesses::class, $server->processes());
+        $this->assertInstanceOf(Processes\Logger::class, $server->processes());
     }
 
     public function testLoadAverage()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('loadAverage')
-            ->willReturn($loadAverage = new LoadAverage(1, 5, 15));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $server = Logger::of($this->server(), new NullLogger);
 
-        $server = new Logger($inner, $logger);
-
-        $this->assertSame($loadAverage, $server->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $server->loadAverage()->unwrap());
     }
 
     public function testDisk()
     {
-        $server = new Logger(
-            $this->createMock(Server::class),
-            $this->createMock(LoggerInterface::class),
+        $server = Logger::of(
+            $this->server(),
+            new NullLogger,
         );
 
-        $this->assertInstanceOf(Disk\LoggerDisk::class, $server->disk());
+        $this->assertInstanceOf(Disk\Logger::class, $server->disk());
     }
 
     public function testTmp()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('tmp')
-            ->willReturn($tmp = Path::of('/tmp/'));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $server = Logger::of($this->server(), new NullLogger);
 
-        $server = new Logger($inner, $logger);
+        $this->assertInstanceOf(Path::class, $server->tmp());
+    }
 
-        $this->assertSame($tmp, $server->tmp());
+    private function server(): Server
+    {
+        return ServerFactory::build(
+            Clock::live(),
+            Control::build(
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
+            ),
+            EnvironmentPath::of(\getenv('PATH')),
+        );
     }
 }

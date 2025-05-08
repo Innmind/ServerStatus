@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Facade\LoadAverage\PhpFacade,
     Server\LoadAverage,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class PhpFacadeTest extends TestCase
 {
@@ -15,6 +15,6 @@ class PhpFacadeTest extends TestCase
     {
         $facade = new PhpFacade;
 
-        $this->assertInstanceOf(LoadAverage::class, $facade());
+        $this->assertInstanceOf(LoadAverage::class, $facade()->unwrap());
     }
 }

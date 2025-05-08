@@ -1,5 +1,29 @@
 # Changelog
 
+## 5.0.0 - 2025-05-08
+
+### Changed
+
+- Requires `innmind/immutable:~5.14`
+- `Innmind\Server\Status\Server::cpu()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Cpu>`
+- `Innmind\Server\Status\Server::memory()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Memory>`
+- `Innmind\Server\Status\Server::loadAverage()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\LoadAverage>`
+- `Innmind\Server\Status\Server\Logger` constructor is now private, use `::of()` instead
+
+### Removed
+
+- `Innmind\Server\Status\Exception\EmptyPathNotAllowed`
+- `Innmind\Server\Status\Exception\BytesCannotBeNegative`
+- `Innmind\Server\Status\Exception\EmptyCommandNotAllowed`
+- `Innmind\Server\Status\Exception\OutOfBoundsPercentage`
+- `Innmind\Server\Status\Exception\LowestPidPossibleIsOne`
+- `Innmind\Server\Status\Exception\EmptyUserNotAllowed`
+- `Innmind\Server\Status\Exception\LoadAverageCannotBeNegative`
+- `Innmind\Server\Status\Exception\DomainException`
+- `Innmind\Server\Status\Exception\UnsupportedOperatingSystem`
+- `Innmind\Server\Status\Exception\RuntimeException`
+- `Innmind\Server\Status\Exception\Exception`
+
 ## 4.1.1 - 2024-09-30
 
 ### Fixed

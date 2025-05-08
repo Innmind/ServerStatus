@@ -4,17 +4,20 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes\UnixProcesses,
+    Server\Processes\Unix,
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\{
+    Clock,
+    PointInTime,
+};
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Immutable\Set;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UnixProcessesTest extends TestCase
 {
@@ -22,12 +25,12 @@ class UnixProcessesTest extends TestCase
 
     public function setUp(): void
     {
-        $this->processes = new UnixProcesses(
-            new Clock,
+        $this->processes = Unix::of(
+            Clock::live(),
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             )->processes(),
         );
     }
@@ -39,14 +42,10 @@ class UnixProcessesTest extends TestCase
 
     public function testAll()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
-        }
-
         $all = $this->processes->all();
 
         $this->assertInstanceOf(Set::class, $all);
-        $this->assertNotEmpty($all);
+        $this->assertGreaterThanOrEqual(1, $all->size());
         $this->assertSame(
             'root',
             $all
@@ -75,13 +74,9 @@ class UnixProcessesTest extends TestCase
 
     public function testGet()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
-        }
-
         $process = $this
             ->processes
-            ->get(new Pid(1))
+            ->get(Pid::of(1))
             ->match(
                 static fn($process) => $process,
                 static fn() => null,
@@ -96,7 +91,7 @@ class UnixProcessesTest extends TestCase
         $this->assertNull(
             $this
                 ->processes
-                ->get(new Pid(42424))
+                ->get(Pid::of(42424))
                 ->match(
                     static fn($process) => $process,
                     static fn() => null,
@@ -106,10 +101,6 @@ class UnixProcessesTest extends TestCase
 
     public function testProcessTimeIsStillAccessible()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->markTestSkipped();
-        }
-
         $process = $this
             ->processes
             ->all()
@@ -120,8 +111,8 @@ class UnixProcessesTest extends TestCase
             );
 
         $this->assertInstanceOf(Process::class, $process);
-        $this->assertIsInt($process->start()->match(
-            static fn($start) => $start->milliseconds(),
+        $this->assertInstanceOf(PointInTime::class, $process->start()->match(
+            static fn($start) => $start,
             static fn() => null,
         ));
     }

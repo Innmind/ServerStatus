@@ -6,25 +6,27 @@ namespace Innmind\Server\Status\Servers;
 use Innmind\Server\Status\{
     Server,
     Server\Processes,
-    Server\LoadAverage,
     Server\Disk,
 };
 use Innmind\Url\Path;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Server
 {
-    private Server $server;
-    private LoggerInterface $logger;
-
-    public function __construct(Server $server, LoggerInterface $logger)
-    {
-        $this->server = $server;
-        $this->logger = $logger;
+    private function __construct(
+        private Server $server,
+        private LoggerInterface $logger,
+    ) {
     }
 
-    public function cpu(): Maybe
+    public static function of(Server $server, LoggerInterface $logger): self
+    {
+        return new self($server, $logger);
+    }
+
+    #[\Override]
+    public function cpu(): Attempt
     {
         return $this
             ->server
@@ -36,7 +38,8 @@ final class Logger implements Server
             });
     }
 
-    public function memory(): Maybe
+    #[\Override]
+    public function memory(): Attempt
     {
         return $this
             ->server
@@ -54,34 +57,39 @@ final class Logger implements Server
             });
     }
 
+    #[\Override]
     public function processes(): Processes
     {
-        return new Processes\LoggerProcesses(
+        return Processes\Logger::of(
             $this->server->processes(),
             $this->logger,
         );
     }
 
-    public function loadAverage(): LoadAverage
+    #[\Override]
+    public function loadAverage(): Attempt
     {
-        $loadAverage = $this->server->loadAverage();
-        $this->logger->debug('Load average: {one} {five} {fifteen}', [
-            'one' => $loadAverage->lastMinute(),
-            'five' => $loadAverage->lastFiveMinutes(),
-            'fifteen' => $loadAverage->lastFifteenMinutes(),
-        ]);
+        return $this->server->loadAverage()->map(function($loadAverage) {
+            $this->logger->debug('Load average: {one} {five} {fifteen}', [
+                'one' => $loadAverage->lastMinute(),
+                'five' => $loadAverage->lastFiveMinutes(),
+                'fifteen' => $loadAverage->lastFifteenMinutes(),
+            ]);
 
-        return $loadAverage;
+            return $loadAverage;
+        });
     }
 
+    #[\Override]
     public function disk(): Disk
     {
-        return new Disk\LoggerDisk(
+        return Disk\Logger::of(
             $this->server->disk(),
             $this->logger,
         );
     }
 
+    #[\Override]
     public function tmp(): Path
     {
         $tmp = $this->server->tmp();

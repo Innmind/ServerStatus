@@ -13,11 +13,11 @@ use Innmind\Server\Status\{
     Server\Disk
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Url\Path;
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LinuxTest extends TestCase
 {
@@ -25,12 +25,12 @@ class LinuxTest extends TestCase
 
     public function setUp(): void
     {
-        $this->server = new Linux(
-            new Clock,
+        $this->server = Linux::of(
+            Clock::live(),
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             ),
         );
     }
@@ -43,7 +43,9 @@ class LinuxTest extends TestCase
     public function testCpu()
     {
         if (\PHP_OS !== 'Linux') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertInstanceOf(
@@ -61,7 +63,9 @@ class LinuxTest extends TestCase
     public function testMemory()
     {
         if (\PHP_OS !== 'Linux') {
-            $this->markTestSkipped();
+            $this->assertTrue(true);
+
+            return;
         }
 
         $this->assertInstanceOf(
@@ -69,10 +73,7 @@ class LinuxTest extends TestCase
             $this
                 ->server
                 ->memory()
-                ->match(
-                    static fn($memory) => $memory,
-                    static fn() => null,
-                ),
+                ->unwrap(),
         );
     }
 
@@ -83,7 +84,7 @@ class LinuxTest extends TestCase
 
     public function testLoadAverage()
     {
-        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage()->unwrap());
     }
 
     public function testDisk()

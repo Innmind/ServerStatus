@@ -4,67 +4,58 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Disk;
 
 use Innmind\Server\Status\{
-    Server\Disk\LoggerDisk,
+    Server\Disk\Logger,
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
-    Server\Disk\Volume\Usage,
-    Server\Memory\Bytes,
+    ServerFactory,
+    EnvironmentPath,
 };
-use Innmind\Immutable\{
-    Set,
-    Maybe,
-};
-use Psr\Log\LoggerInterface;
-use PHPUnit\Framework\TestCase;
+use Innmind\Server\Control\ServerFactory as Control;
+use Innmind\TimeContinuum\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\IO\IO;
+use Innmind\Immutable\Set;
+use Psr\Log\NullLogger;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LoggerDiskTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Disk::class, new LoggerDisk(
-            $this->createMock(Disk::class),
-            $this->createMock(LoggerInterface::class),
+        $this->assertInstanceOf(Disk::class, Logger::of(
+            $this->disk(),
+            new NullLogger,
         ));
     }
 
     public function testVolumes()
     {
-        $inner = $this->createMock(Disk::class);
-        $inner
-            ->expects($this->once())
-            ->method('volumes')
-            ->willReturn($all = Set::of());
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $disk = Logger::of($this->disk(), new NullLogger);
 
-        $disk = new LoggerDisk($inner, $logger);
-
-        $this->assertSame($all, $disk->volumes());
+        $this->assertInstanceOf(Set::class, $disk->volumes());
     }
 
     public function testGet()
     {
-        $inner = $this->createMock(Disk::class);
-        $inner
-            ->expects($this->once())
-            ->method('get')
-            ->willReturn($volume = Maybe::just(new Volume(
-                new MountPoint('/'),
-                new Bytes(1),
-                new Bytes(1),
-                new Bytes(1),
-                new Usage(1),
-            )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
+        $disk = Logger::of($this->disk(), new NullLogger);
 
-        $disk = new LoggerDisk($inner, $logger);
+        $this->assertInstanceOf(Volume::class, $disk->get(MountPoint::of('/'))->match(
+            static fn($volume) => $volume,
+            static fn() => null,
+        ));
+    }
 
-        $this->assertEquals($volume, $disk->get(new MountPoint('/')));
+    private function disk(): Disk
+    {
+        return ServerFactory::build(
+            Clock::live(),
+            Control::build(
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
+            ),
+            EnvironmentPath::of(\getenv('PATH')),
+        )->disk();
     }
 }

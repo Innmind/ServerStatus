@@ -12,9 +12,12 @@ use Innmind\Server\Control\Server\{
     Processes,
     Command,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
+    Attempt,
     Maybe,
+    Monoid\Concat,
 };
 
 /**
@@ -22,17 +25,15 @@ use Innmind\Immutable\{
  */
 final class LinuxFacade
 {
-    private Processes $processes;
-
-    public function __construct(Processes $processes)
-    {
-        $this->processes = $processes;
+    public function __construct(
+        private Processes $processes,
+    ) {
     }
 
     /**
-     * @return Maybe<Cpu>
+     * @return Attempt<Cpu>
      */
-    public function __invoke(): Maybe
+    public function __invoke(): Attempt
     {
         return $this
             ->processes
@@ -44,17 +45,23 @@ final class LinuxFacade
                             ->withArgument('%Cpu'),
                     ),
             )
-            ->wait()
-            ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
-            ->map(Str::of(...))
+            ->flatMap(static fn($process) => $process->wait()->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to retrieve CPU usage')),
+            ))
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            )
             ->flatMap($this->parse(...));
     }
 
     /**
-     * @return Maybe<Cpu>
+     * @return Attempt<Cpu>
      */
-    private function parse(Str $output): Maybe
+    private function parse(Str $output): Attempt
     {
         $percentages = $output
             ->trim()
@@ -67,25 +74,35 @@ final class LinuxFacade
         $cores = $this
             ->processes
             ->execute(Command::foreground('nproc'))
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat)
+                    ->toString(),
+            )
             ->map(static fn($cores) => (int) $cores)
+            ->keep(Is::int()->positive()->asPredicate())
+            ->otherwise(static fn() => Maybe::just(1))
+            ->map(Cores::of(...));
+
+        $user = $percentages
+            ->get('user')
+            ->flatMap(Percentage::maybe(...));
+        $sys = $percentages
+            ->get('sys')
+            ->flatMap(Percentage::maybe(...));
+        $idle = $percentages
+            ->get('idle')
+            ->flatMap(Percentage::maybe(...));
+
+        return Maybe::all($user, $sys, $idle, $cores)
+            ->map(Cpu::of(...))
             ->match(
-                static fn($cores) => $cores,
-                static fn() => 1,
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to parse CPU usage')),
             );
-
-        $user = $percentages->get('user');
-        $sys = $percentages->get('sys');
-        $idle = $percentages->get('idle');
-
-        return Maybe::all($user, $sys, $idle)
-            ->map(static fn(float $user, float $sys, float $idle) => new Cpu(
-                new Percentage($user),
-                new Percentage($sys),
-                new Percentage($idle),
-                new Cores($cores),
-            ));
     }
 }

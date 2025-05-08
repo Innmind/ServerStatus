@@ -8,24 +8,30 @@ use Innmind\Server\Status\{
     Server\Process,
     Server\Process\Pid,
 };
-use Innmind\TimeContinuum\Earth\Format\ISO8601;
+use Innmind\TimeContinuum\Format;
 use Innmind\Immutable\{
     Set,
     Maybe,
 };
 use Psr\Log\LoggerInterface;
 
-final class LoggerProcesses implements Processes
+final class Logger implements Processes
 {
-    private Processes $processes;
-    private LoggerInterface $logger;
-
-    public function __construct(Processes $processes, LoggerInterface $logger)
-    {
-        $this->processes = $processes;
-        $this->logger = $logger;
+    private function __construct(
+        private Processes $processes,
+        private LoggerInterface $logger,
+    ) {
     }
 
+    /**
+     * @internal
+     */
+    public static function of(Processes $processes, LoggerInterface $logger): self
+    {
+        return new self($processes, $logger);
+    }
+
+    #[\Override]
     public function all(): Set
     {
         $all = $this->processes->all();
@@ -44,6 +50,7 @@ final class LoggerProcesses implements Processes
         return $all;
     }
 
+    #[\Override]
     public function get(Pid $pid): Maybe
     {
         return $this
@@ -68,7 +75,7 @@ final class LoggerProcesses implements Processes
             'memory' => $process->memory()->toString(),
             'start' => $process
                 ->start()
-                ->map(static fn($start) => $start->format(new ISO8601))
+                ->map(static fn($start) => $start->format(Format::iso8601()))
                 ->match(
                     static fn($start) => $start,
                     static fn() => null,

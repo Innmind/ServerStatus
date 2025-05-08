@@ -13,17 +13,23 @@ use Innmind\Immutable\{
 };
 use Psr\Log\LoggerInterface;
 
-final class LoggerDisk implements Disk
+final class Logger implements Disk
 {
-    private Disk $disk;
-    private LoggerInterface $logger;
-
-    public function __construct(Disk $disk, LoggerInterface $logger)
-    {
-        $this->disk = $disk;
-        $this->logger = $logger;
+    private function __construct(
+        private Disk $disk,
+        private LoggerInterface $logger,
+    ) {
     }
 
+    /**
+     * @internal
+     */
+    public static function of(Disk $disk, LoggerInterface $logger): self
+    {
+        return new self($disk, $logger);
+    }
+
+    #[\Override]
     public function volumes(): Set
     {
         $volumes = $this->disk->volumes();
@@ -42,6 +48,7 @@ final class LoggerDisk implements Disk
         return $volumes;
     }
 
+    #[\Override]
     public function get(MountPoint $point): Maybe
     {
         return $this

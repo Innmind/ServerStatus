@@ -9,18 +9,21 @@ use Innmind\Server\Status\Server\{
     Disk\Volume\Usage,
     Memory\Bytes,
 };
-use PHPUnit\Framework\TestCase;
+use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class VolumeTest extends TestCase
 {
     public function testInterface()
     {
-        $volume = new Volume(
-            $mount = new MountPoint('/'),
-            $size = new Bytes(42),
-            $available = new Bytes(42),
-            $used = new Bytes(42),
-            $usage = new Usage(100),
+        $volume = Volume::of(
+            $mount = MountPoint::of('/'),
+            $size = Bytes::of(42),
+            $available = Bytes::of(42),
+            $used = Bytes::of(42),
+            $usage = Usage::maybe(100)->match(
+                static fn($usage) => $usage,
+                static fn() => throw new \Exception('Should be valid'),
+            ),
         );
 
         $this->assertSame($mount, $volume->mountPoint());
