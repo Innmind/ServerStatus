@@ -66,7 +66,7 @@ class LoggerTest extends TestCase
     {
         $server = new Logger($this->server(), new NullLogger);
 
-        $this->assertInstanceOf(LoadAverage::class, $server->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $server->loadAverage()->unwrap());
     }
 
     public function testDisk()

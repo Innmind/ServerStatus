@@ -7,6 +7,7 @@
 - Requires `innmind/immutable:~5.14`
 - `Innmind\Server\Status\Server::cpu()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Cpu>`
 - `Innmind\Server\Status\Server::memory()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Memory>`
+- `Innmind\Server\Status\Server::loadAverage()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\LoadAverage>`
 
 ### Removed
 
@@ -16,6 +17,7 @@
 - `Innmind\Server\Status\Exception\OutOfBoundsPercentage`
 - `Innmind\Server\Status\Exception\LowestPidPossibleIsOne`
 - `Innmind\Server\Status\Exception\EmptyUserNotAllowed`
+- `Innmind\Server\Status\Exception\LoadAverageCannotBeNegative`
 
 ## 4.1.1 - 2024-09-30
 

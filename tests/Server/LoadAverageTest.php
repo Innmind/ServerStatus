@@ -3,41 +3,45 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server;
 
-use Innmind\Server\Status\{
-    Server\LoadAverage,
-    Exception\LoadAverageCannotBeNegative,
-};
+use Innmind\Server\Status\Server\LoadAverage;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class LoadAverageTest extends TestCase
 {
     public function testInterface()
     {
-        $load = new LoadAverage(1, 5, 15);
+        $load = LoadAverage::maybe(1, 5, 15)->match(
+            static fn($load) => $load,
+            static fn() => null,
+        );
 
+        $this->assertNotNull($load);
         $this->assertSame(1.0, $load->lastMinute());
         $this->assertSame(5.0, $load->lastFiveMinutes());
         $this->assertSame(15.0, $load->lastFifteenMinutes());
     }
 
-    public function testThrowWhenNegativeLastMinuteLoad()
+    public function testReturnNothingWhenNegativeLastMinuteLoad()
     {
-        $this->expectException(LoadAverageCannotBeNegative::class);
-
-        new LoadAverage(-1, 5, 15);
+        $this->assertNull(LoadAverage::maybe(-1, 5, 15)->match(
+            static fn($load) => $load,
+            static fn() => null,
+        ));
     }
 
-    public function testThrowWhenNegativeLastFiveMinuteLoad()
+    public function testReturnNothingWhenNegativeLastFiveMinuteLoad()
     {
-        $this->expectException(LoadAverageCannotBeNegative::class);
-
-        new LoadAverage(1, -5, 15);
+        $this->assertNull(LoadAverage::maybe(1, -5, 15)->match(
+            static fn($load) => $load,
+            static fn() => null,
+        ));
     }
 
-    public function testThrowWhenNegativeLastFifteenMinuteLoad()
+    public function testReturnNothingWhenNegativeLastFifteenMinuteLoad()
     {
-        $this->expectException(LoadAverageCannotBeNegative::class);
-
-        new LoadAverage(1, 5, -15);
+        $this->assertNull(LoadAverage::maybe(1, 5, -15)->match(
+            static fn($load) => $load,
+            static fn() => null,
+        ));
     }
 }
