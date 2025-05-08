@@ -17,7 +17,7 @@ use Innmind\Server\Status\{
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 
 final class Linux implements Server
 {
@@ -37,13 +37,13 @@ final class Linux implements Server
     }
 
     #[\Override]
-    public function cpu(): Maybe
+    public function cpu(): Attempt
     {
         return ($this->cpu)();
     }
 
     #[\Override]
-    public function memory(): Maybe
+    public function memory(): Attempt
     {
         return ($this->memory)();
     }

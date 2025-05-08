@@ -10,7 +10,7 @@ use Innmind\Server\Status\{
     Server\Disk,
 };
 use Innmind\Url\Path;
-use Innmind\Immutable\Maybe;
+use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
 final class Logger implements Server
@@ -25,7 +25,7 @@ final class Logger implements Server
     }
 
     #[\Override]
-    public function cpu(): Maybe
+    public function cpu(): Attempt
     {
         return $this
             ->server
@@ -38,7 +38,7 @@ final class Logger implements Server
     }
 
     #[\Override]
-    public function memory(): Maybe
+    public function memory(): Attempt
     {
         return $this
             ->server

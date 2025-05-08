@@ -14,6 +14,7 @@ use Innmind\Server\Control\Server\{
 };
 use Innmind\Immutable\{
     Str,
+    Attempt,
     Maybe,
     Monoid\Concat,
 };
@@ -31,9 +32,9 @@ final class LinuxFacade
     }
 
     /**
-     * @return Maybe<Cpu>
+     * @return Attempt<Cpu>
      */
-    public function __invoke(): Maybe
+    public function __invoke(): Attempt
     {
         return $this
             ->processes
@@ -45,8 +46,10 @@ final class LinuxFacade
                             ->withArgument('%Cpu'),
                     ),
             )
-            ->maybe()
-            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->flatMap(static fn($process) => $process->wait()->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to retrieve CPU usage')),
+            ))
             ->map(
                 static fn($success) => $success
                     ->output()
@@ -57,9 +60,9 @@ final class LinuxFacade
     }
 
     /**
-     * @return Maybe<Cpu>
+     * @return Attempt<Cpu>
      */
-    private function parse(Str $output): Maybe
+    private function parse(Str $output): Attempt
     {
         $percentages = $output
             ->trim()
@@ -97,6 +100,10 @@ final class LinuxFacade
                 new Percentage($sys),
                 new Percentage($idle),
                 new Cores($cores),
-            ));
+            ))
+            ->match(
+                Attempt::result(...),
+                static fn() => Attempt::error(new \RuntimeException('Failed to parse CPU usage')),
+            );
     }
 }
