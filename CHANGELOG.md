@@ -18,6 +18,7 @@
 - `Innmind\Server\Status\Exception\LowestPidPossibleIsOne`
 - `Innmind\Server\Status\Exception\EmptyUserNotAllowed`
 - `Innmind\Server\Status\Exception\LoadAverageCannotBeNegative`
+- `Innmind\Server\Status\Exception\DomainException`
 
 ## 4.1.1 - 2024-09-30
 
