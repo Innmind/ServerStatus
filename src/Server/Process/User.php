@@ -3,27 +3,30 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Process;
 
-use Innmind\Server\Status\Exception\EmptyUserNotAllowed;
-
 /**
  * @psalm-immutable
  */
 final class User
 {
-    private string $value;
-
     /**
-     * @throws EmptyUserNotAllowed
+     * @param non-empty-string $value
      */
-    public function __construct(string $value)
-    {
-        if ($value === '') {
-            throw new EmptyUserNotAllowed;
-        }
-
-        $this->value = $value;
+    private function __construct(
+        private string $value,
+    ) {
     }
 
+    /**
+     * @param non-empty-string $value
+     */
+    public static function of(string $value): self
+    {
+        return new self($value);
+    }
+
+    /**
+     * @return non-empty-string
+     */
     public function toString(): string
     {
         return $this->value;

@@ -15,6 +15,7 @@
 - `Innmind\Server\Status\Exception\EmptyCommandNotAllowed`
 - `Innmind\Server\Status\Exception\OutOfBoundsPercentage`
 - `Innmind\Server\Status\Exception\LowestPidPossibleIsOne`
+- `Innmind\Server\Status\Exception\EmptyUserNotAllowed`
 
 ## 4.1.1 - 2024-09-30
 

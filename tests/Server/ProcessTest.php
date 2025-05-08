@@ -29,7 +29,7 @@ class ProcessTest extends TestCase
             ->then(function($pointInTime) {
                 $process = new Process(
                     $pid = Pid::of(1),
-                    $user = new User('root'),
+                    $user = User::of('root'),
                     $cpu = Percentage::maybe(42)->match(
                         static fn($percentage) => $percentage,
                         static fn() => throw new \Exception('Should be valid'),

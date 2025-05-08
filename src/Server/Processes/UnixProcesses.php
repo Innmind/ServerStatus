@@ -111,7 +111,10 @@ final class UnixProcesses implements Processes
             $parts = $parts
                 ->drop(5)
                 ->map(static fn($part) => $part->toString());
-            $user = $parts->get(0);
+            $user = $parts
+                ->get(0)
+                ->keep(Is::string()->nonEmpty()->asPredicate())
+                ->map(User::of(...));
             $pid = $parts
                 ->get(1)
                 ->map(static fn($value) => (int) $value)
@@ -131,9 +134,9 @@ final class UnixProcesses implements Processes
                 ->map(Command::of(...));
 
             return Maybe::all($user, $pid, $percentage, $memory, $command)
-                ->map(fn(string $user, Pid $pid, Percentage $percentage, Memory $memory, Command $command) => new Process(
+                ->map(fn(User $user, Pid $pid, Percentage $percentage, Memory $memory, Command $command) => new Process(
                     $pid,
-                    new User($user),
+                    $user,
                     $percentage,
                     $memory,
                     $this->clock->at($start, Format::of('D M j H:i:s Y')),
