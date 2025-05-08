@@ -95,13 +95,7 @@ final class OSXFacade
             ->map(Bytes::of(...));
 
         return Maybe::all($total, $active, $unused, $swap, $used)
-            ->map(static fn(Bytes $total, Bytes $active, Bytes $unused, Bytes $swap, Bytes $used) => new Memory(
-                $total,
-                $active,
-                $unused,
-                $swap,
-                $used,
-            ))
+            ->map(Memory::of(...))
             ->match(
                 Attempt::result(...),
                 static fn() => Attempt::error(new \RuntimeException('Failed to parse memory usage')),

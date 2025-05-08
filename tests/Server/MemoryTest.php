@@ -13,7 +13,7 @@ class MemoryTest extends TestCase
 {
     public function testInterface()
     {
-        $memory = new Memory(
+        $memory = Memory::of(
             $total = Bytes::of(42),
             $active = Bytes::of(42),
             $free = Bytes::of(42),

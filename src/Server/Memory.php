@@ -10,24 +10,23 @@ use Innmind\Server\Status\Server\Memory\Bytes;
  */
 final class Memory
 {
-    private Bytes $total;
-    private Bytes $active;
-    private Bytes $free;
-    private Bytes $swap;
-    private Bytes $used;
+    private function __construct(
+        private Bytes $total,
+        private Bytes $active,
+        private Bytes $free,
+        private Bytes $swap,
+        private Bytes $used,
+    ) {
+    }
 
-    public function __construct(
+    public static function of(
         Bytes $total,
         Bytes $active,
         Bytes $free,
         Bytes $swap,
         Bytes $used,
-    ) {
-        $this->total = $total;
-        $this->active = $active;
-        $this->free = $free;
-        $this->swap = $swap;
-        $this->used = $used;
+    ): self {
+        return new self($total, $active, $free, $swap, $used);
     }
 
     public function total(): Bytes
