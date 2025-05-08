@@ -99,7 +99,6 @@ final class LinuxFacade
                     ])
                     ->toSequence(),
             );
-        dump($amounts);
         $amounts = Map::of(...$amounts->toList())
             ->map(static fn($_, $value) => Bytes::of(
                 $value->toInt() * 1024, // 1024 represents a kilobyte
