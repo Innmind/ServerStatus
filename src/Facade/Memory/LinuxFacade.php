@@ -15,6 +15,7 @@ use Innmind\Immutable\{
     Str,
     Map,
     Maybe,
+    Monoid\Concat,
 };
 
 /**
@@ -47,10 +48,14 @@ final class LinuxFacade
                 Command::foreground('cat')
                     ->withArgument('/proc/meminfo'),
             )
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
-            ->map(Str::of(...))
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            )
             ->flatMap($this->parse(...));
     }
 

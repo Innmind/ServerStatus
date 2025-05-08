@@ -19,6 +19,7 @@ use Innmind\Immutable\{
     Set,
     Maybe,
     Map,
+    Monoid\Concat,
 };
 
 final class UnixDisk implements Disk
@@ -48,15 +49,15 @@ final class UnixDisk implements Disk
                 Command::foreground('df')
                     ->withShortOption('h'),
             )
-            ->wait()
             ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
             ->map(
                 static fn($success) => $success
                     ->output()
-                    ->filter(static fn($_, $type) => $type === Output\Type::output) // discard errors such as "df: getattrlist failed"
-                    ->toString(),
+                    ->filter(static fn($chunk) => $chunk->type() === Output\Type::output) // discard errors such as "df: getattrlist failed"
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
             )
-            ->map(Str::of(...))
             ->map($this->parse(...))
             ->match(
                 static fn($volumes) => $volumes,

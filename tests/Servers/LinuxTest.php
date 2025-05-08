@@ -13,9 +13,9 @@ use Innmind\Server\Status\{
     Server\Disk
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Url\Path;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -26,11 +26,11 @@ class LinuxTest extends TestCase
     public function setUp(): void
     {
         $this->server = new Linux(
-            new Clock,
+            Clock::live(),
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             ),
         );
     }

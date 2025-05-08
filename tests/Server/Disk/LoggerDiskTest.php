@@ -12,9 +12,9 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeContinuum\Clock;
 use Innmind\TimeWarp\Halt\Usleep;
-use Innmind\Stream\Streams;
+use Innmind\IO\IO;
 use Innmind\Immutable\Set;
 use Psr\Log\NullLogger;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
@@ -49,11 +49,11 @@ class LoggerDiskTest extends TestCase
     private function disk(): Disk
     {
         return ServerFactory::build(
-            new Clock,
+            Clock::live(),
             Control::build(
-                new Clock,
-                Streams::fromAmbientAuthority(),
-                new Usleep,
+                Clock::live(),
+                IO::fromAmbientAuthority(),
+                Usleep::new(),
             ),
             EnvironmentPath::of(\getenv('PATH')),
         )->disk();

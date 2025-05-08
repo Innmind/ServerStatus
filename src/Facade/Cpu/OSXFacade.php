@@ -15,6 +15,7 @@ use Innmind\Server\Control\Server\{
 use Innmind\Immutable\{
     Str,
     Maybe,
+    Monoid\Concat,
 };
 
 /**
@@ -45,18 +46,23 @@ final class OSXFacade
                             ->withArgument('CPU usage'),
                     ),
             )
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            )
             ->flatMap($this->parse(...));
     }
 
     /**
      * @return Maybe<Cpu>
      */
-    private function parse(string $output): Maybe
+    private function parse(Str $output): Maybe
     {
-        $percentages = Str::of($output)
+        $percentages = $output
             ->trim()
             ->capture(
                 '~^CPU usage: (?P<user>\d+\.?\d*)% user, (?P<sys>\d+\.?\d*)% sys, (?P<idle>\d+\.?\d*)% idle$~',
@@ -74,10 +80,14 @@ final class OSXFacade
                             ->withArgument('hw.ncpu:'),
                     ),
             )
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
-            ->map(Str::of(...))
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            )
             ->map(static fn($output) => $output->trim())
             ->map(static fn($output) => $output->capture('~^hw.ncpu: (?P<cores>\d+)$~'))
             ->flatMap(static fn($output) => $output->get('cores'))

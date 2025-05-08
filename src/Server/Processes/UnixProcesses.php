@@ -13,12 +13,16 @@ use Innmind\Server\Status\{
     Server\Cpu\Percentage,
 };
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\Clock;
+use Innmind\TimeContinuum\{
+    Clock,
+    Format,
+};
 use Innmind\Immutable\{
     Str,
     Sequence,
     Set,
     Maybe,
+    Monoid\Concat,
 };
 
 final class UnixProcesses implements Processes
@@ -75,10 +79,14 @@ final class UnixProcesses implements Processes
         return $this
             ->processes
             ->execute($command->withEnvironment('TZ', 'UTC'))
-            ->wait()
             ->maybe()
-            ->map(static fn($success) => $success->output()->toString())
-            ->map(Str::of(...));
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->map(
+                static fn($success) => $success
+                    ->output()
+                    ->map(static fn($chunk) => $chunk->data())
+                    ->fold(new Concat),
+            );
     }
 
     /**
@@ -97,6 +105,7 @@ final class UnixProcesses implements Processes
             $startParts = $parts
                 ->take(5)
                 ->map(static fn(Str $part): string => $part->toString());
+            /** @var non-empty-string */
             $start = Str::of(' ')->join($startParts)->toString();
             $parts = $parts
                 ->drop(5)
@@ -113,7 +122,7 @@ final class UnixProcesses implements Processes
                     new User($user),
                     new Percentage((float) $percentage),
                     new Memory((float) $memory),
-                    $this->clock->at($start),
+                    $this->clock->at($start, Format::of('D M j H:i:s Y')),
                     new Command($command),
                 ));
         });

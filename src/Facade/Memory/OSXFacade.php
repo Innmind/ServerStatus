@@ -15,6 +15,7 @@ use Innmind\Server\Control\Server\{
 use Innmind\Immutable\{
     Str,
     Maybe,
+    Monoid\Concat,
 };
 
 /**
@@ -106,10 +107,11 @@ final class OSXFacade
                 'PATH',
                 $this->path->toString(),
             ))
-            ->wait()
-            ->match(
-                static fn($success) => Str::of($success->output()->toString()),
-                static fn() => Str::of(''),
-            );
+            ->maybe()
+            ->flatMap(static fn($process) => $process->wait()->maybe())
+            ->toSequence()
+            ->flatMap(static fn($success) => $success->output())
+            ->map(static fn($chunk) => $chunk->data())
+            ->fold(new Concat);
     }
 }
