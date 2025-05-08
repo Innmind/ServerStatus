@@ -25,7 +25,7 @@ class LinuxTest extends TestCase
 
     public function setUp(): void
     {
-        $this->server = new Linux(
+        $this->server = Linux::of(
             Clock::live(),
             Control::build(
                 Clock::live(),

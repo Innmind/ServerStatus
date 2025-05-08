@@ -26,7 +26,7 @@ class OSXTest extends TestCase
 
     public function setUp(): void
     {
-        $this->server = new OSX(
+        $this->server = OSX::of(
             Clock::live(),
             Control::build(
                 Clock::live(),

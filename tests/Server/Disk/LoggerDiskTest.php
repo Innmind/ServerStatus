@@ -23,7 +23,7 @@ class LoggerDiskTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Disk::class, new LoggerDisk(
+        $this->assertInstanceOf(Disk::class, LoggerDisk::of(
             $this->disk(),
             new NullLogger,
         ));
@@ -31,14 +31,14 @@ class LoggerDiskTest extends TestCase
 
     public function testVolumes()
     {
-        $disk = new LoggerDisk($this->disk(), new NullLogger);
+        $disk = LoggerDisk::of($this->disk(), new NullLogger);
 
         $this->assertInstanceOf(Set::class, $disk->volumes());
     }
 
     public function testGet()
     {
-        $disk = new LoggerDisk($this->disk(), new NullLogger);
+        $disk = LoggerDisk::of($this->disk(), new NullLogger);
 
         $this->assertInstanceOf(Volume::class, $disk->get(MountPoint::of('/'))->match(
             static fn($volume) => $volume,

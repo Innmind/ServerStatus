@@ -26,7 +26,7 @@ class LoggerTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Server::class, new Logger(
+        $this->assertInstanceOf(Server::class, Logger::of(
             $this->server(),
             new NullLogger,
         ));
@@ -34,7 +34,7 @@ class LoggerTest extends TestCase
 
     public function testCpu()
     {
-        $server = new Logger($this->server(), new NullLogger);
+        $server = Logger::of($this->server(), new NullLogger);
 
         $this->assertInstanceOf(Cpu::class, $server->cpu()->match(
             static fn($cpu) => $cpu,
@@ -44,7 +44,7 @@ class LoggerTest extends TestCase
 
     public function testMemory()
     {
-        $server = new Logger($this->server(), new NullLogger);
+        $server = Logger::of($this->server(), new NullLogger);
 
         $this->assertInstanceOf(Memory::class, $server->memory()->match(
             static fn($memory) => $memory,
@@ -54,7 +54,7 @@ class LoggerTest extends TestCase
 
     public function testProcesses()
     {
-        $server = new Logger(
+        $server = Logger::of(
             $this->server(),
             new NullLogger,
         );
@@ -64,14 +64,14 @@ class LoggerTest extends TestCase
 
     public function testLoadAverage()
     {
-        $server = new Logger($this->server(), new NullLogger);
+        $server = Logger::of($this->server(), new NullLogger);
 
         $this->assertInstanceOf(LoadAverage::class, $server->loadAverage()->unwrap());
     }
 
     public function testDisk()
     {
-        $server = new Logger(
+        $server = Logger::of(
             $this->server(),
             new NullLogger,
         );
@@ -81,7 +81,7 @@ class LoggerTest extends TestCase
 
     public function testTmp()
     {
-        $server = new Logger($this->server(), new NullLogger);
+        $server = Logger::of($this->server(), new NullLogger);
 
         $this->assertInstanceOf(Path::class, $server->tmp());
     }

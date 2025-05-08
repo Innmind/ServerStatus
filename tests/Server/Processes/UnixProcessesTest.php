@@ -25,7 +25,7 @@ class UnixProcessesTest extends TestCase
 
     public function setUp(): void
     {
-        $this->processes = new UnixProcesses(
+        $this->processes = UnixProcesses::of(
             Clock::live(),
             Control::build(
                 Clock::live(),
