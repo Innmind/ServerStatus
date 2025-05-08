@@ -8,6 +8,7 @@
 - `Innmind\Server\Status\Server::cpu()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Cpu>`
 - `Innmind\Server\Status\Server::memory()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\Memory>`
 - `Innmind\Server\Status\Server::loadAverage()` now returns `Innmind\Immutable\Attempt<Innmind\Server\Status\Server\LoadAverage>`
+- `Innmind\Server\Status\Server\Logger` constructor is now private, use `::of()` instead
 
 ### Removed
 

@@ -23,7 +23,7 @@ class LoggerProcessesTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Processes::class, new LoggerProcesses(
+        $this->assertInstanceOf(Processes::class, LoggerProcesses::of(
             $this->processes(),
             new NullLogger,
         ));
@@ -31,14 +31,14 @@ class LoggerProcessesTest extends TestCase
 
     public function testAll()
     {
-        $processes = new LoggerProcesses($this->processes(), new NullLogger);
+        $processes = LoggerProcesses::of($this->processes(), new NullLogger);
 
         $this->assertInstanceOf(Set::class, $processes->all());
     }
 
     public function testGet()
     {
-        $processes = new LoggerProcesses($this->processes(), new NullLogger);
+        $processes = LoggerProcesses::of($this->processes(), new NullLogger);
 
         $this->assertInstanceOf(Process::class, $processes->get(Pid::of(1))->match(
             static fn($process) => $process,

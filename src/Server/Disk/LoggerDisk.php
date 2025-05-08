@@ -18,10 +18,15 @@ final class LoggerDisk implements Disk
     private Disk $disk;
     private LoggerInterface $logger;
 
-    public function __construct(Disk $disk, LoggerInterface $logger)
+    private function __construct(Disk $disk, LoggerInterface $logger)
     {
         $this->disk = $disk;
         $this->logger = $logger;
+    }
+
+    public static function of(Disk $disk, LoggerInterface $logger): self
+    {
+        return new self($disk, $logger);
     }
 
     #[\Override]

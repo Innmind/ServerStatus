@@ -22,7 +22,7 @@ class UnixDiskTest extends TestCase
 
     public function setUp(): void
     {
-        $this->disk = new UnixDisk(
+        $this->disk = UnixDisk::of(
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),

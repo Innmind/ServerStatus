@@ -17,10 +17,15 @@ final class Logger implements Server
     private Server $server;
     private LoggerInterface $logger;
 
-    public function __construct(Server $server, LoggerInterface $logger)
+    private function __construct(Server $server, LoggerInterface $logger)
     {
         $this->server = $server;
         $this->logger = $logger;
+    }
+
+    public static function of(Server $server, LoggerInterface $logger): self
+    {
+        return new self($server, $logger);
     }
 
     #[\Override]
@@ -58,7 +63,7 @@ final class Logger implements Server
     #[\Override]
     public function processes(): Processes
     {
-        return new Processes\LoggerProcesses(
+        return Processes\LoggerProcesses::of(
             $this->server->processes(),
             $this->logger,
         );
@@ -81,7 +86,7 @@ final class Logger implements Server
     #[\Override]
     public function disk(): Disk
     {
-        return new Disk\LoggerDisk(
+        return Disk\LoggerDisk::of(
             $this->server->disk(),
             $this->logger,
         );
