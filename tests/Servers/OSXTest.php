@@ -86,7 +86,7 @@ class OSXTest extends TestCase
 
     public function testLoadAverage()
     {
-        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage()->unwrap());
     }
 
     public function testDisk()

@@ -25,7 +25,11 @@ interface Server
      */
     public function memory(): Attempt;
     public function processes(): Processes;
-    public function loadAverage(): LoadAverage;
+
+    /**
+     * @return Attempt<LoadAverage>
+     */
+    public function loadAverage(): Attempt;
     public function disk(): Disk;
     public function tmp(): Path;
 }

@@ -15,6 +15,6 @@ class PhpFacadeTest extends TestCase
     {
         $facade = new PhpFacade;
 
-        $this->assertInstanceOf(LoadAverage::class, $facade());
+        $this->assertInstanceOf(LoadAverage::class, $facade()->unwrap());
     }
 }

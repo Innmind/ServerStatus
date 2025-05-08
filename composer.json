@@ -19,7 +19,8 @@
         "innmind/time-continuum": "^4.1.1",
         "innmind/url": "~4.0",
         "psr/log": "~3.0",
-        "innmind/server-control": "~6.0"
+        "innmind/server-control": "~6.0",
+        "innmind/validation": "^2.0"
     },
     "autoload": {
         "psr-4": {

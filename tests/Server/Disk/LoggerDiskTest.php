@@ -40,7 +40,7 @@ class LoggerDiskTest extends TestCase
     {
         $disk = new LoggerDisk($this->disk(), new NullLogger);
 
-        $this->assertInstanceOf(Volume::class, $disk->get(new MountPoint('/'))->match(
+        $this->assertInstanceOf(Volume::class, $disk->get(MountPoint::of('/'))->match(
             static fn($volume) => $volume,
             static fn() => null,
         ));

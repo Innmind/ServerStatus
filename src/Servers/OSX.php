@@ -6,7 +6,6 @@ namespace Innmind\Server\Status\Servers;
 use Innmind\Server\Status\{
     Server,
     Server\Processes,
-    Server\LoadAverage,
     Facade\Cpu\OSXFacade as CpuFacade,
     Facade\Memory\OSXFacade as MemoryFacade,
     Facade\LoadAverage\PhpFacade as LoadAverageFacade,
@@ -56,7 +55,7 @@ final class OSX implements Server
     }
 
     #[\Override]
-    public function loadAverage(): LoadAverage
+    public function loadAverage(): Attempt
     {
         return ($this->loadAverage)();
     }

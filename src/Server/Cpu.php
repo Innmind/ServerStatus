@@ -13,21 +13,24 @@ use Innmind\Server\Status\Server\Cpu\{
  */
 final class Cpu
 {
-    private Percentage $user;
-    private Percentage $system;
-    private Percentage $idle;
-    private Cores $cores;
+    private function __construct(
+        private Percentage $user,
+        private Percentage $system,
+        private Percentage $idle,
+        private Cores $cores,
+    ) {
+    }
 
-    public function __construct(
+    /**
+     * @psalm-pure
+     */
+    public static function of(
         Percentage $user,
         Percentage $system,
         Percentage $idle,
         Cores $cores,
-    ) {
-        $this->user = $user;
-        $this->system = $system;
-        $this->idle = $idle;
-        $this->cores = $cores;
+    ): self {
+        return new self($user, $system, $idle, $cores);
     }
 
     public function user(): Percentage

@@ -27,13 +27,19 @@ class ProcessTest extends TestCase
         $this
             ->forAll(PointInTime::any())
             ->then(function($pointInTime) {
-                $process = new Process(
-                    $pid = new Pid(1),
-                    $user = new User('root'),
-                    $cpu = new Percentage(42),
-                    $memory = new Memory(42),
+                $process = Process::of(
+                    $pid = Pid::of(1),
+                    $user = User::of('root'),
+                    $cpu = Percentage::maybe(42)->match(
+                        static fn($percentage) => $percentage,
+                        static fn() => throw new \Exception('Should be valid'),
+                    ),
+                    $memory = Memory::maybe(42)->match(
+                        static fn($memory) => $memory,
+                        static fn() => throw new \Exception('Should be valid'),
+                    ),
                     $start = Maybe::just($pointInTime),
-                    $command = new Command('/sbin/launchd'),
+                    $command = Command::of('/sbin/launchd'),
                 );
 
                 $this->assertSame($pid, $process->pid());

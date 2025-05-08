@@ -12,6 +12,7 @@ use Innmind\Server\Control\Server\{
     Processes,
     Command,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Attempt,
@@ -85,22 +86,22 @@ final class LinuxFacade
                     ->toString(),
             )
             ->map(static fn($cores) => (int) $cores)
-            ->match(
-                static fn($cores) => $cores,
-                static fn() => 1,
-            );
+            ->keep(Is::int()->positive()->asPredicate())
+            ->otherwise(static fn() => Maybe::just(1))
+            ->map(Cores::of(...));
 
-        $user = $percentages->get('user');
-        $sys = $percentages->get('sys');
-        $idle = $percentages->get('idle');
+        $user = $percentages
+            ->get('user')
+            ->flatMap(Percentage::maybe(...));
+        $sys = $percentages
+            ->get('sys')
+            ->flatMap(Percentage::maybe(...));
+        $idle = $percentages
+            ->get('idle')
+            ->flatMap(Percentage::maybe(...));
 
-        return Maybe::all($user, $sys, $idle)
-            ->map(static fn(float $user, float $sys, float $idle) => new Cpu(
-                new Percentage($user),
-                new Percentage($sys),
-                new Percentage($idle),
-                new Cores($cores),
-            ))
+        return Maybe::all($user, $sys, $idle, $cores)
+            ->map(Cpu::of(...))
             ->match(
                 Attempt::result(...),
                 static fn() => Attempt::error(new \RuntimeException('Failed to parse CPU usage')),

@@ -56,7 +56,7 @@ class UnixDiskTest extends TestCase
     {
         $volume = $this
             ->disk
-            ->get(new MountPoint('/'))
+            ->get(MountPoint::of('/'))
             ->match(
                 static fn($volume) => $volume,
                 static fn() => null,

@@ -14,6 +14,7 @@ use Innmind\Server\Control\Server\{
     Command,
     Process\Output,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Set,
@@ -98,26 +99,26 @@ final class UnixDisk implements Disk
             ->map(static fn($parts) => $columns->zip($parts))
             ->map(static fn($parts) => Map::of(...$parts->toList()));
         $volumes = $partsByLine->map(static function($parts): Maybe {
-            $mountPoint = $parts->get('mountPoint');
+            $mountPoint = $parts
+                ->get('mountPoint')
+                ->keep(Is::string()->nonEmpty()->asPredicate())
+                ->map(MountPoint::of(...));
             $size = $parts
                 ->get('size')
-                ->flatMap(static fn($size) => Bytes::of($size));
+                ->flatMap(Bytes::maybe(...));
             $available = $parts
                 ->get('available')
-                ->flatMap(static fn($available) => Bytes::of($available));
+                ->flatMap(Bytes::maybe(...));
             $used = $parts
                 ->get('used')
-                ->flatMap(static fn($used) => Bytes::of($used));
-            $usage = $parts->get('usage');
+                ->flatMap(Bytes::maybe(...));
+            $usage = $parts
+                ->get('usage')
+                ->map(static fn($value) => (float) $value)
+                ->flatMap(Usage::maybe(...));
 
             return Maybe::all($mountPoint, $size, $available, $used, $usage)
-                ->map(static fn(string $mountPoint, Bytes $size, Bytes $available, Bytes $used, string $usage) => new Volume(
-                    new MountPoint($mountPoint),
-                    $size,
-                    $available,
-                    $used,
-                    new Usage((float) $usage),
-                ));
+                ->map(Volume::of(...));
         });
 
         return $volumes

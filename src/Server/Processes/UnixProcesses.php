@@ -17,6 +17,7 @@ use Innmind\TimeContinuum\{
     Clock,
     Format,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Sequence,
@@ -110,20 +111,36 @@ final class UnixProcesses implements Processes
             $parts = $parts
                 ->drop(5)
                 ->map(static fn($part) => $part->toString());
-            $user = $parts->get(0);
-            $pid = $parts->get(1);
-            $percentage = $parts->get(2);
-            $memory = $parts->get(3);
-            $command = $parts->get(4);
+            $user = $parts
+                ->get(0)
+                ->keep(Is::string()->nonEmpty()->asPredicate())
+                ->map(User::of(...));
+            $pid = $parts
+                ->get(1)
+                ->map(static fn($value) => (int) $value)
+                ->keep(Is::int()->positive()->asPredicate())
+                ->map(Pid::of(...));
+            $percentage = $parts
+                ->get(2)
+                ->map(static fn($value) => (float) $value)
+                ->flatMap(Percentage::maybe(...));
+            $memory = $parts
+                ->get(3)
+                ->map(static fn($value) => (float) $value)
+                ->flatMap(Memory::maybe(...));
+            $command = $parts
+                ->get(4)
+                ->keep(Is::string()->nonEmpty()->asPredicate())
+                ->map(Command::of(...));
 
             return Maybe::all($user, $pid, $percentage, $memory, $command)
-                ->map(fn(string $user, string $pid, string $percentage, string $memory, string $command) => new Process(
-                    new Pid((int) $pid),
-                    new User($user),
-                    new Percentage((float) $percentage),
-                    new Memory((float) $memory),
+                ->map(fn(User $user, Pid $pid, Percentage $percentage, Memory $memory, Command $command) => Process::of(
+                    $pid,
+                    $user,
+                    $percentage,
+                    $memory,
                     $this->clock->at($start, Format::of('D M j H:i:s Y')),
-                    new Command($command),
+                    $command,
                 ));
         });
 

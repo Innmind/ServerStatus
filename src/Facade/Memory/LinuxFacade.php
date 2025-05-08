@@ -11,6 +11,7 @@ use Innmind\Server\Control\Server\{
     Processes,
     Command,
 };
+use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Map,
@@ -67,45 +68,57 @@ final class LinuxFacade
      */
     private function parse(Str $output): Attempt
     {
-        /** @var Map<string, int> */
         $amounts = $output
             ->trim()
             ->split("\n")
             ->filter(static fn(Str $line) => $line->matches(
                 '~^('.\implode('|', \array_keys(self::$entries)).'):~',
             ))
-            ->reduce(
-                Map::of(),
-                static function(Map $map, Str $line): Map {
-                    $elements = $line
-                        ->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~')
-                        ->map(static fn($_, $part) => $part->toString());
-
-                    return Maybe::all($elements->get('key'), $elements->get('value'))
-                        ->map(static fn(string $key, string $value) => [$key, (int) $value])
-                        ->match(
-                            static fn($pair) => ($map)(
-                                self::$entries[$pair[0]],
-                                $pair[1] * 1024, // 1024 represents a kilobyte
-                            ),
-                            static fn() => $map,
-                        );
-                },
+            ->map(
+                static fn($line) => $line
+                    ->capture('~^(?P<key>[a-zA-Z]+): +(?P<value>\d+) kB$~')
+                    ->map(static fn($_, $part) => $part->toString()),
+            )
+            ->flatMap(
+                static fn($elements) => Maybe::all(
+                    $elements->get('key'),
+                    $elements
+                        ->get('value')
+                        ->map(static fn($value) => (int) $value)
+                        ->keep(
+                            Is::int()
+                                ->positive()
+                                ->or(Is::value(0))
+                                ->asPredicate(),
+                        )
+                        ->map(Bytes::of(...)),
+                )
+                    ->map(static fn(string $key, Bytes $value) => [
+                        self::$entries[$key],
+                        $value,
+                    ])
+                    ->toSequence(),
             );
+        $amounts = Map::of(...$amounts->toList())
+            ->map(static fn($_, $value) => Bytes::of(
+                $value->toInt() * 1024, // 1024 represents a kilobyte
+            ));
         $total = $amounts->get('total');
         $free = $amounts->get('free');
         $active = $amounts->get('active');
         $swap = $amounts->get('swap');
-        $used = Maybe::all($total, $free)->map(static fn(int $total, int $free) => $total - $free);
+        $used = Maybe::all($total, $free)
+            ->map(static fn(Bytes $total, Bytes $free) => $total->toInt() - $free->toInt())
+            ->keep(
+                Is::int()
+                    ->positive()
+                    ->or(Is::value(0))
+                    ->asPredicate(),
+            )
+            ->map(Bytes::of(...));
 
         return Maybe::all($total, $active, $free, $swap, $used)
-            ->map(static fn(int $total, int $active, int $free, int $swap, int $used) => new Memory(
-                new Bytes($total),
-                new Bytes($active),
-                new Bytes($free),
-                new Bytes($swap),
-                new Bytes($used),
-            ))
+            ->map(Memory::of(...))
             ->match(
                 Attempt::result(...),
                 static fn() => Attempt::error(new \RuntimeException('Failed to parse memory usage')),

@@ -18,31 +18,33 @@ use Innmind\Immutable\Maybe;
  */
 final class Process
 {
-    private Pid $pid;
-    private User $user;
-    private Percentage $cpu;
-    private Memory $memory;
-    /** @var Maybe<PointInTime> */
-    private Maybe $start;
-    private Command $command;
-
     /**
      * @param Maybe<PointInTime> $start
      */
-    public function __construct(
+    private function __construct(
+        private Pid $pid,
+        private User $user,
+        private Percentage $cpu,
+        private Memory $memory,
+        private Maybe $start,
+        private Command $command,
+    ) {
+    }
+
+    /**
+     * @psalm-pure
+     *
+     * @param Maybe<PointInTime> $start
+     */
+    public static function of(
         Pid $pid,
         User $user,
         Percentage $cpu,
         Memory $memory,
         Maybe $start,
         Command $command,
-    ) {
-        $this->pid = $pid;
-        $this->user = $user;
-        $this->cpu = $cpu;
-        $this->memory = $memory;
-        $this->start = $start;
-        $this->command = $command;
+    ): self {
+        return new self($pid, $user, $cpu, $memory, $start, $command);
     }
 
     public function pid(): Pid

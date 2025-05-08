@@ -6,7 +6,6 @@ namespace Innmind\Server\Status\Servers;
 use Innmind\Server\Status\{
     Server,
     Server\Processes,
-    Server\LoadAverage,
     Server\Disk,
 };
 use Innmind\Url\Path;
@@ -66,16 +65,17 @@ final class Logger implements Server
     }
 
     #[\Override]
-    public function loadAverage(): LoadAverage
+    public function loadAverage(): Attempt
     {
-        $loadAverage = $this->server->loadAverage();
-        $this->logger->debug('Load average: {one} {five} {fifteen}', [
-            'one' => $loadAverage->lastMinute(),
-            'five' => $loadAverage->lastFiveMinutes(),
-            'fifteen' => $loadAverage->lastFifteenMinutes(),
-        ]);
+        return $this->server->loadAverage()->map(function($loadAverage) {
+            $this->logger->debug('Load average: {one} {five} {fifteen}', [
+                'one' => $loadAverage->lastMinute(),
+                'five' => $loadAverage->lastFiveMinutes(),
+                'fifteen' => $loadAverage->lastFifteenMinutes(),
+            ]);
 
-        return $loadAverage;
+            return $loadAverage;
+        });
     }
 
     #[\Override]

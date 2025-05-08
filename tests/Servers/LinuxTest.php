@@ -73,10 +73,7 @@ class LinuxTest extends TestCase
             $this
                 ->server
                 ->memory()
-                ->match(
-                    static fn($memory) => $memory,
-                    static fn() => null,
-                ),
+                ->unwrap(),
         );
     }
 
@@ -87,7 +84,7 @@ class LinuxTest extends TestCase
 
     public function testLoadAverage()
     {
-        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $this->server->loadAverage()->unwrap());
     }
 
     public function testDisk()

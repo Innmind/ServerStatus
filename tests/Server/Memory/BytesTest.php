@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\Server\Status\Server\Memory;
 
-use Innmind\Server\Status\{
-    Server\Memory\Bytes,
-    Exception\BytesCannotBeNegative,
-};
+use Innmind\Server\Status\Server\Memory\Bytes;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 
@@ -15,23 +12,16 @@ class BytesTest extends TestCase
     #[DataProvider('steps')]
     public function testInterface($value, $expected)
     {
-        $bytes = new Bytes($value);
+        $bytes = Bytes::of($value);
 
         $this->assertSame($value, $bytes->toInt());
         $this->assertSame($expected, $bytes->toString());
     }
 
-    public function testThrowWhenNegative()
-    {
-        $this->expectException(BytesCannotBeNegative::class);
-
-        new Bytes(-1);
-    }
-
     #[DataProvider('strings')]
     public function testFromString($string, $expected)
     {
-        $bytes = Bytes::of($string)->match(
+        $bytes = Bytes::maybe($string)->match(
             static fn($bytes) => $bytes,
             static fn() => null,
         );
@@ -42,7 +32,7 @@ class BytesTest extends TestCase
 
     public function testReturnNothingWhenUnknownFormat()
     {
-        $this->assertNull(Bytes::of('42Br')->match(
+        $this->assertNull(Bytes::maybe('42Br')->match(
             static fn($bytes) => $bytes,
             static fn() => null,
         ));
@@ -51,7 +41,7 @@ class BytesTest extends TestCase
     #[DataProvider('invalidStrings')]
     public function testReturnNothingWhenStringTooShort($string)
     {
-        $this->assertNull(Bytes::of($string)->match(
+        $this->assertNull(Bytes::maybe($string)->match(
             static fn($bytes) => $bytes,
             static fn() => null,
         ));
