@@ -36,6 +36,9 @@ final class Pid
         return $this->value === $value;
     }
 
+    /**
+     * @return int<1, max>
+     */
     public function toInt(): int
     {
         return $this->value;

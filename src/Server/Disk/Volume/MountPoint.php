@@ -36,6 +36,9 @@ final class MountPoint
         return $this->value === $point;
     }
 
+    /**
+     * @return non-empty-string
+     */
     public function toString(): string
     {
         return $this->value;
