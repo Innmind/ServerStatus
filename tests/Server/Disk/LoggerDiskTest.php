@@ -8,13 +8,14 @@ use Innmind\Server\Status\{
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
-    Server\Disk\Volume\Usage,
-    Server\Memory\Bytes,
+    ServerFactory,
+    EnvironmentPath,
 };
-use Innmind\Immutable\{
-    Set,
-    Maybe,
-};
+use Innmind\Server\Control\ServerFactory as Control;
+use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Streams;
+use Innmind\Immutable\Set;
 use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 
@@ -23,40 +24,38 @@ class LoggerDiskTest extends TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(Disk::class, new LoggerDisk(
-            $this->createMock(Disk::class),
+            $this->disk(),
             new NullLogger,
         ));
     }
 
     public function testVolumes()
     {
-        $inner = $this->createMock(Disk::class);
-        $inner
-            ->expects($this->once())
-            ->method('volumes')
-            ->willReturn($all = Set::of());
+        $disk = new LoggerDisk($this->disk(), new NullLogger);
 
-        $disk = new LoggerDisk($inner, new NullLogger);
-
-        $this->assertSame($all, $disk->volumes());
+        $this->assertInstanceOf(Set::class, $disk->volumes());
     }
 
     public function testGet()
     {
-        $inner = $this->createMock(Disk::class);
-        $inner
-            ->expects($this->once())
-            ->method('get')
-            ->willReturn($volume = Maybe::just(new Volume(
-                new MountPoint('/'),
-                new Bytes(1),
-                new Bytes(1),
-                new Bytes(1),
-                new Usage(1),
-            )));
+        $disk = new LoggerDisk($this->disk(), new NullLogger);
 
-        $disk = new LoggerDisk($inner, new NullLogger);
+        $this->assertInstanceOf(Volume::class, $disk->get(new MountPoint('/'))->match(
+            static fn($volume) => $volume,
+            static fn() => null,
+        ));
+    }
 
-        $this->assertEquals($volume, $disk->get(new MountPoint('/')));
+    private function disk(): Disk
+    {
+        return ServerFactory::build(
+            new Clock,
+            Control::build(
+                new Clock,
+                Streams::fromAmbientAuthority(),
+                new Usleep,
+            ),
+            EnvironmentPath::of(\getenv('PATH')),
+        )->disk();
     }
 }

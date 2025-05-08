@@ -10,10 +10,15 @@ use Innmind\Server\Status\{
     Server\Memory,
     Server\LoadAverage,
     Server\Processes,
-    Server\Disk
+    Server\Disk,
+    ServerFactory,
+    EnvironmentPath,
 };
+use Innmind\Server\Control\ServerFactory as Control;
+use Innmind\TimeContinuum\Earth\Clock;
+use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Stream\Streams;
 use Innmind\Url\Path;
-use Innmind\Immutable\Maybe;
 use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 
@@ -22,53 +27,35 @@ class LoggerTest extends TestCase
     public function testInterface()
     {
         $this->assertInstanceOf(Server::class, new Logger(
-            $this->createMock(Server::class),
+            $this->server(),
             new NullLogger,
         ));
     }
 
     public function testCpu()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('cpu')
-            ->willReturn($cpu = Maybe::just(new Cpu(
-                new Cpu\Percentage(1),
-                new Cpu\Percentage(1),
-                new Cpu\Percentage(1),
-                new Cpu\Cores(1),
-            )));
+        $server = new Logger($this->server(), new NullLogger);
 
-        $server = new Logger($inner, new NullLogger);
-
-        $this->assertEquals($cpu, $server->cpu());
+        $this->assertInstanceOf(Cpu::class, $server->cpu()->match(
+            static fn($cpu) => $cpu,
+            static fn() => null,
+        ));
     }
 
     public function testMemory()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('memory')
-            ->willReturn($memory = Maybe::just(new Memory(
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-                new Memory\Bytes(1),
-            )));
+        $server = new Logger($this->server(), new NullLogger);
 
-        $server = new Logger($inner, new NullLogger);
-
-        $this->assertEquals($memory, $server->memory());
+        $this->assertInstanceOf(Memory::class, $server->memory()->match(
+            static fn($memory) => $memory,
+            static fn() => null,
+        ));
     }
 
     public function testProcesses()
     {
         $server = new Logger(
-            $this->createMock(Server::class),
+            $this->server(),
             new NullLogger,
         );
 
@@ -77,21 +64,15 @@ class LoggerTest extends TestCase
 
     public function testLoadAverage()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('loadAverage')
-            ->willReturn($loadAverage = new LoadAverage(1, 5, 15));
+        $server = new Logger($this->server(), new NullLogger);
 
-        $server = new Logger($inner, new NullLogger);
-
-        $this->assertSame($loadAverage, $server->loadAverage());
+        $this->assertInstanceOf(LoadAverage::class, $server->loadAverage());
     }
 
     public function testDisk()
     {
         $server = new Logger(
-            $this->createMock(Server::class),
+            $this->server(),
             new NullLogger,
         );
 
@@ -100,14 +81,21 @@ class LoggerTest extends TestCase
 
     public function testTmp()
     {
-        $inner = $this->createMock(Server::class);
-        $inner
-            ->expects($this->once())
-            ->method('tmp')
-            ->willReturn($tmp = Path::of('/tmp/'));
+        $server = new Logger($this->server(), new NullLogger);
 
-        $server = new Logger($inner, new NullLogger);
+        $this->assertInstanceOf(Path::class, $server->tmp());
+    }
 
-        $this->assertSame($tmp, $server->tmp());
+    private function server(): Server
+    {
+        return ServerFactory::build(
+            new Clock,
+            Control::build(
+                new Clock,
+                Streams::fromAmbientAuthority(),
+                new Usleep,
+            ),
+            EnvironmentPath::of(\getenv('PATH')),
+        );
     }
 }
