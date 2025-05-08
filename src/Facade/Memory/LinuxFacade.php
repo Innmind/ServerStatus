@@ -84,8 +84,14 @@ final class LinuxFacade
                     $elements->get('key'),
                     $elements
                         ->get('value')
-                        ->map(static fn($value) => $value.'K')
-                        ->flatMap(Bytes::maybe(...)),
+                        ->map(static fn($value) => (int) $value)
+                        ->keep(
+                            Is::int()
+                                ->positive()
+                                ->or(Is::value(0))
+                                ->asPredicate(),
+                        )
+                        ->map(Bytes::of(...)),
                 )
                     ->map(static fn(string $key, Bytes $value) => [$key, $value])
                     ->toSequence(),
