@@ -18,7 +18,7 @@ use Innmind\Immutable\{
     Set,
     Maybe,
 };
-use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 
 class LoggerProcessesTest extends TestCase
@@ -27,7 +27,7 @@ class LoggerProcessesTest extends TestCase
     {
         $this->assertInstanceOf(Processes::class, new LoggerProcesses(
             $this->createMock(Processes::class),
-            $this->createMock(LoggerInterface::class),
+            new NullLogger,
         ));
     }
 
@@ -38,12 +38,8 @@ class LoggerProcessesTest extends TestCase
             ->expects($this->once())
             ->method('all')
             ->willReturn($all = Set::of());
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $processes = new LoggerProcesses($inner, $logger);
+        $processes = new LoggerProcesses($inner, new NullLogger);
 
         $this->assertSame($all, $processes->all());
     }
@@ -62,12 +58,8 @@ class LoggerProcessesTest extends TestCase
                 Maybe::just((new Clock)->now()),
                 new Command('sleep 42'),
             )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $processes = new LoggerProcesses($inner, $logger);
+        $processes = new LoggerProcesses($inner, new NullLogger);
 
         $this->assertEquals($process, $processes->get(new Pid(1)));
     }

@@ -15,7 +15,7 @@ use Innmind\Immutable\{
     Set,
     Maybe,
 };
-use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 
 class LoggerDiskTest extends TestCase
@@ -24,7 +24,7 @@ class LoggerDiskTest extends TestCase
     {
         $this->assertInstanceOf(Disk::class, new LoggerDisk(
             $this->createMock(Disk::class),
-            $this->createMock(LoggerInterface::class),
+            new NullLogger,
         ));
     }
 
@@ -35,12 +35,8 @@ class LoggerDiskTest extends TestCase
             ->expects($this->once())
             ->method('volumes')
             ->willReturn($all = Set::of());
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $disk = new LoggerDisk($inner, $logger);
+        $disk = new LoggerDisk($inner, new NullLogger);
 
         $this->assertSame($all, $disk->volumes());
     }
@@ -58,12 +54,8 @@ class LoggerDiskTest extends TestCase
                 new Bytes(1),
                 new Usage(1),
             )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $disk = new LoggerDisk($inner, $logger);
+        $disk = new LoggerDisk($inner, new NullLogger);
 
         $this->assertEquals($volume, $disk->get(new MountPoint('/')));
     }

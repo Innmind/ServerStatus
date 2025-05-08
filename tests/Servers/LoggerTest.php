@@ -14,7 +14,7 @@ use Innmind\Server\Status\{
 };
 use Innmind\Url\Path;
 use Innmind\Immutable\Maybe;
-use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use PHPUnit\Framework\TestCase;
 
 class LoggerTest extends TestCase
@@ -23,7 +23,7 @@ class LoggerTest extends TestCase
     {
         $this->assertInstanceOf(Server::class, new Logger(
             $this->createMock(Server::class),
-            $this->createMock(LoggerInterface::class),
+            new NullLogger,
         ));
     }
 
@@ -39,12 +39,8 @@ class LoggerTest extends TestCase
                 new Cpu\Percentage(1),
                 new Cpu\Cores(1),
             )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $server = new Logger($inner, $logger);
+        $server = new Logger($inner, new NullLogger);
 
         $this->assertEquals($cpu, $server->cpu());
     }
@@ -63,12 +59,8 @@ class LoggerTest extends TestCase
                 new Memory\Bytes(1),
                 new Memory\Bytes(1),
             )));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $server = new Logger($inner, $logger);
+        $server = new Logger($inner, new NullLogger);
 
         $this->assertEquals($memory, $server->memory());
     }
@@ -77,7 +69,7 @@ class LoggerTest extends TestCase
     {
         $server = new Logger(
             $this->createMock(Server::class),
-            $this->createMock(LoggerInterface::class),
+            new NullLogger,
         );
 
         $this->assertInstanceOf(Processes\LoggerProcesses::class, $server->processes());
@@ -90,12 +82,8 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('loadAverage')
             ->willReturn($loadAverage = new LoadAverage(1, 5, 15));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $server = new Logger($inner, $logger);
+        $server = new Logger($inner, new NullLogger);
 
         $this->assertSame($loadAverage, $server->loadAverage());
     }
@@ -104,7 +92,7 @@ class LoggerTest extends TestCase
     {
         $server = new Logger(
             $this->createMock(Server::class),
-            $this->createMock(LoggerInterface::class),
+            new NullLogger,
         );
 
         $this->assertInstanceOf(Disk\LoggerDisk::class, $server->disk());
@@ -117,12 +105,8 @@ class LoggerTest extends TestCase
             ->expects($this->once())
             ->method('tmp')
             ->willReturn($tmp = Path::of('/tmp/'));
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger
-            ->expects($this->once())
-            ->method('debug');
 
-        $server = new Logger($inner, $logger);
+        $server = new Logger($inner, new NullLogger);
 
         $this->assertSame($tmp, $server->tmp());
     }
