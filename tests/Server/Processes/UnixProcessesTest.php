@@ -39,12 +39,6 @@ class UnixProcessesTest extends TestCase
 
     public function testAll()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
         $all = $this->processes->all();
 
         $this->assertInstanceOf(Set::class, $all);
@@ -77,12 +71,6 @@ class UnixProcessesTest extends TestCase
 
     public function testGet()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
         $process = $this
             ->processes
             ->get(new Pid(1))
@@ -110,12 +98,6 @@ class UnixProcessesTest extends TestCase
 
     public function testProcessTimeIsStillAccessible()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
         $process = $this
             ->processes
             ->all()

@@ -38,12 +38,6 @@ class UnixDiskTest extends TestCase
 
     public function testVolumes()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
         $volumes = $this->disk->volumes();
 
         $this->assertInstanceOf(Set::class, $volumes);
@@ -60,12 +54,6 @@ class UnixDiskTest extends TestCase
 
     public function testGet()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
         $volume = $this
             ->disk
             ->get(new MountPoint('/'))

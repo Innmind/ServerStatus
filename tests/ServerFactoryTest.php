@@ -19,12 +19,6 @@ class ServerFactoryTest extends TestCase
 {
     public function testMake()
     {
-        if (!\in_array(\PHP_OS, ['Darwin', 'Linux'], true)) {
-            $this->assertTrue(true);
-
-            return;
-        }
-
         $this->assertInstanceOf(Server::class, ServerFactory::build(
             new Clock,
             Control::build(
