@@ -9,6 +9,7 @@
 - `Innmind\Server\Status\Server\Processes::all()` now returns an `Innmind\Immutable\Sequence`
 - `Innmind\Server\Status\Server\Disk::volumes()` now returns an `Innmind\Immutable\Sequence`
 - `Innmind\Server\Status\Server\Disk` is now a final class
+- `Innmind\Server\Status\Server\Processes` is now a final class
 
 ## 5.0.0 - 2025-05-08
 

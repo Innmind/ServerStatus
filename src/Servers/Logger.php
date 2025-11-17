@@ -61,7 +61,7 @@ final class Logger implements Implementation
     #[\Override]
     public function processes(): Processes
     {
-        return Processes\Logger::of(
+        return Processes::logger(
             $this->server->processes(),
             $this->logger,
         );

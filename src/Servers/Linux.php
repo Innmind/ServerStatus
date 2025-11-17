@@ -21,7 +21,7 @@ final class Linux implements Implementation
 {
     private CpuFacade $cpu;
     private MemoryFacade $memory;
-    private Processes\Unix $processes;
+    private Processes $processes;
     private LoadAverageFacade $loadAverage;
     private Disk $disk;
 
@@ -29,7 +29,7 @@ final class Linux implements Implementation
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes());
-        $this->processes = Processes\Unix::linux($clock, $control->processes());
+        $this->processes = Processes::linux($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
         $this->disk = Disk::of($control->processes());
     }

@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes,
     Server\Process,
     Server\Process\Pid,
 };
@@ -15,10 +14,13 @@ use Innmind\Immutable\{
 };
 use Psr\Log\LoggerInterface;
 
-final class Logger implements Processes
+/**
+ * @internal
+ */
+final class Logger implements Implementation
 {
     private function __construct(
-        private Processes $processes,
+        private Implementation $processes,
         private LoggerInterface $logger,
     ) {
     }
@@ -26,7 +28,7 @@ final class Logger implements Processes
     /**
      * @internal
      */
-    public static function of(Processes $processes, LoggerInterface $logger): self
+    public static function of(Implementation $processes, LoggerInterface $logger): self
     {
         return new self($processes, $logger);
     }

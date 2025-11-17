@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes,
     Server\Process,
     Server\Process\Pid,
     Server\Process\User,
@@ -25,7 +24,10 @@ use Innmind\Immutable\{
     Monoid\Concat,
 };
 
-final class Unix implements Processes
+/**
+ * @internal
+ */
+final class Unix implements Implementation
 {
     private function __construct(
         private Clock $clock,
