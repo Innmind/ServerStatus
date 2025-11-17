@@ -30,7 +30,7 @@ final class OSX implements Implementation
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes(), $path);
-        $this->processes = Processes\Unix::of($clock, $control->processes());
+        $this->processes = Processes\Unix::osx($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
         $this->disk = Disk\Unix::of($control->processes());
     }

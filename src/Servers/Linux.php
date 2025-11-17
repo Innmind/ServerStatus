@@ -29,7 +29,7 @@ final class Linux implements Implementation
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes());
-        $this->processes = Processes\Unix::of($clock, $control->processes());
+        $this->processes = Processes\Unix::linux($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
         $this->disk = Disk\Unix::of($control->processes());
     }

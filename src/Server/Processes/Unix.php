@@ -30,15 +30,32 @@ final class Unix implements Processes
     private function __construct(
         private Clock $clock,
         private Control\Processes $processes,
+        private string $format,
     ) {
     }
 
     /**
      * @internal
      */
-    public static function of(Clock $clock, Control\Processes $processes): self
+    public static function osx(Clock $clock, Control\Processes $processes): self
     {
-        return new self($clock, $processes);
+        return new self(
+            $clock,
+            $processes,
+            'lstart,user,pid,%cpu,%mem,command',
+        );
+    }
+
+    /**
+     * @internal
+     */
+    public static function linux(Clock $clock, Control\Processes $processes): self
+    {
+        return new self(
+            $clock,
+            $processes,
+            'lstart,user,pid,%cpu,%mem,cmd',
+        );
     }
 
     #[\Override]
@@ -47,7 +64,7 @@ final class Unix implements Processes
         return $this
             ->run(
                 Control\Command::foreground('ps')
-                    ->withShortOption('eo', $this->format()),
+                    ->withShortOption('eo', $this->format),
             )
             ->map($this->parse(...))
             ->toSequence()
@@ -60,12 +77,12 @@ final class Unix implements Processes
         return $this
             ->run(
                 Control\Command::foreground('ps')
-                    ->withShortOption('o', $this->format())
+                    ->withShortOption('o', $this->format)
                     ->withShortOption('p', $pid->toString()),
             )
             ->otherwise(fn() => $this->run(
                 Control\Command::foreground('ps')
-                    ->withShortOption('o', $this->format())
+                    ->withShortOption('o', $this->format)
                     ->withShortOption('q', $pid->toString()),
             ))
             ->map($this->parse(...))
@@ -145,10 +162,5 @@ final class Unix implements Processes
         return $processes->flatMap(
             static fn($process) => $process->toSequence(), // discard process that failed to be parsed
         );
-    }
-
-    private function format(): string
-    {
-        return \PHP_OS === 'Linux' ? 'lstart,user,pid,%cpu,%mem,cmd' : 'lstart,user,pid,%cpu,%mem,command';
     }
 }
