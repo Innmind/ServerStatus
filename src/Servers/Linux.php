@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Server,
     Server\Processes,
     Facade\Cpu\LinuxFacade as CpuFacade,
     Facade\Memory\LinuxFacade as MemoryFacade,
@@ -16,7 +15,10 @@ use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
 
-final class Linux implements Server
+/**
+ * @internal
+ */
+final class Linux implements Implementation
 {
     private CpuFacade $cpu;
     private MemoryFacade $memory;

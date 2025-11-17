@@ -5,6 +5,7 @@
 ### Changed
 
 - Requires PHP `8.4`
+- `Innmind\Server\Status\Server` is now a final class, all previous implementations are now flagged as internal
 
 ## 5.0.0 - 2025-05-08
 

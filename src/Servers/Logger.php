@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Server,
     Server\Processes,
     Server\Disk,
 };
@@ -12,15 +11,18 @@ use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
-final class Logger implements Server
+/**
+ * @internal
+ */
+final class Logger implements Implementation
 {
     private function __construct(
-        private Server $server,
+        private Implementation $server,
         private LoggerInterface $logger,
     ) {
     }
 
-    public static function of(Server $server, LoggerInterface $logger): self
+    public static function of(Implementation $server, LoggerInterface $logger): self
     {
         return new self($server, $logger);
     }

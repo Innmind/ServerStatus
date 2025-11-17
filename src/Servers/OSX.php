@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Server,
     Server\Processes,
     Facade\Cpu\OSXFacade as CpuFacade,
     Facade\Memory\OSXFacade as MemoryFacade,
@@ -17,7 +16,10 @@ use Innmind\TimeContinuum\Clock;
 use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
 
-final class OSX implements Server
+/**
+ * @internal
+ */
+final class OSX implements Implementation
 {
     private CpuFacade $cpu;
     private MemoryFacade $memory;
