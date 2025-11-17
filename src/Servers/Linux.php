@@ -23,7 +23,7 @@ final class Linux implements Implementation
     private MemoryFacade $memory;
     private Processes\Unix $processes;
     private LoadAverageFacade $loadAverage;
-    private Disk\Unix $disk;
+    private Disk $disk;
 
     private function __construct(Clock $clock, Control $control)
     {
@@ -31,7 +31,7 @@ final class Linux implements Implementation
         $this->memory = new MemoryFacade($control->processes());
         $this->processes = Processes\Unix::linux($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
-        $this->disk = Disk\Unix::of($control->processes());
+        $this->disk = Disk::of($control->processes());
     }
 
     /**

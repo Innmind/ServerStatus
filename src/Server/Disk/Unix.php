@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Server\Disk;
 
 use Innmind\Server\Status\{
-    Server\Disk,
     Server\Disk\Volume\MountPoint,
     Server\Disk\Volume\Usage,
     Server\Memory\Bytes,
@@ -23,7 +22,10 @@ use Innmind\Immutable\{
     Monoid\Concat,
 };
 
-final class Unix implements Disk
+/**
+ * @internal
+ */
+final class Unix implements Implementation
 {
     private static array $columns = [
         'Size' => 'size',

@@ -84,7 +84,7 @@ final class Logger implements Implementation
     #[\Override]
     public function disk(): Disk
     {
-        return Disk\Logger::of(
+        return Disk::logger(
             $this->server->disk(),
             $this->logger,
         );

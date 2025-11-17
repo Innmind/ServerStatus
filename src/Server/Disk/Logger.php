@@ -3,20 +3,20 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Disk;
 
-use Innmind\Server\Status\{
-    Server\Disk,
-    Server\Disk\Volume\MountPoint,
-};
+use Innmind\Server\Status\Server\Disk\Volume\MountPoint;
 use Innmind\Immutable\{
     Sequence,
     Maybe,
 };
 use Psr\Log\LoggerInterface;
 
-final class Logger implements Disk
+/**
+ * @internal
+ */
+final class Logger implements Implementation
 {
     private function __construct(
-        private Disk $disk,
+        private Implementation $disk,
         private LoggerInterface $logger,
     ) {
     }
@@ -24,7 +24,7 @@ final class Logger implements Disk
     /**
      * @internal
      */
-    public static function of(Disk $disk, LoggerInterface $logger): self
+    public static function of(Implementation $disk, LoggerInterface $logger): self
     {
         return new self($disk, $logger);
     }
