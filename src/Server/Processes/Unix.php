@@ -21,7 +21,6 @@ use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Sequence,
-    Set,
     Maybe,
     Monoid\Concat,
 };
@@ -43,7 +42,7 @@ final class Unix implements Processes
     }
 
     #[\Override]
-    public function all(): Set
+    public function all(): Sequence
     {
         return $this
             ->run(
@@ -52,7 +51,6 @@ final class Unix implements Processes
             )
             ->map($this->parse(...))
             ->toSequence()
-            ->toSet()
             ->flatMap(static fn($processes) => $processes);
     }
 
@@ -95,9 +93,9 @@ final class Unix implements Processes
     }
 
     /**
-     * @return Set<Process>
+     * @return Sequence<Process>
      */
-    private function parse(Str $output): Set
+    private function parse(Str $output): Sequence
     {
         $lines = $output
             ->trim()
@@ -144,9 +142,9 @@ final class Unix implements Processes
                 ->map(Process::of(...));
         });
 
-        return $processes
-            ->flatMap(static fn($process) => $process->toSequence()) // discard process that failed to be parsed
-            ->toSet();
+        return $processes->flatMap(
+            static fn($process) => $process->toSequence(), // discard process that failed to be parsed
+        );
     }
 
     private function format(): string

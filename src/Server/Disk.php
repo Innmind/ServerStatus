@@ -8,16 +8,16 @@ use Innmind\Server\Status\Server\Disk\{
     Volume\MountPoint,
 };
 use Innmind\Immutable\{
-    Set,
+    Sequence,
     Maybe,
 };
 
 interface Disk
 {
     /**
-     * @return Set<Volume>
+     * @return Sequence<Volume>
      */
-    public function volumes(): Set;
+    public function volumes(): Sequence;
 
     /**
      * @return Maybe<Volume>

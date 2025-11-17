@@ -10,7 +10,7 @@ use Innmind\Server\Status\{
 };
 use Innmind\TimeContinuum\Format;
 use Innmind\Immutable\{
-    Set,
+    Sequence,
     Maybe,
 };
 use Psr\Log\LoggerInterface;
@@ -32,7 +32,7 @@ final class Logger implements Processes
     }
 
     #[\Override]
-    public function all(): Set
+    public function all(): Sequence
     {
         $all = $this->processes->all();
         $this->logger->debug('{count} processes currently running', [

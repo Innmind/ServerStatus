@@ -8,7 +8,7 @@ use Innmind\Server\Status\{
     Server\Disk\Volume\MountPoint,
 };
 use Innmind\Immutable\{
-    Set,
+    Sequence,
     Maybe,
 };
 use Psr\Log\LoggerInterface;
@@ -30,7 +30,7 @@ final class Logger implements Disk
     }
 
     #[\Override]
-    public function volumes(): Set
+    public function volumes(): Sequence
     {
         $volumes = $this->disk->volumes();
         $this->logger->debug('{count} volumes currently mounted', [

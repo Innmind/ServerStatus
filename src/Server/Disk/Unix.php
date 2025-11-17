@@ -17,7 +17,7 @@ use Innmind\Server\Control\Server\{
 use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
-    Set,
+    Sequence,
     Maybe,
     Map,
     Monoid\Concat,
@@ -48,7 +48,7 @@ final class Unix implements Disk
     }
 
     #[\Override]
-    public function volumes(): Set
+    public function volumes(): Sequence
     {
         return $this
             ->processes
@@ -67,7 +67,6 @@ final class Unix implements Disk
             )
             ->map($this->parse(...))
             ->toSequence()
-            ->toSet()
             ->flatMap(static fn($volumes) => $volumes);
     }
 
@@ -80,9 +79,9 @@ final class Unix implements Disk
     }
 
     /**
-     * @return Set<Volume>
+     * @return Sequence<Volume>
      */
-    private function parse(Str $output): Set
+    private function parse(Str $output): Sequence
     {
         $lines = $output
             ->trim()
@@ -126,8 +125,8 @@ final class Unix implements Disk
                 ->map(Volume::of(...));
         });
 
-        return $volumes
-            ->flatMap(static fn($volume) => $volume->toSequence()) // discard unparsed volumes
-            ->toSet();
+        return $volumes->flatMap(
+            static fn($volume) => $volume->toSequence(), // discard unparsed volumes
+        );
     }
 }

@@ -5,16 +5,16 @@ namespace Innmind\Server\Status\Server;
 
 use Innmind\Server\Status\Server\Process\Pid;
 use Innmind\Immutable\{
-    Set,
+    Sequence,
     Maybe,
 };
 
 interface Processes
 {
     /**
-     * @return Set<Process>
+     * @return Sequence<Process>
      */
-    public function all(): Set;
+    public function all(): Sequence;
 
     /**
      * @return Maybe<Process>
