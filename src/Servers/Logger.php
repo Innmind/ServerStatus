@@ -7,7 +7,6 @@ use Innmind\Server\Status\{
     Server\Processes,
     Server\Disk,
 };
-use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
@@ -89,16 +88,5 @@ final class Logger implements Implementation
             $this->server->disk(),
             $this->logger,
         );
-    }
-
-    #[\Override]
-    public function tmp(): Path
-    {
-        $tmp = $this->server->tmp();
-        $this->logger->debug('Temporary folder located at: {path}', [
-            'path' => $tmp->toString(),
-        ]);
-
-        return $tmp;
     }
 }

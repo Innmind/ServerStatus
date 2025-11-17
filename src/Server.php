@@ -86,6 +86,6 @@ final class Server
 
     public function tmp(): Path
     {
-        return $this->implementation->tmp();
+        return Path::of(\rtrim(\sys_get_temp_dir(), '/').'/');
     }
 }

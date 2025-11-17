@@ -10,7 +10,6 @@ use Innmind\Server\Status\{
     Server\LoadAverage,
     Server\Disk,
 };
-use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
 
 /**
@@ -34,5 +33,4 @@ interface Implementation
      */
     public function loadAverage(): Attempt;
     public function disk(): Disk;
-    public function tmp(): Path;
 }

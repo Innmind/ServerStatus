@@ -13,7 +13,6 @@ use Innmind\Server\Status\{
 };
 use Innmind\Server\Control\Server as Control;
 use Innmind\TimeContinuum\Clock;
-use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
 
 /**
@@ -72,11 +71,5 @@ final class OSX implements Implementation
     public function disk(): Disk
     {
         return $this->disk;
-    }
-
-    #[\Override]
-    public function tmp(): Path
-    {
-        return Path::of(\rtrim(\sys_get_temp_dir(), '/').'/');
     }
 }
