@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Servers\Linux,
     Server,
     Server\Cpu,
     Server\Memory,
@@ -25,7 +24,7 @@ class LinuxTest extends TestCase
 
     public function setUp(): void
     {
-        $this->server = Linux::of(
+        $this->server = Server::linux(
             Clock::live(),
             Control::build(
                 Clock::live(),

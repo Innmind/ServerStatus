@@ -4,10 +4,11 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes\Unix,
+    ServerFactory,
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
+    EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\{
@@ -16,7 +17,7 @@ use Innmind\TimeContinuum\{
 };
 use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
-use Innmind\Immutable\Set;
+use Innmind\Immutable\Sequence;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UnixProcessesTest extends TestCase
@@ -25,14 +26,15 @@ class UnixProcessesTest extends TestCase
 
     public function setUp(): void
     {
-        $this->processes = Unix::of(
+        $this->processes = ServerFactory::build(
             Clock::live(),
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
                 Halt::new(),
-            )->processes(),
-        );
+            ),
+            EnvironmentPath::of(\getenv('PATH')),
+        )->processes();
     }
 
     public function testInterface()
@@ -44,7 +46,7 @@ class UnixProcessesTest extends TestCase
     {
         $all = $this->processes->all();
 
-        $this->assertInstanceOf(Set::class, $all);
+        $this->assertInstanceOf(Sequence::class, $all);
         $this->assertGreaterThanOrEqual(1, $all->size());
         $this->assertSame(
             'root',

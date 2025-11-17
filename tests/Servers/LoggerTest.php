@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Servers\Logger,
     Server,
     Server\Cpu,
     Server\Memory,
@@ -26,7 +25,7 @@ class LoggerTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Server::class, Logger::of(
+        $this->assertInstanceOf(Server::class, Server::logger(
             $this->server(),
             new NullLogger,
         ));
@@ -34,7 +33,7 @@ class LoggerTest extends TestCase
 
     public function testCpu()
     {
-        $server = Logger::of($this->server(), new NullLogger);
+        $server = Server::logger($this->server(), new NullLogger);
 
         $this->assertInstanceOf(Cpu::class, $server->cpu()->match(
             static fn($cpu) => $cpu,
@@ -44,7 +43,7 @@ class LoggerTest extends TestCase
 
     public function testMemory()
     {
-        $server = Logger::of($this->server(), new NullLogger);
+        $server = Server::logger($this->server(), new NullLogger);
 
         $this->assertInstanceOf(Memory::class, $server->memory()->match(
             static fn($memory) => $memory,
@@ -54,34 +53,34 @@ class LoggerTest extends TestCase
 
     public function testProcesses()
     {
-        $server = Logger::of(
+        $server = Server::logger(
             $this->server(),
             new NullLogger,
         );
 
-        $this->assertInstanceOf(Processes\Logger::class, $server->processes());
+        $this->assertInstanceOf(Processes::class, $server->processes());
     }
 
     public function testLoadAverage()
     {
-        $server = Logger::of($this->server(), new NullLogger);
+        $server = Server::logger($this->server(), new NullLogger);
 
         $this->assertInstanceOf(LoadAverage::class, $server->loadAverage()->unwrap());
     }
 
     public function testDisk()
     {
-        $server = Logger::of(
+        $server = Server::logger(
             $this->server(),
             new NullLogger,
         );
 
-        $this->assertInstanceOf(Disk\Logger::class, $server->disk());
+        $this->assertInstanceOf(Disk::class, $server->disk());
     }
 
     public function testTmp()
     {
-        $server = Logger::of($this->server(), new NullLogger);
+        $server = Server::logger($this->server(), new NullLogger);
 
         $this->assertInstanceOf(Path::class, $server->tmp());
     }

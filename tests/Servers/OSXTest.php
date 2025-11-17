@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Servers\OSX,
     Server,
     Server\Cpu,
     Server\Memory,
@@ -26,7 +25,7 @@ class OSXTest extends TestCase
 
     public function setUp(): void
     {
-        $this->server = OSX::of(
+        $this->server = Server::osx(
             Clock::live(),
             Control::build(
                 Clock::live(),
