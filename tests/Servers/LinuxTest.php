@@ -14,7 +14,7 @@ use Innmind\Server\Status\{
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Clock;
-use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Url\Path;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
@@ -30,7 +30,7 @@ class LinuxTest extends TestCase
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
-                Usleep::new(),
+                Halt::new(),
             ),
         );
     }

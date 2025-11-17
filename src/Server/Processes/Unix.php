@@ -137,7 +137,7 @@ final class Unix implements Processes
                 ->keep(Is::string()->nonEmpty()->asPredicate())
                 ->map(Command::of(...));
             $start = Maybe::just(
-                $this->clock->at($start, Format::of('D M j H:i:s Y')),
+                $this->clock->at($start, Format::of('D M j H:i:s Y'))->maybe(),
             );
 
             return Maybe::all($pid, $user, $percentage, $memory, $start, $command)

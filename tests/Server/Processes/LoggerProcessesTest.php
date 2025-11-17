@@ -13,7 +13,7 @@ use Innmind\Server\Status\{
 };
 use Innmind\Server\Control\ServerFactory as Control;
 use Innmind\TimeContinuum\Clock;
-use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Immutable\Set;
 use Psr\Log\NullLogger;
@@ -53,7 +53,7 @@ class LoggerProcessesTest extends TestCase
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
-                Usleep::new(),
+                Halt::new(),
             ),
             EnvironmentPath::of(\getenv('PATH')),
         )->processes();

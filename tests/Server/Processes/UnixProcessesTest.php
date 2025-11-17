@@ -14,7 +14,7 @@ use Innmind\TimeContinuum\{
     Clock,
     PointInTime,
 };
-use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Immutable\Set;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
@@ -30,7 +30,7 @@ class UnixProcessesTest extends TestCase
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
-                Usleep::new(),
+                Halt::new(),
             )->processes(),
         );
     }
