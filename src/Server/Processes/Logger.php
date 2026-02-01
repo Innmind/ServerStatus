@@ -3,9 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Processes;
 
-use Innmind\Server\Status\{
-    Server\Process,
-    Server\Process\Pid,
+use Innmind\Server\Status\Server\{
+    Process,
+    Process\Pid,
 };
 use Innmind\Time\Format;
 use Innmind\Immutable\{

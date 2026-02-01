@@ -3,9 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Servers;
 
-use Innmind\Server\Status\{
-    Server\Processes,
-    Server\Disk,
+use Innmind\Server\Status\Server\{
+    Processes,
+    Disk,
 };
 use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;

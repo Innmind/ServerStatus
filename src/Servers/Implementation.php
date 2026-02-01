@@ -3,12 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Servers;
 
-use Innmind\Server\Status\{
-    Server\Cpu,
-    Server\Memory,
-    Server\Processes,
-    Server\LoadAverage,
-    Server\Disk,
+use Innmind\Server\Status\Server\{
+    Cpu,
+    Memory,
+    Processes,
+    LoadAverage,
+    Disk,
 };
 use Innmind\Immutable\Attempt;
 

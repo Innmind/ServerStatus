@@ -3,9 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Facade\Memory;
 
-use Innmind\Server\Status\{
-    Server\Memory,
-    Server\Memory\Bytes,
+use Innmind\Server\Status\Server\{
+    Memory,
+    Memory\Bytes,
 };
 use Innmind\Server\Control\Server\{
     Processes,

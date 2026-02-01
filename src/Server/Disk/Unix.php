@@ -3,10 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Disk;
 
-use Innmind\Server\Status\{
-    Server\Disk\Volume\MountPoint,
-    Server\Disk\Volume\Usage,
-    Server\Memory\Bytes,
+use Innmind\Server\Status\Server\{
+    Disk\Volume\MountPoint,
+    Disk\Volume\Usage,
+    Memory\Bytes,
 };
 use Innmind\Server\Control\Server\{
     Processes,

@@ -3,10 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Facade\Cpu;
 
-use Innmind\Server\Status\{
-    Server\Cpu,
-    Server\Cpu\Percentage,
-    Server\Cpu\Cores,
+use Innmind\Server\Status\Server\{
+    Cpu,
+    Cpu\Percentage,
+    Cpu\Cores,
 };
 use Innmind\Server\Control\Server\{
     Processes,

@@ -3,13 +3,13 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Processes;
 
-use Innmind\Server\Status\{
-    Server\Process,
-    Server\Process\Pid,
-    Server\Process\User,
-    Server\Process\Command,
-    Server\Process\Memory,
-    Server\Cpu\Percentage,
+use Innmind\Server\Status\Server\{
+    Process,
+    Process\Pid,
+    Process\User,
+    Process\Command,
+    Process\Memory,
+    Cpu\Percentage,
 };
 use Innmind\Server\Control\Server as Control;
 use Innmind\Time\{
