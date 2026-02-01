@@ -107,7 +107,7 @@ final class Unix implements Implementation
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             );
     }
 

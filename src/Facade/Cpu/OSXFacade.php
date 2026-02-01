@@ -54,7 +54,7 @@ final class OSXFacade
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             )
             ->flatMap($this->parse(...));
     }
@@ -88,7 +88,7 @@ final class OSXFacade
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             )
             ->map(static fn($output) => $output->trim())
             ->map(static fn($output) => $output->capture('~^hw.ncpu: (?P<cores>\d+)$~'))

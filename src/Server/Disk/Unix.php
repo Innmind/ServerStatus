@@ -65,7 +65,7 @@ final class Unix implements Implementation
                     ->output()
                     ->filter(static fn($chunk) => $chunk->type() === Output\Type::output) // discard errors such as "df: getattrlist failed"
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             )
             ->map($this->parse(...))
             ->toSequence()

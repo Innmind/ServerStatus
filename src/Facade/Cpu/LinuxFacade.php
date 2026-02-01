@@ -53,7 +53,7 @@ final class LinuxFacade
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             )
             ->flatMap($this->parse(...));
     }
@@ -80,7 +80,7 @@ final class LinuxFacade
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat)
+                    ->fold(Concat::monoid)
                     ->toString(),
             )
             ->map(static fn($cores) => (int) $cores)
