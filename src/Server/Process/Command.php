@@ -32,6 +32,7 @@ final class Command
         return new self($value);
     }
 
+    #[\NoDiscard]
     public function matches(RegExp $pattern): bool
     {
         return $pattern->matches(Str::of($this->value));
@@ -40,6 +41,7 @@ final class Command
     /**
      * @return non-empty-string
      */
+    #[\NoDiscard]
     public function toString(): string
     {
         return $this->value;

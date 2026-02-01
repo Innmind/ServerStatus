@@ -48,21 +48,25 @@ final class Process
         return new self($pid, $user, $cpu, $memory, $start, $command);
     }
 
+    #[\NoDiscard]
     public function pid(): Pid
     {
         return $this->pid;
     }
 
+    #[\NoDiscard]
     public function user(): User
     {
         return $this->user;
     }
 
+    #[\NoDiscard]
     public function cpu(): Percentage
     {
         return $this->cpu;
     }
 
+    #[\NoDiscard]
     public function memory(): Memory
     {
         return $this->memory;
@@ -71,11 +75,13 @@ final class Process
     /**
      * @return Maybe<Point>
      */
+    #[\NoDiscard]
     public function start(): Maybe
     {
         return $this->start;
     }
 
+    #[\NoDiscard]
     public function command(): Command
     {
         return $this->command;

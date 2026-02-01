@@ -44,11 +44,13 @@ final class Bytes
     /**
      * @return int<0, max>
      */
+    #[\NoDiscard]
     public function toInt(): int
     {
         return $this->value;
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return Size::of($this->value)->toString();

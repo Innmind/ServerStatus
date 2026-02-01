@@ -54,6 +54,7 @@ final class Processes
     /**
      * @return Sequence<Process>
      */
+    #[\NoDiscard]
     public function all(): Sequence
     {
         return $this->implementation->all();
@@ -62,6 +63,7 @@ final class Processes
     /**
      * @return Maybe<Process>
      */
+    #[\NoDiscard]
     public function get(Pid $pid): Maybe
     {
         return $this->implementation->get($pid);

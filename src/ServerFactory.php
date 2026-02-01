@@ -8,6 +8,7 @@ use Innmind\Time\Clock;
 
 final class ServerFactory
 {
+    #[\NoDiscard]
     public static function build(
         Clock $clock,
         Control $control,

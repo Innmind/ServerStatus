@@ -30,11 +30,13 @@ final class Cores
     /**
      * @return int<1, max>
      */
+    #[\NoDiscard]
     public function toInt(): int
     {
         return $this->value;
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return (string) $this->value;
