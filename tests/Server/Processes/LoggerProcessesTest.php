@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Processes;
 
 use Innmind\Server\Status\{
-    Server\Processes\Logger,
+    Server,
     Server\Processes,
     Server\Process,
     Server\Process\Pid,
@@ -12,10 +12,12 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Clock;
-use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Time\{
+    Clock,
+    Halt,
+};
 use Innmind\IO\IO;
-use Innmind\Immutable\Set;
+use Innmind\Immutable\Sequence;
 use Psr\Log\NullLogger;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
@@ -23,22 +25,22 @@ class LoggerProcessesTest extends TestCase
 {
     public function testInterface()
     {
-        $this->assertInstanceOf(Processes::class, Logger::of(
-            $this->processes(),
+        $this->assertInstanceOf(Processes::class, Server::logger(
+            $this->server(),
             new NullLogger,
-        ));
+        )->processes());
     }
 
     public function testAll()
     {
-        $processes = Logger::of($this->processes(), new NullLogger);
+        $processes = Server::logger($this->server(), new NullLogger)->processes();
 
-        $this->assertInstanceOf(Set::class, $processes->all());
+        $this->assertInstanceOf(Sequence::class, $processes->all());
     }
 
     public function testGet()
     {
-        $processes = Logger::of($this->processes(), new NullLogger);
+        $processes = Server::logger($this->server(), new NullLogger)->processes();
 
         $this->assertInstanceOf(Process::class, $processes->get(Pid::of(1))->match(
             static fn($process) => $process,
@@ -46,16 +48,16 @@ class LoggerProcessesTest extends TestCase
         ));
     }
 
-    private function processes(): Processes
+    private function server(): Server
     {
         return ServerFactory::build(
             Clock::live(),
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
-                Usleep::new(),
+                Halt::new(),
             ),
             EnvironmentPath::of(\getenv('PATH')),
-        )->processes();
+        );
     }
 }

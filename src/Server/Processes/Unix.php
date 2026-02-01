@@ -3,17 +3,16 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Processes;
 
-use Innmind\Server\Status\{
-    Server\Processes,
-    Server\Process,
-    Server\Process\Pid,
-    Server\Process\User,
-    Server\Process\Command,
-    Server\Process\Memory,
-    Server\Cpu\Percentage,
+use Innmind\Server\Status\Server\{
+    Process,
+    Process\Pid,
+    Process\User,
+    Process\Command,
+    Process\Memory,
+    Cpu\Percentage,
 };
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\{
+use Innmind\Time\{
     Clock,
     Format,
 };
@@ -21,38 +20,56 @@ use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
     Sequence,
-    Set,
     Maybe,
     Monoid\Concat,
 };
 
-final class Unix implements Processes
+/**
+ * @internal
+ */
+final class Unix implements Implementation
 {
     private function __construct(
         private Clock $clock,
         private Control\Processes $processes,
+        private string $format,
     ) {
     }
 
     /**
      * @internal
      */
-    public static function of(Clock $clock, Control\Processes $processes): self
+    public static function osx(Clock $clock, Control\Processes $processes): self
     {
-        return new self($clock, $processes);
+        return new self(
+            $clock,
+            $processes,
+            'lstart,user,pid,%cpu,%mem,command',
+        );
+    }
+
+    /**
+     * @internal
+     */
+    public static function linux(Clock $clock, Control\Processes $processes): self
+    {
+        return new self(
+            $clock,
+            $processes,
+            'lstart,user,pid,%cpu,%mem,cmd',
+        );
     }
 
     #[\Override]
-    public function all(): Set
+    public function all(): Sequence
     {
         return $this
             ->run(
                 Control\Command::foreground('ps')
-                    ->withShortOption('eo', $this->format()),
+                    ->withShortOption('eo', $this->format),
             )
             ->map($this->parse(...))
             ->toSequence()
-            ->toSet()
             ->flatMap(static fn($processes) => $processes);
     }
 
@@ -62,12 +79,12 @@ final class Unix implements Processes
         return $this
             ->run(
                 Control\Command::foreground('ps')
-                    ->withShortOption('o', $this->format())
+                    ->withShortOption('o', $this->format)
                     ->withShortOption('p', $pid->toString()),
             )
             ->otherwise(fn() => $this->run(
                 Control\Command::foreground('ps')
-                    ->withShortOption('o', $this->format())
+                    ->withShortOption('o', $this->format)
                     ->withShortOption('q', $pid->toString()),
             ))
             ->map($this->parse(...))
@@ -90,14 +107,14 @@ final class Unix implements Processes
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             );
     }
 
     /**
-     * @return Set<Process>
+     * @return Sequence<Process>
      */
-    private function parse(Str $output): Set
+    private function parse(Str $output): Sequence
     {
         $lines = $output
             ->trim()
@@ -137,20 +154,15 @@ final class Unix implements Processes
                 ->keep(Is::string()->nonEmpty()->asPredicate())
                 ->map(Command::of(...));
             $start = Maybe::just(
-                $this->clock->at($start, Format::of('D M j H:i:s Y')),
+                $this->clock->at($start, Format::of('D M j H:i:s Y'))->maybe(),
             );
 
             return Maybe::all($pid, $user, $percentage, $memory, $start, $command)
                 ->map(Process::of(...));
         });
 
-        return $processes
-            ->flatMap(static fn($process) => $process->toSequence()) // discard process that failed to be parsed
-            ->toSet();
-    }
-
-    private function format(): string
-    {
-        return \PHP_OS === 'Linux' ? 'lstart,user,pid,%cpu,%mem,cmd' : 'lstart,user,pid,%cpu,%mem,command';
+        return $processes->flatMap(
+            static fn($process) => $process->toSequence(), // discard process that failed to be parsed
+        );
     }
 }

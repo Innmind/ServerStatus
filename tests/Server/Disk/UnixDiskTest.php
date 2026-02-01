@@ -4,16 +4,19 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Server\Disk;
 
 use Innmind\Server\Status\{
-    Server\Disk\Unix,
+    ServerFactory,
     Server\Disk,
     Server\Disk\Volume,
     Server\Disk\Volume\MountPoint,
+    EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Clock;
-use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Time\{
+    Clock,
+    Halt,
+};
 use Innmind\IO\IO;
-use Innmind\Immutable\Set;
+use Innmind\Immutable\Sequence;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 
 class UnixDiskTest extends TestCase
@@ -22,13 +25,15 @@ class UnixDiskTest extends TestCase
 
     public function setUp(): void
     {
-        $this->disk = Unix::of(
+        $this->disk = ServerFactory::build(
+            Clock::live(),
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
-                Usleep::new(),
-            )->processes(),
-        );
+                Halt::new(),
+            ),
+            EnvironmentPath::of(\getenv('PATH')),
+        )->disk();
     }
 
     public function testInterface()
@@ -40,7 +45,7 @@ class UnixDiskTest extends TestCase
     {
         $volumes = $this->disk->volumes();
 
-        $this->assertInstanceOf(Set::class, $volumes);
+        $this->assertInstanceOf(Sequence::class, $volumes);
         $this->assertGreaterThanOrEqual(1, $volumes->size());
         $this->assertTrue(
             $volumes

@@ -1,5 +1,17 @@
 # Changelog
 
+## 6.0.0 - 2026-02-01
+
+### Changed
+
+- Requires PHP `8.4`
+- `Innmind\Server\Status\Server` is now a final class, all previous implementations are now flagged as internal
+- `Innmind\Server\Status\Server\Processes::all()` now returns an `Innmind\Immutable\Sequence`
+- `Innmind\Server\Status\Server\Disk::volumes()` now returns an `Innmind\Immutable\Sequence`
+- `Innmind\Server\Status\Server\Disk` is now a final class
+- `Innmind\Server\Status\Server\Processes` is now a final class
+- Requires `innmind/time:~1.0`
+
 ## 5.0.0 - 2025-05-08
 
 ### Changed

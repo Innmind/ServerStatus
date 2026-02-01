@@ -27,11 +27,13 @@ final class Pid
         return new self($value);
     }
 
+    #[\NoDiscard]
     public function equals(self $pid): bool
     {
         return $pid->is($this->value);
     }
 
+    #[\NoDiscard]
     public function is(int $value): bool
     {
         return $this->value === $value;
@@ -40,11 +42,13 @@ final class Pid
     /**
      * @return int<1, max>
      */
+    #[\NoDiscard]
     public function toInt(): int
     {
         return $this->value;
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return (string) $this->value;

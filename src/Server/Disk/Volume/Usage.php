@@ -31,11 +31,13 @@ final class Usage
         return Maybe::just(new self($value));
     }
 
+    #[\NoDiscard]
     public function toFloat(): float
     {
         return $this->value;
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return \sprintf(

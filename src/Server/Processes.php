@@ -3,21 +3,69 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server;
 
-use Innmind\Server\Status\Server\Process\Pid;
+use Innmind\Server\Status\Server\{
+    Processes\Implementation,
+    Processes\Unix,
+    Processes\Logger,
+    Process\Pid,
+};
+use Innmind\Server\Control\Server as Control;
+use Innmind\Time\Clock;
 use Innmind\Immutable\{
-    Set,
+    Sequence,
     Maybe,
 };
+use Psr\Log\LoggerInterface;
 
-interface Processes
+final class Processes
 {
+    private function __construct(
+        private Implementation $implementation,
+    ) {
+    }
+
     /**
-     * @return Set<Process>
+     * @internal
      */
-    public function all(): Set;
+    public static function osx(Clock $clock, Control\Processes $processes): self
+    {
+        return new self(Unix::osx($clock, $processes));
+    }
+
+    /**
+     * @internal
+     */
+    public static function linux(Clock $clock, Control\Processes $processes): self
+    {
+        return new self(Unix::linux($clock, $processes));
+    }
+
+    /**
+     * @internal
+     */
+    public static function logger(self $processes, LoggerInterface $logger): self
+    {
+        return new self(Logger::of(
+            $processes->implementation,
+            $logger,
+        ));
+    }
+
+    /**
+     * @return Sequence<Process>
+     */
+    #[\NoDiscard]
+    public function all(): Sequence
+    {
+        return $this->implementation->all();
+    }
 
     /**
      * @return Maybe<Process>
      */
-    public function get(Pid $pid): Maybe;
+    #[\NoDiscard]
+    public function get(Pid $pid): Maybe
+    {
+        return $this->implementation->get($pid);
+    }
 }

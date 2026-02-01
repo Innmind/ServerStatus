@@ -37,26 +37,31 @@ final class Volume
         return new self($mountPoint, $size, $available, $used, $usage);
     }
 
+    #[\NoDiscard]
     public function mountPoint(): MountPoint
     {
         return $this->mountPoint;
     }
 
+    #[\NoDiscard]
     public function size(): Bytes
     {
         return $this->size;
     }
 
+    #[\NoDiscard]
     public function available(): Bytes
     {
         return $this->available;
     }
 
+    #[\NoDiscard]
     public function used(): Bytes
     {
         return $this->used;
     }
 
+    #[\NoDiscard]
     public function usage(): Usage
     {
         return $this->usage;

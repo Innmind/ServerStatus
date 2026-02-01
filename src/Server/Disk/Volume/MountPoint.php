@@ -27,11 +27,13 @@ final class MountPoint
         return new self($value);
     }
 
+    #[\NoDiscard]
     public function equals(self $point): bool
     {
         return $point->is($this->value);
     }
 
+    #[\NoDiscard]
     public function is(string $point): bool
     {
         return $this->value === $point;
@@ -40,6 +42,7 @@ final class MountPoint
     /**
      * @return non-empty-string
      */
+    #[\NoDiscard]
     public function toString(): string
     {
         return $this->value;

@@ -112,6 +112,6 @@ final class OSXFacade
             ->toSequence()
             ->flatMap(static fn($success) => $success->output())
             ->map(static fn($chunk) => $chunk->data())
-            ->fold(new Concat);
+            ->fold(Concat::monoid);
     }
 }

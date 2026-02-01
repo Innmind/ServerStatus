@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Tests\Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Servers\Linux,
     Server,
     Server\Cpu,
     Server\Memory,
@@ -13,8 +12,10 @@ use Innmind\Server\Status\{
     Server\Disk
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Clock;
-use Innmind\TimeWarp\Halt\Usleep;
+use Innmind\Time\{
+    Clock,
+    Halt,
+};
 use Innmind\IO\IO;
 use Innmind\Url\Path;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
@@ -25,12 +26,12 @@ class LinuxTest extends TestCase
 
     public function setUp(): void
     {
-        $this->server = Linux::of(
+        $this->server = Server::linux(
             Clock::live(),
             Control::build(
                 Clock::live(),
                 IO::fromAmbientAuthority(),
-                Usleep::new(),
+                Halt::new(),
             ),
         );
     }

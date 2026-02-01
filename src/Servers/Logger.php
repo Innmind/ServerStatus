@@ -3,24 +3,25 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Servers;
 
-use Innmind\Server\Status\{
-    Server,
-    Server\Processes,
-    Server\Disk,
+use Innmind\Server\Status\Server\{
+    Processes,
+    Disk,
 };
-use Innmind\Url\Path;
 use Innmind\Immutable\Attempt;
 use Psr\Log\LoggerInterface;
 
-final class Logger implements Server
+/**
+ * @internal
+ */
+final class Logger implements Implementation
 {
     private function __construct(
-        private Server $server,
+        private Implementation $server,
         private LoggerInterface $logger,
     ) {
     }
 
-    public static function of(Server $server, LoggerInterface $logger): self
+    public static function of(Implementation $server, LoggerInterface $logger): self
     {
         return new self($server, $logger);
     }
@@ -60,7 +61,7 @@ final class Logger implements Server
     #[\Override]
     public function processes(): Processes
     {
-        return Processes\Logger::of(
+        return Processes::logger(
             $this->server->processes(),
             $this->logger,
         );
@@ -83,20 +84,9 @@ final class Logger implements Server
     #[\Override]
     public function disk(): Disk
     {
-        return Disk\Logger::of(
+        return Disk::logger(
             $this->server->disk(),
             $this->logger,
         );
-    }
-
-    #[\Override]
-    public function tmp(): Path
-    {
-        $tmp = $this->server->tmp();
-        $this->logger->debug('Temporary folder located at: {path}', [
-            'path' => $tmp->toString(),
-        ]);
-
-        return $tmp;
     }
 }
