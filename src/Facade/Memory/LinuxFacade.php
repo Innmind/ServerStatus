@@ -3,9 +3,9 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Facade\Memory;
 
-use Innmind\Server\Status\{
-    Server\Memory,
-    Server\Memory\Bytes,
+use Innmind\Server\Status\Server\{
+    Memory,
+    Memory\Bytes,
 };
 use Innmind\Server\Control\Server\{
     Processes,
@@ -56,7 +56,7 @@ final class LinuxFacade
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             )
             ->flatMap($this->parse(...));
     }

@@ -10,7 +10,7 @@ use Innmind\Server\Status\Server\{
     Process\Memory,
     Cpu\Percentage,
 };
-use Innmind\TimeContinuum\PointInTime;
+use Innmind\Time\Point;
 use Innmind\Immutable\Maybe;
 
 /**
@@ -19,7 +19,7 @@ use Innmind\Immutable\Maybe;
 final class Process
 {
     /**
-     * @param Maybe<PointInTime> $start
+     * @param Maybe<Point> $start
      */
     private function __construct(
         private Pid $pid,
@@ -35,7 +35,7 @@ final class Process
      * @internal
      * @psalm-pure
      *
-     * @param Maybe<PointInTime> $start
+     * @param Maybe<Point> $start
      */
     public static function of(
         Pid $pid,
@@ -69,7 +69,7 @@ final class Process
     }
 
     /**
-     * @return Maybe<PointInTime>
+     * @return Maybe<Point>
      */
     public function start(): Maybe
     {

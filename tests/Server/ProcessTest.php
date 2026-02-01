@@ -12,7 +12,7 @@ use Innmind\Server\Status\Server\{
     Cpu\Percentage,
 };
 use Innmind\Immutable\Maybe;
-use Fixtures\Innmind\TimeContinuum\PointInTime;
+use Fixtures\Innmind\Time\Point;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
     PHPUnit\Framework\TestCase,
@@ -25,7 +25,7 @@ class ProcessTest extends TestCase
     public function testInterface()
     {
         $this
-            ->forAll(PointInTime::any())
+            ->forAll(Point::any())
             ->then(function($pointInTime) {
                 $process = Process::of(
                     $pid = Pid::of(1),

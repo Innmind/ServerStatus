@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status\Servers;
 
 use Innmind\Server\Status\{
-    Server,
     Server\Processes,
     Facade\Cpu\LinuxFacade as CpuFacade,
     Facade\Memory\LinuxFacade as MemoryFacade,
@@ -12,25 +11,27 @@ use Innmind\Server\Status\{
     Server\Disk,
 };
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\Clock;
-use Innmind\Url\Path;
+use Innmind\Time\Clock;
 use Innmind\Immutable\Attempt;
 
-final class Linux implements Server
+/**
+ * @internal
+ */
+final class Linux implements Implementation
 {
     private CpuFacade $cpu;
     private MemoryFacade $memory;
-    private Processes\Unix $processes;
+    private Processes $processes;
     private LoadAverageFacade $loadAverage;
-    private Disk\Unix $disk;
+    private Disk $disk;
 
     private function __construct(Clock $clock, Control $control)
     {
         $this->cpu = new CpuFacade($control->processes());
         $this->memory = new MemoryFacade($control->processes());
-        $this->processes = Processes\Unix::of($clock, $control->processes());
+        $this->processes = Processes::linux($clock, $control->processes());
         $this->loadAverage = new LoadAverageFacade;
-        $this->disk = Disk\Unix::of($control->processes());
+        $this->disk = Disk::of($control->processes());
     }
 
     /**
@@ -69,11 +70,5 @@ final class Linux implements Server
     public function disk(): Disk
     {
         return $this->disk;
-    }
-
-    #[\Override]
-    public function tmp(): Path
-    {
-        return Path::of(\rtrim(\sys_get_temp_dir(), '/').'/');
     }
 }

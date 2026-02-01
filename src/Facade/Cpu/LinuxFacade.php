@@ -3,10 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Facade\Cpu;
 
-use Innmind\Server\Status\{
-    Server\Cpu,
-    Server\Cpu\Percentage,
-    Server\Cpu\Cores,
+use Innmind\Server\Status\Server\{
+    Cpu,
+    Cpu\Percentage,
+    Cpu\Cores,
 };
 use Innmind\Server\Control\Server\{
     Processes,
@@ -53,7 +53,7 @@ final class LinuxFacade
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             )
             ->flatMap($this->parse(...));
     }
@@ -80,7 +80,7 @@ final class LinuxFacade
                 static fn($success) => $success
                     ->output()
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat)
+                    ->fold(Concat::monoid)
                     ->toString(),
             )
             ->map(static fn($cores) => (int) $cores)

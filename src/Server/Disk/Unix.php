@@ -3,11 +3,10 @@ declare(strict_types = 1);
 
 namespace Innmind\Server\Status\Server\Disk;
 
-use Innmind\Server\Status\{
-    Server\Disk,
-    Server\Disk\Volume\MountPoint,
-    Server\Disk\Volume\Usage,
-    Server\Memory\Bytes,
+use Innmind\Server\Status\Server\{
+    Disk\Volume\MountPoint,
+    Disk\Volume\Usage,
+    Memory\Bytes,
 };
 use Innmind\Server\Control\Server\{
     Processes,
@@ -17,13 +16,16 @@ use Innmind\Server\Control\Server\{
 use Innmind\Validation\Is;
 use Innmind\Immutable\{
     Str,
-    Set,
+    Sequence,
     Maybe,
     Map,
     Monoid\Concat,
 };
 
-final class Unix implements Disk
+/**
+ * @internal
+ */
+final class Unix implements Implementation
 {
     private static array $columns = [
         'Size' => 'size',
@@ -48,7 +50,7 @@ final class Unix implements Disk
     }
 
     #[\Override]
-    public function volumes(): Set
+    public function volumes(): Sequence
     {
         return $this
             ->processes
@@ -63,11 +65,10 @@ final class Unix implements Disk
                     ->output()
                     ->filter(static fn($chunk) => $chunk->type() === Output\Type::output) // discard errors such as "df: getattrlist failed"
                     ->map(static fn($chunk) => $chunk->data())
-                    ->fold(new Concat),
+                    ->fold(Concat::monoid),
             )
             ->map($this->parse(...))
             ->toSequence()
-            ->toSet()
             ->flatMap(static fn($volumes) => $volumes);
     }
 
@@ -80,9 +81,9 @@ final class Unix implements Disk
     }
 
     /**
-     * @return Set<Volume>
+     * @return Sequence<Volume>
      */
-    private function parse(Str $output): Set
+    private function parse(Str $output): Sequence
     {
         $lines = $output
             ->trim()
@@ -126,8 +127,8 @@ final class Unix implements Disk
                 ->map(Volume::of(...));
         });
 
-        return $volumes
-            ->flatMap(static fn($volume) => $volume->toSequence()) // discard unparsed volumes
-            ->toSet();
+        return $volumes->flatMap(
+            static fn($volume) => $volume->toSequence(), // discard unparsed volumes
+        );
     }
 }
