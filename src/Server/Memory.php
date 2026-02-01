@@ -33,26 +33,31 @@ final class Memory
         return new self($total, $active, $free, $swap, $used);
     }
 
+    #[\NoDiscard]
     public function total(): Bytes
     {
         return $this->total;
     }
 
+    #[\NoDiscard]
     public function active(): Bytes
     {
         return $this->active;
     }
 
+    #[\NoDiscard]
     public function free(): Bytes
     {
         return $this->free;
     }
 
+    #[\NoDiscard]
     public function swap(): Bytes
     {
         return $this->swap;
     }
 
+    #[\NoDiscard]
     public function used(): Bytes
     {
         return $this->used;

@@ -34,26 +34,31 @@ final class Cpu
         return new self($user, $system, $idle, $cores);
     }
 
+    #[\NoDiscard]
     public function user(): Percentage
     {
         return $this->user;
     }
 
+    #[\NoDiscard]
     public function system(): Percentage
     {
         return $this->system;
     }
 
+    #[\NoDiscard]
     public function idle(): Percentage
     {
         return $this->idle;
     }
 
+    #[\NoDiscard]
     public function cores(): Cores
     {
         return $this->cores;
     }
 
+    #[\NoDiscard]
     public function toString(): string
     {
         return \sprintf(

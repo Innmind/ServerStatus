@@ -36,16 +36,19 @@ final class LoadAverage
         return Maybe::just(new self($lastMinute, $lastFiveMinutes, $lastFifteenMinutes));
     }
 
+    #[\NoDiscard]
     public function lastMinute(): float
     {
         return $this->lastMinute;
     }
 
+    #[\NoDiscard]
     public function lastFiveMinutes(): float
     {
         return $this->lastFiveMinutes;
     }
 
+    #[\NoDiscard]
     public function lastFifteenMinutes(): float
     {
         return $this->lastFifteenMinutes;

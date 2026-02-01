@@ -27,6 +27,7 @@ final class Server
     ) {
     }
 
+    #[\NoDiscard]
     public static function osx(
         Clock $clock,
         Control $control,
@@ -35,6 +36,7 @@ final class Server
         return new self(OSX::of($clock, $control, $path));
     }
 
+    #[\NoDiscard]
     public static function linux(
         Clock $clock,
         Control $control,
@@ -42,6 +44,7 @@ final class Server
         return new self(Linux::of($clock, $control));
     }
 
+    #[\NoDiscard]
     public static function logger(self $server, LoggerInterface $logger): self
     {
         return new self(Logger::of(
@@ -53,6 +56,7 @@ final class Server
     /**
      * @return Attempt<Cpu>
      */
+    #[\NoDiscard]
     public function cpu(): Attempt
     {
         return $this->implementation->cpu();
@@ -61,11 +65,13 @@ final class Server
     /**
      * @return Attempt<Memory>
      */
+    #[\NoDiscard]
     public function memory(): Attempt
     {
         return $this->implementation->memory();
     }
 
+    #[\NoDiscard]
     public function processes(): Processes
     {
         return $this->implementation->processes();
@@ -74,16 +80,19 @@ final class Server
     /**
      * @return Attempt<LoadAverage>
      */
+    #[\NoDiscard]
     public function loadAverage(): Attempt
     {
         return $this->implementation->loadAverage();
     }
 
+    #[\NoDiscard]
     public function disk(): Disk
     {
         return $this->implementation->disk();
     }
 
+    #[\NoDiscard]
     public function tmp(): Path
     {
         return Path::of(\rtrim(\sys_get_temp_dir(), '/').'/');

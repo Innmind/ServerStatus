@@ -46,6 +46,7 @@ final class Disk
     /**
      * @return Sequence<Volume>
      */
+    #[\NoDiscard]
     public function volumes(): Sequence
     {
         return $this->implementation->volumes();
@@ -54,6 +55,7 @@ final class Disk
     /**
      * @return Maybe<Volume>
      */
+    #[\NoDiscard]
     public function get(MountPoint $point): Maybe
     {
         return $this->implementation->get($point);
