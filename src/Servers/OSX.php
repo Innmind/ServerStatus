@@ -12,7 +12,7 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\Clock;
 use Innmind\Immutable\Attempt;
 
 /**

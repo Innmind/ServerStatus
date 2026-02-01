@@ -7,7 +7,7 @@ use Innmind\Server\Status\{
     Server\Process,
     Server\Process\Pid,
 };
-use Innmind\TimeContinuum\Format;
+use Innmind\Time\Format;
 use Innmind\Immutable\{
     Sequence,
     Maybe,

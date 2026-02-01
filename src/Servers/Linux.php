@@ -11,7 +11,7 @@ use Innmind\Server\Status\{
     Server\Disk,
 };
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\Clock;
 use Innmind\Immutable\Attempt;
 
 /**

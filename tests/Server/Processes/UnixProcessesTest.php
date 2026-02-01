@@ -11,11 +11,11 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\{
+use Innmind\Time\{
     Clock,
-    PointInTime,
+    Point,
+    Halt,
 };
-use Innmind\TimeWarp\Halt;
 use Innmind\IO\IO;
 use Innmind\Immutable\Sequence;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
@@ -113,7 +113,7 @@ class UnixProcessesTest extends TestCase
             );
 
         $this->assertInstanceOf(Process::class, $process);
-        $this->assertInstanceOf(PointInTime::class, $process->start()->match(
+        $this->assertInstanceOf(Point::class, $process->start()->match(
             static fn($start) => $start,
             static fn() => null,
         ));

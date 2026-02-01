@@ -10,7 +10,7 @@ use Innmind\Server\Status\Server\{
     Process\Pid,
 };
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\Clock;
 use Innmind\Immutable\{
     Sequence,
     Maybe,

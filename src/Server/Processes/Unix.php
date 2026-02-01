@@ -12,7 +12,7 @@ use Innmind\Server\Status\{
     Server\Cpu\Percentage,
 };
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\{
+use Innmind\Time\{
     Clock,
     Format,
 };

@@ -16,8 +16,7 @@
     "require": {
         "php": "~8.4",
         "innmind/immutable": "~6.0",
-        "innmind/time-continuum": "~5.0",
-        "innmind/time-warp": "~5.0",
+        "innmind/time": "~1.0",
         "innmind/url": "~5.0",
         "psr/log": "~3.0",
         "innmind/server-control": "~7.0",

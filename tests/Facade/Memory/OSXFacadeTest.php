@@ -9,8 +9,10 @@ use Innmind\Server\Status\{
     EnvironmentPath,
 };
 use Innmind\Server\Control\ServerFactory as Control;
-use Innmind\TimeContinuum\Clock;
-use Innmind\TimeWarp\Halt;
+use Innmind\Time\{
+    Clock,
+    Halt,
+};
 use Innmind\IO\IO;
 use Innmind\BlackBox\PHPUnit\Framework\TestCase;
 

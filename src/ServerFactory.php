@@ -4,7 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\Server\Status;
 
 use Innmind\Server\Control\Server as Control;
-use Innmind\TimeContinuum\Clock;
+use Innmind\Time\Clock;
 
 final class ServerFactory
 {
