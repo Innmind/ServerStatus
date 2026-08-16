@@ -14,7 +14,7 @@
         "issues": "http://github.com/Innmind/ServerStatus/issues"
     },
     "require": {
-        "php": "~8.4",
+        "php": "~8.5",
         "innmind/immutable": "~6.0",
         "innmind/time": "~1.0",
         "innmind/url": "~5.0",
